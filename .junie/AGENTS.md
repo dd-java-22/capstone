@@ -1,15 +1,17 @@
 # Project Guidelines
 
-Default to **Brave Mode**: Guidelines in this file (`./.junie/AGENTS.md`) take highest precedence, followed by the immediate parent (`../.junie/AGENTS.md`), then the grandparent (`../../.junie/AGENTS.md`).
+This directory contains the mandatory guidelines for AI agents working on this project. To ensure consistency, safety, and adherence to project standards, these rules are split into procedural and project-specific components.
 
-## Capstone Project Rules
+### Core Procedures
 
-- **Base Package Name:** Read from the `basePackageName` property in `gradle.properties`.
-- **Database Schema:** Read the Room schema location from the `room.schemaLocation` argument in `app/build.gradle.kts`.
-- **Project Structure:** This is a multi-module project with `app` (Android client) and `server` (Spring Boot) modules.
+Refer to [PROCEDURES.md](./PROCEDURES.md) for mandatory instructions regarding guideline discovery, rule precedence, and version control gates. These procedures **must** be followed at the start of every session.
+
+### Project Standards
+
+Refer to [PROJECT.md](./PROJECT.md) for rules specific to this project's build configuration, package structure, and database schema.
 
 ---
 
-### Responsibility
+## Responsibility
 
 While you should attempt to identify obvious contradictions (e.g., "Use tabs" vs. "Use spaces"), the user is responsible for the granularity and clarity of the rules provided at each level. If a rule is ambiguous, seek clarification as per standard operating procedures.
