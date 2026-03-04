@@ -40,7 +40,7 @@ dependencyResolutionManagement {
     }
 }
 
-// TODO Update for project name.
-rootProject.name = "capstone-project"
+
+rootProject.name = "see-something-abq"
 
 include(":app", ":server")

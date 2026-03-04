@@ -14,15 +14,61 @@ order: 0
 
 ## Summary
 
-[//]: # (TODO Replace this paragraph with one or more paragraphs summarizing the purpose and operation of the application (client and server) you propose to develop in this project.)
+See Something, Say Something, Albuquerque! is an issue/incident reporting system, intended for use by city employees and executives, to encourage all employees to report general (non-emergency) issues and incidents that should not be allowed to persist or escalate, and for designated executives to receive those reports in near-real-time and resolve them quickly.
 
 ## Intended users and user stories
 
-[//]: # (TODO Write a bullet list here, including at least 2 different types of intended users. Along with each type of intended user, include at least 1 _user story_. A user story is usually just 1 simple sentence &#40;no more than 2 sentences&#41;, in the voice of the intended user, stating a specific task that the user performs using the app, and the benefit that will be obtained. See rubric for required form.)
+- Commuting city employees
+
+  > As a Albuquerque city employee who commutes to work by car pool, I often see unsightly graffiti or trash on the major traffic routes along the way. I use the reporting features of the app (along with my phone camera) to create issue reports, so they don’t get lost in the “cognitive shuffle” I experience when I get to the office.
+
+- City employees committed to the long-term viability of Albuquerque’s parks and other public spaces
+
+  > As an Albuquerque resident and employee who’s raising children here, I often see trash and broken equipment at city parks. I use the app (with its GPS and camera support) to create issue reports on the spot, and then use my list of open issues to track them; in this way, I feel I’m doing my part to keep the city’s public spaces safe and child-friendly.
+
+- City executives dealing with fragmented, partial data
+
+  > As an Albuquerque city executive who has, among my other responsibilities, input into the scheduling and and tasking of city maintenance and cleanup resources, I often feel frustrated by the lack of information available to me in that process. With city employees now encouraged to use the app to report issues, I can now use location- and tag-filtered queries of open issues to aid not only in immediate resolution of issues but also in short- and near-term planning and scheduling of city resources.
+
+  
 
 ## Functionality
 
-[//]: # (TODO List &#40;using a bullet list---or ordered list, if order is relevant&#41; the key functional aspects that will be provided by the app---i.e., tell us what the user will be able to do using the app. This should not simply be a re-statement of the [summary]&#40;#summary&#41;, but should instead provide a more specific articulation of the functionality and user experience. )
+
+### Users
+
+The system (available initially as an Android app) will present a very simple interface, allowing a user to:
+
+
+- Create an issue report, with location information added manually or automatically (using the GPS services of the device), and optionally attaching one or more photographs
+
+- Tag that report with predefined or ad hoc tags.
+
+- See a list of issues previously reported by the given user, filtered (by default) by status, and (optionally) by tag and general location.
+
+- Add comments (optionally with photos) to any issue previously reported by that user.
+
+### Managers
+
+In addition to the above, the system will enable users designated in the system as authorized managers to:
+
+
+- Review lists of all issues, filtered (by default) by status, and (optionally) by tag and general location.
+
+- Add comments (optionally with photos) to any issue.
+
+- Update the status (open/reported, open/in-progress, closed) of any issue.
+
+- Generate and export reports of issues filtered by status, tag, general location, and month, showing item-specific and aggregated data for time open, reports per month, reports by general location, etc.
+
+
+### General
+
+- The user-facing mobile app will send all issue reports (as they are created) to a Spring Boot-based web service, backed by a persistent store, so that reports can be accessed by issue creators and managers on any supported device.
+
+- The web service will use a relational database management system (RDBMS) for the persistent store of issue reports (with related comments, photos, etc.), maintaining them for any duration required by law, regulation, or policy.
+
+
 
 ## Persistent data
 
@@ -30,7 +76,17 @@ order: 0
 
 ## Device/external services
 
-[//]: # (TODO If the client component will need to access special services of the client device &#40;e.g., sensors, contacts, messaging&#41;, list them here using a bullet list. Also, if the client component will need to access already-existing external services &#40;e.g., real-time weather data, Open Movie Database, Open Trivia Database&#41;, those should also be listed here.)
+
+- Over the current planning horizon, the system will not manage user credentials internally (or via connection to a SSO—if any—in use by the city), but will use an external OpenID Connect/OAuth 2.0 authentication provider. Initially, Google will be supported as an authentication provider, but support for other providers are included in the short-term stretch goals.
+
+- If the report initiator chooses to do so, device-level GPS services will be used to capture location information. Use of the app will not be limited to those users with GPS services available/enabled, and will not be otherwise restricted in any way if the user doesn’t grant location access permissions to the app.
+
+
+- A report initiator may attach one or more photos captured by the mobile device to an issue report; a manager may attach additional photos during the process of resolution. Use of the app will not be otherwise restricted in any way if the user does not grant camera access permissions to the app.
+
+- Device-level voice-to-text features will be supported for entering the text of an issue or related comment. Use of the app will not be otherwise restricted in any way if the user does not grant microphone access permissions to the app.
+
+- Reports will be exportable in CSV format, enabling subsequent import into spreadsheets.
 
 ## Stretch goals and possible enhancements 
 
