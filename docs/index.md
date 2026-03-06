@@ -72,7 +72,9 @@ In addition to the above, the system will enable users designated in the system 
 
 ## Persistent data
 
-[//]: # (TODO Using a bullet list, list what content will be maintained in server-side storage. This should include any information that users of your app would expect to be maintained &#40;i.e., without connection to a server&#41; across multiple sessions of use.)
+- File store for photographs
+- Relational database for issue reports and other data
+- Storage for AI model (stretch goal)
 
 ## Device/external services
 
@@ -87,6 +89,8 @@ In addition to the above, the system will enable users designated in the system 
 - Device-level voice-to-text features will be supported for entering the text of an issue or related comment. Use of the app will not be otherwise restricted in any way if the user does not grant microphone access permissions to the app.
 
 - Reports will be exportable in CSV format, enabling subsequent import into spreadsheets.
+
+- Google Maps API for choosing a GPS location on a map.
 
 ## Stretch goals and possible enhancements 
 
