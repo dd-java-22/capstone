@@ -4,7 +4,7 @@ This directory contains the mandatory guidelines for AI agents working on this p
 
 ### Core Procedures
 
-Refer to [PROCEDURES.md](./PROCEDURES.md) for mandatory instructions regarding guideline discovery, rule precedence, and version control gates. These procedures **must** be followed at the start of every session.
+Refer to [PROCEDURES.md](./PROCEDURES.md) for mandatory instructions regarding guideline discovery, rule precedence, and version control gates. These procedures **must** be followed at the start of every session. Note that `PROCEDURES.md` is already an integral part of the discovery process triggered by reading this file.
 
 ### Project Standards
 

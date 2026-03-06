@@ -8,15 +8,14 @@ titles_from_headings:
 prev_next_navigation:
 - bottom
 
-# TODO Modify the contents below for the specific project. NOTE THE INDENTATION!
 
-title: "Capstone Project"
-description: "Trust me, it'll be cool!"
+title: "See Something, Say Something, Albuquerque!"
+description: "A general issues ticketing app for Albuquerque city employees"
 version: 1.0.0
 
-# TODO List team members in the author.name property.
+
 author:
-  name: "DDC Student"
+  name: "Kevin Dilts, Skylar Scott, Michael Sylvester, and Mark Vega."
 
 # Do not change the following line.
   copyright: true
