@@ -42,7 +42,7 @@ The system (available initially as an Android app) will present a very simple in
 
 - Create an issue report, with location information added manually or automatically (using the GPS services of the device), and optionally attaching one or more photographs
 
-- Tag that report with predefined or ad hoc tags.
+- Tag that report with predefined tags.
 
 - See a list of issues previously reported by the given user, filtered (by default) by status, and (optionally) by tag and general location.
 
