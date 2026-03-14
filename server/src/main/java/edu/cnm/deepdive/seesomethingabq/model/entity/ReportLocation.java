@@ -26,4 +26,48 @@ public class ReportLocation {
   // used AI to help with OneToOne annotation
   @OneToOne(mappedBy = "reportLocation")
   private IssueReport issueReport;
+
+  public Long getReportLocationId() {
+    return reportLocationId;
+  }
+
+  public Double getLatitude() {
+    return latitude;
+  }
+
+  public void setLatitude(Double latitude) {
+    this.latitude = latitude;
+  }
+
+  public Double getLongitude() {
+    return longitude;
+  }
+
+  public void setLongitude(Double longitude) {
+    this.longitude = longitude;
+  }
+
+  public String getStreetCoordinate() {
+    return streetCoordinate;
+  }
+
+  public void setStreetCoordinate(String streetCoordinate) {
+    this.streetCoordinate = streetCoordinate;
+  }
+
+  public String getLocationDescription() {
+    return locationDescription;
+  }
+
+  public void setLocationDescription(String locationDescription) {
+    this.locationDescription = locationDescription;
+  }
+
+  public IssueReport getIssueReport() {
+    return issueReport;
+  }
+
+  public void setIssueReport(IssueReport issueReport) {
+    this.issueReport = issueReport;
+  }
 }

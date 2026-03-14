@@ -5,7 +5,12 @@ import jakarta.persistence.*;
 import java.net.URI;
 
 @Entity
-@Table(name = "report_image")
+@Table(
+  name = "report_image",
+  indexes = {
+    @Index(name = "ix_report_image_issue_report_id", columnList = "issue_report_id")
+  }
+)
 public class ReportImage {
 
   @Id
@@ -26,4 +31,40 @@ public class ReportImage {
 
   @Column(name = "mime_type", nullable = false)
   private String mimeType;
+
+  public Long getReportImageId() {
+    return reportImageId;
+  }
+
+  public IssueReport getIssueReport() {
+    return issueReport;
+  }
+
+  public void setIssueReport(IssueReport issueReport) {
+    this.issueReport = issueReport;
+  }
+
+  public URI getImageLocator() {
+    return imageLocator;
+  }
+
+  public void setImageLocator(URI imageLocator) {
+    this.imageLocator = imageLocator;
+  }
+
+  public String getFilename() {
+    return filename;
+  }
+
+  public void setFilename(String filename) {
+    this.filename = filename;
+  }
+
+  public String getMimeType() {
+    return mimeType;
+  }
+
+  public void setMimeType(String mimeType) {
+    this.mimeType = mimeType;
+  }
 }

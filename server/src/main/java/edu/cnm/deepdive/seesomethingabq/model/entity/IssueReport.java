@@ -9,7 +9,18 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "issue_report")
+@Table(
+  name = "issue_report",
+  uniqueConstraints = {
+    @UniqueConstraint(name = "uk_issue_report_report_location_id", columnNames = "report_location_id")
+  },
+  indexes = {
+    @Index(name = "ix_issue_report_user_profile_id", columnList = "user_profile_id"),
+    @Index(name = "ix_issue_report_accepted_state_id", columnList = "accepted_state_id"),
+    @Index(name = "ix_issue_report_time_first_reported", columnList = "time_first_reported"),
+    @Index(name = "ix_issue_report_time_last_modified", columnList = "time_last_modified")
+  }
+)
 public class IssueReport {
 
   @Id
@@ -52,5 +63,57 @@ public class IssueReport {
   // used AI to help with OneToMany annotation
   @OneToMany(mappedBy = "issueReport") // this is confusing - issueReport here actually refers to the ReportImage.issueReport field
   private final Set<ReportImage> reportImages = new HashSet<>();
+
+  public Long getIssueReportId() {
+    return issueReportId;
+  }
+
+  public UserProfile getUserProfile() {
+    return userProfile;
+  }
+
+  public void setUserProfile(UserProfile userProfile) {
+    this.userProfile = userProfile;
+  }
+
+  public ReportLocation getReportLocation() {
+    return reportLocation;
+  }
+
+  public void setReportLocation(ReportLocation reportLocation) {
+    this.reportLocation = reportLocation;
+  }
+
+  public AcceptedState getAcceptedState() {
+    return acceptedState;
+  }
+
+  public void setAcceptedState(AcceptedState acceptedState) {
+    this.acceptedState = acceptedState;
+  }
+
+  public Set<IssueType> getIssueTypes() {
+    return issueTypes;
+  }
+
+  public Instant getTimeFirstReported() {
+    return timeFirstReported;
+  }
+
+  public Instant getTimeLastModified() {
+    return timeLastModified;
+  }
+
+  public String getTextDescription() {
+    return textDescription;
+  }
+
+  public void setTextDescription(String textDescription) {
+    this.textDescription = textDescription;
+  }
+
+  public Set<ReportImage> getReportImages() {
+    return reportImages;
+  }
 }
 
