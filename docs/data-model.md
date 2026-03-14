@@ -15,3 +15,7 @@ order: 20
 ## UML class diagram
 
 [![UML class diagram](img/UML.svg)](pdf/UML.pdf)
+
+## Entity-relationship diagram
+
+[![Entity-relationship diagram](img/ERD.svg)](pdf/ERD.pdf)
