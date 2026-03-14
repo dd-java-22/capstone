@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "user_profile")
@@ -40,4 +42,8 @@ public class UserProfile {
 
   @Column(name = "user_enabled", nullable = false)
   private Boolean userEnabled;
+
+  // used AI to help with OneToMany annotation
+  @OneToMany(mappedBy = "userProfile")
+  private final Set<IssueReport> issueReports = new HashSet<>();
 }

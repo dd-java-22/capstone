@@ -26,5 +26,5 @@ public class IssueType {
 
   // used AI to help with ManyToMany annotation
   @ManyToMany(mappedBy = "issueTypes")
-  private Set<IssueReport> issueReports = new HashSet<>();
+  private final Set<IssueReport> issueReports = new HashSet<>();
 }

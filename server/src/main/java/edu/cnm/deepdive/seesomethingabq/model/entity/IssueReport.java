@@ -36,7 +36,7 @@ public class IssueReport {
     joinColumns = @JoinColumn(name = "issue_report_id"),
     inverseJoinColumns = @JoinColumn(name = "issue_type_id")
   )
-  private Set<IssueType> issueTypes = new HashSet<>();
+  private final Set<IssueType> issueTypes = new HashSet<>();
 
   @CreationTimestamp
   @Column(name = "time_first_reported", nullable = false)

@@ -22,4 +22,8 @@ public class ReportLocation {
 
   @Column(name = "location_description")
   private String locationDescription;
+
+  // used AI to help with OneToOne annotation
+  @OneToOne(mappedBy = "reportLocation")
+  private IssueReport issueReport;
 }

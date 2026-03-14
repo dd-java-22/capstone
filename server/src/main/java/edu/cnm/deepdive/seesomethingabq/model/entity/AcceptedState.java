@@ -2,6 +2,9 @@ package edu.cnm.deepdive.seesomethingabq.model.entity;
 
 import jakarta.persistence.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Entity
 @Table(name = "accepted_state")
 public class AcceptedState {
@@ -20,4 +23,8 @@ public class AcceptedState {
 
   @Column(name = "status_tag_description", nullable = false)
   private String statusTagDescription;
+
+  // used AI to help with OneToMany annotation
+  @OneToMany(mappedBy = "acceptedState")
+  private final Set<IssueReport> issueReports = new HashSet<>();
 }
