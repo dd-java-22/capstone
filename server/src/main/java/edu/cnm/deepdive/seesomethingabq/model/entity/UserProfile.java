@@ -25,11 +25,7 @@ public class UserProfile {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long userProfileId;
 
-  @Column(
-    name = "oauth_key",
-    nullable = false,
-    unique = true
-  )
+  @Column(name = "oauth_key", nullable = false)
   private String oauthKey;
 
   @Column(name = "display_name", nullable = false)

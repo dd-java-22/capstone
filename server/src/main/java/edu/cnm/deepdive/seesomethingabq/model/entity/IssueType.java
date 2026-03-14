@@ -19,11 +19,7 @@ public class IssueType {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long issueTypeId;
 
-  @Column(
-    name = "issue_type_tag",
-    nullable = false,
-    unique = true
-  )
+  @Column(name = "issue_type_tag", nullable = false)
   private String issueTypeTag;
 
   @Column(name = "issue_type_description", nullable = false)

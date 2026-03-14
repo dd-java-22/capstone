@@ -19,11 +19,7 @@ public class AcceptedState {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long acceptedStateId;
 
-  @Column(
-    name = "status_tag",
-    nullable = false,
-    unique = true
-  )
+  @Column(name = "status_tag", nullable = false)
   private String statusTag;
 
   @Column(name = "status_tag_description", nullable = false)
