@@ -3,7 +3,7 @@ erDiagram
     accepted_state ||--o{ issue_report : "An issue always has a current status."
     issue_report ||--o{ report_image : "One or more photos may be attached to an issue."
     issue_report }o--|| user_profile : "Users may make multiple reports."
-    report_locations ||--|| issue_report : "Issues are associated with their location."
+    report_location ||--|| issue_report : "Issues are associated with their location."
 
 
     issue_type {
@@ -12,26 +12,26 @@ erDiagram
         String issue_type_description
     }
     accepted_state {
-        Long status_id PK
+        Long accepted_state_id PK
         String status_tag UK
         String status_tag_description
     }
-    report_locations {
-        Long location_id PK
+    report_location {
+        Long report_location_id PK
         Double latitude "N"
         Double longitude "N"
         String street_coordinate "N, Needs client clarification"
         String location_description "N"
     }
     report_image {
-        Long image_id PK
-        Long attached_report FK
+        Long report_image_id PK
+        Long issue_report_id FK
         URI image_locator
         String filename
         String mime_type
     }
     user_profile {
-        Long user_id PK
+        Long user_profile_id PK
         String oauth_key UK
         String display_name
         String email
@@ -40,10 +40,10 @@ erDiagram
         Boolean user_enabled
     }
     issue_report {
-        Long report_id PK
-        Long reporting_user_id FK
-        Long location_id FK
-        Long accepted_state FK
+        Long issue_report_id PK
+        Long user_profile_id FK
+        Long report_location_id FK
+        Long accepted_state_id FK
         Instant time_first_reported
         Instant time_last_modfied
         String text_description "User explanation of issue"
