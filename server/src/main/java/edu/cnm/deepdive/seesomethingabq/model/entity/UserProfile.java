@@ -35,7 +35,7 @@ public class UserProfile {
   private String email;
 
   @Column(name = "is_manager", nullable = false)
-  private Boolean manager;
+  private boolean manager;
 
   @CreationTimestamp
   @Column(
@@ -46,7 +46,7 @@ public class UserProfile {
   private Instant timeCreated;
 
   @Column(name = "user_enabled", nullable = false)
-  private Boolean userEnabled;
+  private boolean userEnabled;
 
   // used AI to help with OneToMany annotation
   @OneToMany(mappedBy = "userProfile")
@@ -80,11 +80,11 @@ public class UserProfile {
     this.email = email;
   }
 
-  public Boolean getManager() {
+  public boolean getManager() {
     return manager;
   }
 
-  public void setManager(Boolean manager) {
+  public void setManager(boolean manager) {
     this.manager = manager;
   }
 
@@ -92,11 +92,11 @@ public class UserProfile {
     return timeCreated;
   }
 
-  public Boolean getUserEnabled() {
+  public boolean getUserEnabled() {
     return userEnabled;
   }
 
-  public void setUserEnabled(Boolean userEnabled) {
+  public void setUserEnabled(boolean userEnabled) {
     this.userEnabled = userEnabled;
   }
 
