@@ -1,0 +1,50 @@
+erDiagram
+    issue_types }|--o{ issue_reports : ""
+    accepted_states ||--o{ issue_reports : ""
+    issue_reports ||--o{ report_images : ""
+    issue_reports}o--|| user_profile : ""
+    report_locations ||--|| issue_reports : ""
+
+
+    issue_types {
+        Long issue_type_id PK
+        String issue_type_tag UK
+        String issue_type_description
+    }
+    accepted_states {
+        Long status_id PK
+        String status_tag UK
+        String status_tag_description
+    }
+    report_locations {
+        Long location_id PK
+        Double latitude
+        Double longitude
+        String street_coordinate "Needs client clarification"
+        String location_description "N"
+    }
+    report_images {
+        Long image_id PK
+        Long attached_report FK
+        URI image_locator
+        String filename
+        String mime_type
+    }
+    user_profile {
+        Long user_id PK
+        String oauth_key UK
+        String display_name
+        String email
+        Boolean is_manager
+        Instant time_created
+        Boolean user_enabled
+    }
+    issue_reports {
+        Long report_id PK
+        Long reporting_user_id FK
+        Long location_id FK
+        Long accepted_state FK
+        Instant time_first_reported
+        Instant time_last_modfied
+        String text_description "User explanation of issue"
+    }
