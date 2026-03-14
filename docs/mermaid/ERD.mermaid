@@ -1,29 +1,29 @@
 erDiagram
-    issue_types }|--o{ issue_reports : ""
-    accepted_states ||--o{ issue_reports : ""
-    issue_reports ||--o{ report_images : ""
-    issue_reports}o--|| user_profile : ""
-    report_locations ||--|| issue_reports : ""
+    issue_type }|--o{ issue_report : "Issues must be tagged with at least one issue type."
+    accepted_state ||--o{ issue_report : "An issue always has a current status."
+    issue_report ||--o{ report_image : "One or more photos may be attached to an issue."
+    issue_report }o--|| user_profile : "Users may make multiple reports."
+    report_locations ||--|| issue_report : "Issues are associated with their location."
 
 
-    issue_types {
+    issue_type {
         Long issue_type_id PK
         String issue_type_tag UK
         String issue_type_description
     }
-    accepted_states {
+    accepted_state {
         Long status_id PK
         String status_tag UK
         String status_tag_description
     }
     report_locations {
         Long location_id PK
-        Double latitude
-        Double longitude
-        String street_coordinate "Needs client clarification"
+        Double latitude "N"
+        Double longitude "N"
+        String street_coordinate "N, Needs client clarification"
         String location_description "N"
     }
-    report_images {
+    report_image {
         Long image_id PK
         Long attached_report FK
         URI image_locator
@@ -39,7 +39,7 @@ erDiagram
         Instant time_created
         Boolean user_enabled
     }
-    issue_reports {
+    issue_report {
         Long report_id PK
         Long reporting_user_id FK
         Long location_id FK
