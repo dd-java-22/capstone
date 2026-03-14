@@ -35,7 +35,7 @@ public class UserProfile {
   private String email;
 
   @Column(name = "is_manager", nullable = false)
-  private Boolean isManager;
+  private Boolean manager;
 
   @CreationTimestamp
   @Column(
@@ -80,12 +80,12 @@ public class UserProfile {
     this.email = email;
   }
 
-  public Boolean getIsManager() {
-    return isManager;
+  public Boolean getManager() {
+    return manager;
   }
 
-  public void setIsManager(Boolean isManager) {
-    this.isManager = isManager;
+  public void setManager(Boolean manager) {
+    this.manager = manager;
   }
 
   public Instant getTimeCreated() {
