@@ -7,44 +7,44 @@ erDiagram
 
 
     issue_type {
-        Long issue_type_id PK
-        String issue_type_tag UK
+        Long issue_type_id "PK"
+        String issue_type_tag "UK1"
         String issue_type_description
     }
     accepted_state {
-        Long accepted_state_id PK
-        String status_tag UK
+        Long accepted_state_id "PK"
+        String status_tag "UK1"
         String status_tag_description
     }
     report_location {
-        Long report_location_id PK
+        Long report_location_id "PK"
         Double latitude "N"
         Double longitude "N"
-        String street_coordinate "N, Needs client clarification"
+        String street_coordinate "N"
         String location_description "N"
     }
     report_image {
-        Long report_image_id PK
-        Long issue_report_id FK
+        Long report_image_id "PK"
+        Long issue_report_id "FK1"
         URI image_locator
         String filename
         String mime_type
     }
     user_profile {
-        Long user_profile_id PK
-        String oauth_key UK
+        Long user_profile_id "PK"
+        String oauth_key "UK1"
         String display_name
-        String email
+        String email "IX1"
         Boolean is_manager
         Instant time_created
         Boolean user_enabled
     }
     issue_report {
-        Long issue_report_id PK
-        Long user_profile_id FK
-        Long report_location_id FK
-        Long accepted_state_id FK
-        Instant time_first_reported
-        Instant time_last_modfied
-        String text_description "User explanation of issue"
+        Long issue_report_id "PK"
+        Long user_profile_id "FK1"
+        Long report_location_id "FK2"
+        Long accepted_state_id "FK3"
+        Instant time_first_reported "IX1"
+        Instant time_last_modified "IX2"
+        String text_description "N"
     }
