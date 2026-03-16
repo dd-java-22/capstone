@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
 import jakarta.persistence.*;
+import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -23,12 +24,13 @@ import java.util.Set;
 )
 public class IssueReport {
 
-  // TODO: 3/16/2026 consider adding UUIDs for UserProfile and IssueReport - will need prepersist
-
   @Id
   @Column(name = "issue_report_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(name = "issue_report_external_id")
+  private UUID externalId;
 
   // TODO: 3/16/2026 add optional to other fields that need it
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -64,7 +66,7 @@ public class IssueReport {
   private String textDescription; // User explanation of issue
 
   // used AI to help with OneToMany annotation
-  @OneToMany(mappedBy = "issueReport") // this is confusing - issueReport here actually refers to the ReportImage.issueReport field
+  @OneToMany(mappedBy = "issueReport") // issueReport here actually refers to the ReportImage.issueReport field
   private final Set<ReportImage> reportImages = new HashSet<>();
 
   public Long getId() {
@@ -117,6 +119,11 @@ public class IssueReport {
 
   public Set<ReportImage> getReportImages() {
     return reportImages;
+  }
+
+  @PrePersist
+  void onCreate() {
+    this.externalId = UUID.randomUUID();
   }
 }
 

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
@@ -28,6 +29,9 @@ public class UserProfile {
   @Column(name = "user_profile_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
+
+  @Column(name = "user_profile_external_id")
+  private UUID externalId;
 
   // TODO: 3/16/2026 check that updateable = false is applied everywhere that needs it
   @Column(nullable = false, updatable = false)
@@ -109,5 +113,10 @@ public class UserProfile {
 
   public List<IssueReport> getIssueReports() {
     return issueReports;
+  }
+
+  @PrePersist
+  void onCreate() {
+    this.externalId = UUID.randomUUID();
   }
 }
