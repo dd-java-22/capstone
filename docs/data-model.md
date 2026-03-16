@@ -22,7 +22,7 @@ order: 20
 
 ## Entity classes
 
-The following Room entity classes correspond to the tables shown in the ERD.
+The following JPA entity classes correspond to the tables shown in the ERD.
 
 - [AcceptedState](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/model/entity/AcceptedState.java)
 - [IssueReport](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/model/entity/IssueReport.java)
