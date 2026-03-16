@@ -1,9 +1,17 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
-import jakarta.persistence.*;
-
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(
@@ -15,7 +23,7 @@ import java.util.Set;
 public class AcceptedState {
 
   @Id
-  @Column(name = "accepted_state_id")
+  @Column(name = "accepted_state_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
@@ -26,8 +34,9 @@ public class AcceptedState {
   private String statusTagDescription;
 
   // used AI to help with OneToMany annotation
-  @OneToMany(mappedBy = "acceptedState")
-  private final Set<IssueReport> issueReports = new HashSet<>();
+  @OneToMany(mappedBy = "acceptedState", fetch = FetchType.LAZY)
+  @OrderBy("timeLastModified DESC")
+  private final List<IssueReport> issueReports = new LinkedList<>();
 
   public Long getId() {
     return id;
@@ -49,7 +58,7 @@ public class AcceptedState {
     this.statusTagDescription = statusTagDescription;
   }
 
-  public Set<IssueReport> getIssueReports() {
+  public List<IssueReport> getIssueReports() {
     return issueReports;
   }
 }

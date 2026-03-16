@@ -1,16 +1,22 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
-import jakarta.persistence.*;
-import java.util.ArrayList;
-import java.util.LinkedHashSet;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.PrePersist;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.Instant;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(
@@ -30,10 +36,9 @@ public class UserProfile {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "user_profile_external_id")
+  @Column(name = "user_profile_external_id", updatable = false)
   private UUID externalId;
 
-  // TODO: 3/16/2026 check that updateable = false is applied everywhere that needs it
   @Column(nullable = false, updatable = false)
   private String oauthKey;
 
@@ -57,10 +62,8 @@ public class UserProfile {
   private boolean userEnabled;
 
   // used AI to help with OneToMany annotation
-  // TODO: 3/16/2026 add fetchType and orderBy to fields that need it
-  // TODO: 3/16/2026 double check collection types
   @OneToMany(mappedBy = "userProfile", fetch = FetchType.LAZY)
-  @OrderBy("timeFirstReported DESC")
+  @OrderBy("timeLastModified DESC")
   private final List<IssueReport> issueReports = new LinkedList<>();
 
   public Long getId() {

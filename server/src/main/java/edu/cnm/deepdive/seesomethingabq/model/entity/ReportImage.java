@@ -1,7 +1,15 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
-import jakarta.persistence.*;
-
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import java.net.URI;
 
 @Entity
@@ -14,23 +22,26 @@ import java.net.URI;
 public class ReportImage {
 
   @Id
-  @Column(name = "report_image_id")
+  @Column(name = "report_image_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
   // used AI to help with ManyToOne annotation
-  @ManyToOne
-  @JoinColumn(name = "issue_report_id", nullable = false)
+  @ManyToOne(fetch = FetchType.LAZY, optional = false)
+  @JoinColumn(name = "issue_report_id", nullable = false, updatable = false)
   private IssueReport issueReport;
 
-  @Column(nullable = false)
+  @Column(nullable = false, updatable = false)
   private URI imageLocator;
 
-  @Column(nullable = false)
+  @Column(nullable = false, updatable = false)
   private String filename;
 
-  @Column(nullable = false)
+  @Column(nullable = false, updatable = false)
   private String mimeType;
+
+  @Column(nullable = false, updatable = false)
+  private int albumOrder;
 
   public Long getId() {
     return id;
@@ -66,5 +77,13 @@ public class ReportImage {
 
   public void setMimeType(String mimeType) {
     this.mimeType = mimeType;
+  }
+
+  public int getAlbumOrder() {
+    return albumOrder;
+  }
+
+  public void setAlbumOrder(int albumOrder) {
+    this.albumOrder = albumOrder;
   }
 }

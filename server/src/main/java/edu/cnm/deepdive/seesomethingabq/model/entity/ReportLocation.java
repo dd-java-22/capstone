@@ -1,13 +1,20 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "report_location")
 public class ReportLocation {
 
   @Id
-  @Column(name = "report_location_id")
+  @Column(name = "report_location_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
@@ -20,7 +27,8 @@ public class ReportLocation {
   private String locationDescription;
 
   // used AI to help with OneToOne annotation
-  @OneToOne(mappedBy = "reportLocation")
+  @OneToOne(mappedBy = "reportLocation", optional = false)
+  @JoinColumn(name = "issue_report_id", nullable = false, updatable = false)
   private IssueReport issueReport;
 
   public Long getId() {

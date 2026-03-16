@@ -1,9 +1,16 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
-import jakarta.persistence.*;
-
-import java.util.HashSet;
-import java.util.Set;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(
@@ -15,7 +22,7 @@ import java.util.Set;
 public class IssueType {
 
   @Id
-  @Column(name = "issue_type_id")
+  @Column(name = "issue_type_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
@@ -26,8 +33,8 @@ public class IssueType {
   private String issueTypeDescription;
 
   // used AI to help with ManyToMany annotation
-  @ManyToMany(mappedBy = "issueTypes")
-  private final Set<IssueReport> issueReports = new HashSet<>();
+  @ManyToMany(mappedBy = "issueTypes", fetch = FetchType.LAZY)
+  private final List<IssueReport> issueReports = new LinkedList<>();
 
   public Long getId() {
     return id;
@@ -49,7 +56,7 @@ public class IssueType {
     this.issueTypeDescription = issueTypeDescription;
   }
 
-  public Set<IssueReport> getIssueReports() {
+  public List<IssueReport> getIssueReports() {
     return issueReports;
   }
 }
