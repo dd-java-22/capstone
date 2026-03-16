@@ -22,7 +22,7 @@ import java.util.List;
 public class IssueType {
 
   @Id
-  @Column(name = "issue_type_id", updatable = false)
+  @Column(name = "issue_type_id", nullable = false, updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 

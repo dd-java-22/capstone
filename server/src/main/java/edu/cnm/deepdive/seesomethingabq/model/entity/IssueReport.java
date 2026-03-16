@@ -65,13 +65,11 @@ public class IssueReport {
     name = "issue_report_issue_type",
     joinColumns = @JoinColumn(
       name = "issue_report_id",
-      nullable = false,
-      updatable = false
+      nullable = false
     ),
     inverseJoinColumns = @JoinColumn(
       name = "issue_type_id",
-      nullable = false,
-      updatable = false
+      nullable = false
     )
   )
   private final List<IssueType> issueTypes = new LinkedList<>();
