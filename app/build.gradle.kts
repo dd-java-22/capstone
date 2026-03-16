@@ -93,6 +93,12 @@ dependencies {
 //    implementation(libs.core.ktx)
     // .jar-based libraries included in project
 
+    // Kotlin standard library and coroutines
+    implementation(libs.kotlin)
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.coroutines.jdk8)
+    implementation(libs.kotlin.coroutines.android)
+
     // Desugaring for subset of JDK
     coreLibraryDesugaring(libs.desugar)
 
@@ -124,8 +130,10 @@ dependencies {
     // Gson (Google JSON parser) library
     implementation(libs.gson)
 
-    // Google Sign-in library
-    implementation(libs.play.auth)
+    // Credential Manager libraries
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services)
+    implementation(libs.googleid)
 
     // Retrofit (REST client) with Gson integration
     implementation(libs.retrofit.core)
