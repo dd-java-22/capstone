@@ -29,29 +29,27 @@ public class UserProfile {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  // TODO: 3/16/2026 remove name on fields where name is the same
   // TODO: 3/16/2026 check that updateable = false is applied everywhere that needs it
-  @Column(name = "oauth_key", nullable = false, updatable = false)
+  @Column(nullable = false, updatable = false)
   private String oauthKey;
 
-  @Column(name = "display_name", nullable = false)
+  @Column(nullable = false)
   private String displayName;
 
-  @Column(name = "email", nullable = false)
+  @Column(nullable = false)
   private String email;
 
-  @Column(name = "is_manager", nullable = false)
+  @Column(nullable = false)
   private boolean isManager;
 
   @CreationTimestamp
   @Column(
-    name = "time_created",
     nullable = false,
     updatable = false
   )
   private Instant timeCreated;
 
-  @Column(name = "user_enabled", nullable = false)
+  @Column(nullable = false)
   private boolean userEnabled;
 
   // used AI to help with OneToMany annotation

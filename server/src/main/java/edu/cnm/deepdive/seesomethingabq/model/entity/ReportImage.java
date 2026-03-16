@@ -23,13 +23,13 @@ public class ReportImage {
   @JoinColumn(name = "issue_report_id", nullable = false)
   private IssueReport issueReport;
 
-  @Column(name = "image_locator", nullable = false)
+  @Column(nullable = false)
   private URI imageLocator;
 
-  @Column(name = "filename", nullable = false)
+  @Column(nullable = false)
   private String filename;
 
-  @Column(name = "mime_type", nullable = false)
+  @Column(nullable = false)
   private String mimeType;
 
   public Long getId() {

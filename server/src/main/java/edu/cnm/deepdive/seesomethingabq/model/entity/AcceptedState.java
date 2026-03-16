@@ -19,10 +19,10 @@ public class AcceptedState {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "status_tag", nullable = false)
+  @Column(nullable = false)
   private String statusTag;
 
-  @Column(name = "status_tag_description", nullable = false)
+  @Column(nullable = false)
   private String statusTagDescription;
 
   // used AI to help with OneToMany annotation

@@ -19,10 +19,10 @@ public class IssueType {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "issue_type_tag", nullable = false)
+  @Column(nullable = false)
   private String issueTypeTag;
 
-  @Column(name = "issue_type_description", nullable = false)
+  @Column(nullable = false)
   private String issueTypeDescription;
 
   // used AI to help with ManyToMany annotation

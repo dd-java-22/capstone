@@ -53,14 +53,14 @@ public class IssueReport {
   private final Set<IssueType> issueTypes = new HashSet<>();
 
   @CreationTimestamp
-  @Column(name = "time_first_reported", nullable = false)
+  @Column(nullable = false)
   private Instant timeFirstReported;
 
   @UpdateTimestamp
-  @Column(name = "time_last_modified", nullable = false)
+  @Column(nullable = false)
   private Instant timeLastModified;
 
-  @Column(name = "text_description", nullable = false)
+  @Column(nullable = false)
   private String textDescription; // User explanation of issue
 
   // used AI to help with OneToMany annotation

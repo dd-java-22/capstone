@@ -11,16 +11,12 @@ public class ReportLocation {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @Column(name = "latitude")
   private Double latitude;
 
-  @Column(name = "longitude")
   private Double longitude;
 
-  @Column(name = "street_coordinate")
   private String streetCoordinate; // TODO: 3/14/2026 Needs client clarification
 
-  @Column(name = "location_description")
   private String locationDescription;
 
   // used AI to help with OneToOne annotation
