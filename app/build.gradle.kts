@@ -24,6 +24,7 @@ plugins {
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.schema.parser)
     alias(libs.plugins.junit)
+    alias(libs.plugins.kotlin.android)
 }
 
 android {
@@ -75,6 +76,10 @@ android {
         targetCompatibility = JavaVersion.valueOf("VERSION_${libs.versions.java.get()}")
     }
 
+    kotlin {
+        jvmToolchain(libs.versions.java.get().toInt())
+    }
+
     buildFeatures {
         viewBinding = true
         // Enable dataBinding if desired.
@@ -85,6 +90,7 @@ android {
 
 dependencies {
 
+//    implementation(libs.core.ktx)
     // .jar-based libraries included in project
 
     // Desugaring for subset of JDK
