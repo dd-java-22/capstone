@@ -17,85 +17,82 @@ package edu.cnm.deepdive.seesomethingabq.model.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import java.time.Instant;
-import org.springframework.lang.NonNull;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+import org.hibernate.annotations.CreationTimestamp;
 
-/**
- * Represents a user profile in the See Something, Say Something application. Each user is uniquely
- * identified by their OAuth2 key and can have an optional display name.
- */
 @Entity
 @Table(
-    name = "user_profile",
-    indexes = {
-        @Index(columnList = "oauth_key", unique = true)
-    }
+  name = "user_profile",
+  uniqueConstraints = {
+    @UniqueConstraint(name = "uk_user_profile_oauth_key", columnNames = "oauth_key")
+  },
+  indexes = {
+    @Index(name = "ix_user_profile_email", columnList = "email"),
+    @Index(name = "ix_user_profile_user_enabled", columnList = "user_enabled")
+  }
 )
 public class UserProfile {
 
   @Id
-  @GeneratedValue
-  @Column(name = "user_profile_id", updatable = false, nullable = false)
+  @Column(name = "user_profile_id", updatable = false)
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  @NonNull
-  @Column(name = "created", nullable = false, updatable = false)
-  private Instant created = Instant.now();
+  @Column(name = "user_profile_external_id", updatable = false)
+  private UUID externalId;
 
-  @NonNull
-  @Column(name = "oauth_key", nullable = false, updatable = false, unique = true, length = 30)
+  @Column(nullable = false, updatable = false)
   private String oauthKey;
 
-  @Column(name = "display_name", length = 100)
+  @Column(nullable = false)
   private String displayName;
 
-  /**
-   * Returns the unique identifier for this user profile.
-   *
-   * @return User profile ID.
-   */
+  @Column(nullable = false)
+  private String email;
+
+  @Column(nullable = false)
+  private boolean isManager;
+
+  @CreationTimestamp
+  @Column(
+    nullable = false,
+    updatable = false
+  )
+  private Instant timeCreated;
+
+  @Column(nullable = false)
+  private boolean userEnabled;
+
+  // used AI to help with OneToMany annotation
+  @OneToMany(mappedBy = "userProfile", fetch = FetchType.LAZY)
+  @OrderBy("timeLastModified DESC")
+  private final List<IssueReport> issueReports = new LinkedList<>();
+
   public Long getId() {
     return id;
   }
 
-  /**
-   * Returns the timestamp when this user profile was created.
-   *
-   * @return Creation timestamp.
-   */
-  @NonNull
-  public Instant getCreated() {
-    return created;
-  }
-
-  /**
-   * Returns the OAuth2 key associated with this user profile.
-   *
-   * @return OAuth2 key.
-   */
-  @NonNull
   public String getOauthKey() {
     return oauthKey;
   }
 
-  /**
-   * Sets the OAuth2 key for this user profile.
-   *
-   * @param oauthKey OAuth2 key.
-   */
-  public void setOauthKey(@NonNull String oauthKey) {
+  public void setOauthKey(String oauthKey) {
     this.oauthKey = oauthKey;
   }
 
-  /**
-   * Returns the display name for this user profile.
-   *
-   * @return Display name, or {@code null} if not set.
-   */
   public String getDisplayName() {
     return displayName;
   }
@@ -109,4 +106,40 @@ public class UserProfile {
     this.displayName = displayName;
   }
 
+  public String getEmail() {
+    return email;
+  }
+
+  public void setEmail(String email) {
+    this.email = email;
+  }
+
+  public boolean isManager() {
+    return isManager;
+  }
+
+  public void setIsManager(boolean isManager) {
+    this.isManager = isManager;
+  }
+
+  public Instant getTimeCreated() {
+    return timeCreated;
+  }
+
+  public boolean getUserEnabled() {
+    return userEnabled;
+  }
+
+  public void setUserEnabled(boolean userEnabled) {
+    this.userEnabled = userEnabled;
+  }
+
+  public List<IssueReport> getIssueReports() {
+    return issueReports;
+  }
+
+  @PrePersist
+  void onCreate() {
+    this.externalId = UUID.randomUUID();
+  }
 }
