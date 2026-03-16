@@ -29,7 +29,6 @@ public class UserProfile {
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
 
-  // TODO: 3/16/2026 rename all id fields to just 'id'
   // TODO: 3/16/2026 remove name on fields where name is the same
   // TODO: 3/16/2026 check that updateable = false is applied everywhere that needs it
   @Column(name = "oauth_key", nullable = false, updatable = false)
@@ -62,7 +61,7 @@ public class UserProfile {
   @OrderBy("timeFirstReported DESC")
   private final List<IssueReport> issueReports = new LinkedList<>();
 
-  public Long getUserProfileId() {
+  public Long getId() {
     return id;
   }
 

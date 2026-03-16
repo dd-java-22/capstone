@@ -28,7 +28,7 @@ public class IssueReport {
   @Id
   @Column(name = "issue_report_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long issueReportId;
+  private Long id;
 
   // TODO: 3/16/2026 add optional to other fields that need it
   @ManyToOne(fetch = FetchType.EAGER, optional = false)
@@ -67,8 +67,8 @@ public class IssueReport {
   @OneToMany(mappedBy = "issueReport") // this is confusing - issueReport here actually refers to the ReportImage.issueReport field
   private final Set<ReportImage> reportImages = new HashSet<>();
 
-  public Long getIssueReportId() {
-    return issueReportId;
+  public Long getId() {
+    return id;
   }
 
   public UserProfile getUserProfile() {

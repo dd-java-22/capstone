@@ -17,7 +17,7 @@ public class IssueType {
   @Id
   @Column(name = "issue_type_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long issueTypeId;
+  private Long id;
 
   @Column(name = "issue_type_tag", nullable = false)
   private String issueTypeTag;
@@ -29,8 +29,8 @@ public class IssueType {
   @ManyToMany(mappedBy = "issueTypes")
   private final Set<IssueReport> issueReports = new HashSet<>();
 
-  public Long getIssueTypeId() {
-    return issueTypeId;
+  public Long getId() {
+    return id;
   }
 
   public String getIssueTypeTag() {

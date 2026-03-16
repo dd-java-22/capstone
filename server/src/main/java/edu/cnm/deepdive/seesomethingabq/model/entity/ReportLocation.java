@@ -9,7 +9,7 @@ public class ReportLocation {
   @Id
   @Column(name = "report_location_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long reportLocationId;
+  private Long id;
 
   @Column(name = "latitude")
   private Double latitude;
@@ -27,8 +27,8 @@ public class ReportLocation {
   @OneToOne(mappedBy = "reportLocation")
   private IssueReport issueReport;
 
-  public Long getReportLocationId() {
-    return reportLocationId;
+  public Long getId() {
+    return id;
   }
 
   public Double getLatitude() {

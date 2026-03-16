@@ -16,7 +16,7 @@ public class ReportImage {
   @Id
   @Column(name = "report_image_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long reportImageId;
+  private Long id;
 
   // used AI to help with ManyToOne annotation
   @ManyToOne
@@ -32,8 +32,8 @@ public class ReportImage {
   @Column(name = "mime_type", nullable = false)
   private String mimeType;
 
-  public Long getReportImageId() {
-    return reportImageId;
+  public Long getId() {
+    return id;
   }
 
   public IssueReport getIssueReport() {

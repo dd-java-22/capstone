@@ -17,7 +17,7 @@ public class AcceptedState {
   @Id
   @Column(name = "accepted_state_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long acceptedStateId;
+  private Long id;
 
   @Column(name = "status_tag", nullable = false)
   private String statusTag;
@@ -29,8 +29,8 @@ public class AcceptedState {
   @OneToMany(mappedBy = "acceptedState")
   private final Set<IssueReport> issueReports = new HashSet<>();
 
-  public Long getAcceptedStateId() {
-    return acceptedStateId;
+  public Long getId() {
+    return id;
   }
 
   public String getStatusTag() {
