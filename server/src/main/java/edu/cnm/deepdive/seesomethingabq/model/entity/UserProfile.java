@@ -1,6 +1,10 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
 import jakarta.persistence.*;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.Instant;
@@ -21,11 +25,14 @@ import java.util.Set;
 public class UserProfile {
 
   @Id
-  @Column(name = "user_profile_id")
+  @Column(name = "user_profile_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private Long userProfileId;
+  private Long id;
 
-  @Column(name = "oauth_key", nullable = false)
+  // TODO: 3/16/2026 rename all id fields to just 'id'
+  // TODO: 3/16/2026 remove name on fields where name is the same
+  // TODO: 3/16/2026 check that updateable = false is applied everywhere that needs it
+  @Column(name = "oauth_key", nullable = false, updatable = false)
   private String oauthKey;
 
   @Column(name = "display_name", nullable = false)
@@ -49,11 +56,14 @@ public class UserProfile {
   private boolean userEnabled;
 
   // used AI to help with OneToMany annotation
-  @OneToMany(mappedBy = "userProfile")
-  private final Set<IssueReport> issueReports = new HashSet<>();
+  // TODO: 3/16/2026 add fetchType and orderBy to fields that need it
+  // TODO: 3/16/2026 double check collection types
+  @OneToMany(mappedBy = "userProfile", fetch = FetchType.LAZY)
+  @OrderBy("timeFirstReported DESC")
+  private final List<IssueReport> issueReports = new LinkedList<>();
 
   public Long getUserProfileId() {
-    return userProfileId;
+    return id;
   }
 
   public String getOauthKey() {
@@ -100,7 +110,7 @@ public class UserProfile {
     this.userEnabled = userEnabled;
   }
 
-  public Set<IssueReport> getIssueReports() {
+  public List<IssueReport> getIssueReports() {
     return issueReports;
   }
 }

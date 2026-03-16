@@ -23,13 +23,16 @@ import java.util.Set;
 )
 public class IssueReport {
 
+  // TODO: 3/16/2026 consider adding UUIDs for UserProfile and IssueReport - will need prepersist
+
   @Id
   @Column(name = "issue_report_id")
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long issueReportId;
 
-  @ManyToOne
-  @JoinColumn(name = "user_profile_id", nullable = false)
+  // TODO: 3/16/2026 add optional to other fields that need it
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
+  @JoinColumn(name = "user_profile_id", nullable = false, updatable = false)
   private UserProfile userProfile;
 
   @OneToOne

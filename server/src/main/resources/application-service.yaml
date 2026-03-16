@@ -1,0 +1,23 @@
+spring:
+  application:
+    name: service
+
+  jackson:
+    deserialization:
+      accept-float-as-int: false
+
+  web:
+    error:
+      include-message: always
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: https://accounts.google.com
+
+server:
+  port: 8080
+  forward-headers-strategy: framework
+  servlet:
+    context-path: "/see-something"
