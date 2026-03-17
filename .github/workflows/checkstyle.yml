@@ -1,0 +1,36 @@
+name: Checkstyle
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up JDK
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/gradle-build-action@v3
+
+    - name: Run Checkstyle
+      run: ./gradlew checkstyle
+      continue-on-error: true
+
+    - name: Upload Checkstyle reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: checkstyle-reports
+        path: |
+          app/build/reports/checkstyle/
+          server/build/reports/checkstyle/
