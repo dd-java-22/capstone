@@ -31,7 +31,7 @@
     tools:ignore="AllowBackup,DataExtractionRules">
 
     <activity
-      android:name="edu.cnm.deepdive.seesomethingabq.controller.MainActivity"
+      android:name=".controller.MainActivity"
       android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
