@@ -24,6 +24,7 @@ plugins {
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.schema.parser)
     alias(libs.plugins.junit)
+    checkstyle
 }
 
 android {
@@ -157,6 +158,22 @@ dependencies {
             because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
         }
     }
+}
+
+checkstyle {
+    toolVersion = "13.3.0"
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+}
+
+tasks.register("checkstyle", Checkstyle::class) {
+    source("src/main/java")
+    include("**/*.java")
+    exclude("**/gen/**", "**/R.java", "**/BuildConfig.java")
+    classpath = files()
+}
+
+tasks.named("check").configure {
+    dependsOn("checkstyle")
 }
 
 roomDdl {
