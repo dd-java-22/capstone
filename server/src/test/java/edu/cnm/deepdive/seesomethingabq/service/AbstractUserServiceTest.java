@@ -119,7 +119,7 @@ class AbstractUserServiceTest {
   void testGetOrCreateExistingUser() {
     when(repository.findByOauthKey("existing-key")).thenReturn(Optional.of(testUser));
 
-    UserProfile result = service.getOrCreate("existing-key", "Display Name");
+    UserProfile result = service.getOrCreate("existing-key", "Display Name", "exampleemail.com");
 
     assertNotNull(result);
     assertEquals("test-oauth-key", result.getOauthKey());
@@ -134,7 +134,7 @@ class AbstractUserServiceTest {
       return user;
     });
 
-    UserProfile result = service.getOrCreate("new-key", "New Display Name");
+    UserProfile result = service.getOrCreate("new-key", "New Display Name", "exampleemail.com");
 
     assertNotNull(result);
     assertEquals("new-key", result.getOauthKey());

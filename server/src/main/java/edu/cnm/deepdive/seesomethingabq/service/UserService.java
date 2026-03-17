@@ -51,7 +51,7 @@ public interface UserService {
    * @param displayName Optional display name for new user profiles.
    * @return User profile for the given OAuth2 key.
    */
-  UserProfile getOrCreate(String oauthKey, String displayName);
+  UserProfile getOrCreate(String oauthKey, String displayName, String email);
 
   /**
    * Updates the display name for the specified user profile.

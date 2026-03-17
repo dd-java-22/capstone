@@ -50,7 +50,8 @@ public class AbstractUserService implements UserService {
   public UserProfile getCurrentUser(@NonNull Jwt jwt) {
     String oauthKey = jwt.getSubject();
     String displayName = jwt.getClaimAsString(OAUTH_NAME_CLAIM);
-    return getOrCreate(oauthKey, displayName);
+    String email = jwt.getClaimAsString("email");
+    return getOrCreate(oauthKey, displayName, email);
   }
 
   @Override
@@ -59,13 +60,15 @@ public class AbstractUserService implements UserService {
   }
 
   @Override
-  public UserProfile getOrCreate(String oauthKey, String displayName) {
+  public UserProfile getOrCreate(String oauthKey, String displayName, String email) {
     return repository
         .findByOauthKey(oauthKey)
         .orElseGet(() -> {
           UserProfile user = new UserProfile();
           user.setOauthKey(oauthKey);
           user.setDisplayName(displayName);
+          user.setEmail(email);
+          user.setUserEnabled(true);
           return repository.save(user);
         });
   }

@@ -82,7 +82,7 @@ class UserProfileRepositoryTest {
 
     UserProfile saved = repository.save(user);
 
-    assertNotNull(saved.getCreated());
+    assertNotNull(saved.getTimeCreated());
   }
 
   @Test
