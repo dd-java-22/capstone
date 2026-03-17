@@ -106,9 +106,6 @@ tasks.asciidoctor {
 checkstyle {
     toolVersion = "13.3.0"
     configFile = rootProject.file("config/checkstyle/checkstyle.xml")
-    isIgnoreFailures = false
-    maxErrors = 0
-    maxWarnings = 0
 }
 
 tasks.register("checkstyle", Checkstyle::class) {
