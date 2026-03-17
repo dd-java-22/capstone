@@ -16,6 +16,7 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
+import java.util.List;
 import java.util.Optional;
 import org.springframework.security.oauth2.jwt.Jwt;
 
@@ -33,7 +34,7 @@ public interface UserService {
    * @param jwt JWT token from the current authenticated request.
    * @return User profile for the authenticated user.
    */
-  UserProfile getCurrentUser(Jwt jwt);
+  UserProfile getCurrentUser();
 
   /**
    * Returns the user profile with the specified ID, if it exists.
@@ -51,7 +52,7 @@ public interface UserService {
    * @param displayName Optional display name for new user profiles.
    * @return User profile for the given OAuth2 key.
    */
-  UserProfile getOrCreate(String oauthKey, String displayName, String email);
+  UserProfile getOrCreate(String oauthKey, UserProfile userProfile);
 
   /**
    * Updates the display name for the specified user profile.
@@ -61,5 +62,9 @@ public interface UserService {
    * @return Updated user profile.
    */
   UserProfile updateDisplayName(Long id, String displayName);
+
+  List<UserProfile> getAll();
+
+  UserProfile getMe();
 
 }

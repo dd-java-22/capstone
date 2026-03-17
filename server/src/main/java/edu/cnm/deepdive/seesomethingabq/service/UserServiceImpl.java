@@ -17,11 +17,11 @@ package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.dao.UserProfileRepository;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.lang.NonNull;
-import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 /**
@@ -29,7 +29,7 @@ import org.springframework.stereotype.Service;
  * This service handles OAuth2-based user identification and creation, as well as profile updates.
  */
 @Service
-public class AbstractUserService implements UserService {
+public class UserServiceImpl implements UserService {
 
   private static final String OAUTH_SUB_CLAIM = "sub";
   private static final String OAUTH_NAME_CLAIM = "name";
@@ -42,16 +42,17 @@ public class AbstractUserService implements UserService {
    * @param repository User profile repository for persistence operations.
    */
   @Autowired
-  public AbstractUserService(UserProfileRepository repository) {
+  public UserServiceImpl(UserProfileRepository repository) {
     this.repository = repository;
   }
 
   @Override
-  public UserProfile getCurrentUser(@NonNull Jwt jwt) {
-    String oauthKey = jwt.getSubject();
-    String displayName = jwt.getClaimAsString(OAUTH_NAME_CLAIM);
-    String email = jwt.getClaimAsString("email");
-    return getOrCreate(oauthKey, displayName, email);
+  public UserProfile getCurrentUser() {
+    //noinspection DataFlowIssue
+    return (UserProfile) SecurityContextHolder
+        .getContext()
+        .getAuthentication()
+        .getPrincipal();
   }
 
   @Override
@@ -60,16 +61,12 @@ public class AbstractUserService implements UserService {
   }
 
   @Override
-  public UserProfile getOrCreate(String oauthKey, String displayName, String email) {
+  public UserProfile getOrCreate(String oauthKey, UserProfile userProfile) {
     return repository
         .findByOauthKey(oauthKey)
         .orElseGet(() -> {
-          UserProfile user = new UserProfile();
-          user.setOauthKey(oauthKey);
-          user.setDisplayName(displayName);
-          user.setEmail(email);
-          user.setUserEnabled(true);
-          return repository.save(user);
+          userProfile.setOauthKey(oauthKey);
+          return repository.save(userProfile);
         });
   }
 
@@ -84,4 +81,13 @@ public class AbstractUserService implements UserService {
         .orElseThrow(NoSuchElementException::new);
   }
 
+  @Override
+  public List<UserProfile> getAll() {
+    return repository.findAll();
+  }
+
+  @Override
+  public UserProfile getMe() {
+    return getCurrentUser();
+  }
 }

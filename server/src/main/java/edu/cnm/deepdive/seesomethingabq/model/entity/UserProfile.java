@@ -27,6 +27,7 @@ import jakarta.persistence.OrderBy;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
+import java.net.URL;
 import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,6 +63,9 @@ public class UserProfile {
 
   @Column(nullable = false)
   private String email;
+
+  @Column(nullable = true, updatable = true)
+  private URL avatar;
 
   @Column(nullable = false)
   private boolean isManager;
@@ -104,6 +108,14 @@ public class UserProfile {
    */
   public void setDisplayName(String displayName) {
     this.displayName = displayName;
+  }
+
+  public URL getAvatar() {
+    return avatar;
+  }
+
+  public void setAvatar(URL avatar) {
+    this.avatar = avatar;
   }
 
   public String getEmail() {

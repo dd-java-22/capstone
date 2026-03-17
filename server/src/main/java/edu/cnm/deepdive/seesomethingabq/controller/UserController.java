@@ -17,6 +17,7 @@ package edu.cnm.deepdive.seesomethingabq.controller;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,8 +29,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- * REST controller for user profile operations. This controller exposes endpoints for retrieving
- * and updating user profile information. All operations require authentication.
+ * REST controller for user profile operations. This controller exposes endpoints for retrieving and
+ * updating user profile information. All operations require authentication.
  */
 @RestController
 @RequestMapping("/users")
@@ -51,28 +52,36 @@ public class UserController {
    * Returns the user profile for the currently authenticated user. If the user does not already
    * exist in the system, a new profile will be created automatically.
    *
-   * @param jwt JWT token from the authenticated request.
    * @return User profile for the authenticated user.
    */
+
   @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
-  public UserProfile getCurrentUser(@AuthenticationPrincipal Jwt jwt) {
-    return service.getCurrentUser(jwt);
+  public UserProfile get() {
+    return service.getMe();
   }
 
-  /**
-   * Updates the display name for the currently authenticated user.
-   *
-   * @param jwt JWT token from the authenticated request.
-   * @param updated User profile containing the updated display name.
-   * @return Updated user profile.
+  @GetMapping
+  public List<UserProfile> getAll() {
+    return service.getAll();
+  }
+  /*
    */
+/**
+ * Updates the display name for the currently authenticated user.
+ *
+ * @param jwt JWT token from the authenticated request.
+ * @param updated User profile containing the updated display name.
+ * @return Updated user profile.
+ *//*
+
   @PutMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   public UserProfile updateCurrentUser(
       @AuthenticationPrincipal Jwt jwt,
       @RequestBody UserProfile updated) {
-    UserProfile current = service.getCurrentUser(jwt);
+    UserProfile current = service.getCurrentUser();
     return service.updateDisplayName(current.getId(), updated.getDisplayName());
   }
+*/
 
 }
