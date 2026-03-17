@@ -9,7 +9,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import dagger.hilt.android.AndroidEntryPoint;
-import edu.cnm.deepdive.seesomething.databinding.ActivityMainBinding;
+import edu.cnm.deepdive.seesomethingabq.databinding.ActivityMainBinding;
 
 @AndroidEntryPoint
 public class MainActivity extends AppCompatActivity {
