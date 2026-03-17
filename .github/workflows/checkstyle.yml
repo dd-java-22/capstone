@@ -47,5 +47,3 @@ jobs:
         fail_on_error: false
         reviewdog_flags: '-f=checkstyle -name=checkstyle'
         checkstyle_file: '**/build/reports/checkstyle/*.xml'
-        reviewdog_flags: '-f=checkstyle -name=checkstyle'
-        checkstyle_file: '**/build/reports/checkstyle/*.xml'
