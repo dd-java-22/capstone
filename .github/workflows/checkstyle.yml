@@ -20,7 +20,6 @@ jobs:
 
     - name: Run Checkstyle
       run: ./gradlew checkstyle
-      continue-on-error: true
 
     - name: Review Checkstyle Results
       uses: lcollins/checkstyle-github-action@64dd6cb4a632cb9e31917ebea89878118255af09
