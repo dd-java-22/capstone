@@ -9,10 +9,20 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Run Reviewdog Checkstyle
+    - name: Run Reviewdog Checkstyle - App
       uses: dbelyaev/action-checkstyle@1df550cf7ca173631075cd649bbc52cfa6549cbd
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: github-pr-review
         level: warning
         checkstyle_config: config/checkstyle/checkstyle.xml
+        workdir: app/
+
+    - name: Run Reviewdog Checkstyle - Server
+      uses: dbelyaev/action-checkstyle@1df550cf7ca173631075cd649bbc52cfa6549cbd
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        reporter: github-pr-review
+        level: warning
+        checkstyle_config: config/checkstyle/checkstyle.xml
+        workdir: server/
