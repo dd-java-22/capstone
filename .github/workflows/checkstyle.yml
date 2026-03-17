@@ -16,7 +16,7 @@ jobs:
     - name: Set up JDK
       uses: actions/setup-java@v4
       with:
-        java-version: '17'
+        java-version: '21'
         distribution: 'temurin'
 
     - name: Setup Gradle
@@ -34,3 +34,18 @@ jobs:
         path: |
           app/build/reports/checkstyle/
           server/build/reports/checkstyle/
+
+    - name: Run Reviewdog
+      if: github.event_name == 'pull_request'
+      uses: reviewdog/reviewdog-action@v1
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        reporter: github-pr-review
+        level: warning
+        tool_name: checkstyle
+        filter_mode: nofilter
+        fail_on_error: false
+        reviewdog_flags: '-f=checkstyle -name=checkstyle'
+        checkstyle_file: '**/build/reports/checkstyle/*.xml'
+        reviewdog_flags: '-f=checkstyle -name=checkstyle'
+        checkstyle_file: '**/build/reports/checkstyle/*.xml'
