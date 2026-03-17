@@ -1,10 +1,6 @@
 name: Checkstyle
 
-on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+on: [pull_request]
 
 jobs:
   checkstyle:
@@ -13,37 +9,10 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set up JDK
-      uses: actions/setup-java@v4
-      with:
-        java-version: '21'
-        distribution: 'temurin'
-
-    - name: Setup Gradle
-      uses: gradle/gradle-build-action@v3
-
-    - name: Run Checkstyle
-      run: ./gradlew checkstyle
-      continue-on-error: true
-
-    - name: Upload Checkstyle reports
-      if: always()
-      uses: actions/upload-artifact@v4
-      with:
-        name: checkstyle-reports
-        path: |
-          app/build/reports/checkstyle/
-          server/build/reports/checkstyle/
-
-    - name: Run Reviewdog
-      if: github.event_name == 'pull_request'
-      uses: reviewdog/reviewdog-action@v1
+    - name: Run Reviewdog Checkstyle
+      uses: dbelyaev/action-checkstyle@1df550cf7ca173631075cd649bbc52cfa6549cbd
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         reporter: github-pr-review
         level: warning
-        tool_name: checkstyle
-        filter_mode: nofilter
-        fail_on_error: false
-        reviewdog_flags: '-f=checkstyle -name=checkstyle'
-        checkstyle_file: '**/build/reports/checkstyle/*.xml'
+        checkstyle_config: config/checkstyle/checkstyle.xml
