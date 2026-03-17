@@ -19,3 +19,7 @@ order: 20
 ## Entity-relationship diagram
 
 [![Entity-relationship diagram](img/ERD.svg)](pdf/ERD.pdf)
+
+## DDL
+
+{% include linked-file.md type="sqlite" file="sql/ddl-server.sql" %}
