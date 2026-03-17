@@ -12,7 +12,7 @@ interface GoogleAuthRepository {
 
     fun refreshToken(activity: Activity, credential: GoogleIdTokenCredential): CompletableFuture<GoogleIdTokenCredential>
 
-    fun signOut(activity: Activity): CompletableFuture<Void?>
+    fun signOut(): CompletableFuture<Void?>
 
     class SignInRequiredException(message: String, cause: Throwable) : RuntimeException(message, cause)
 

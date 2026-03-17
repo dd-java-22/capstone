@@ -3,6 +3,7 @@ package edu.cnm.deepdive.seesomethingabq.service.repository
 import android.app.Activity
 import android.content.Context
 import android.util.Base64
+import android.util.Log
 import androidx.credentials.ClearCredentialStateRequest
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
@@ -10,7 +11,7 @@ import androidx.credentials.GetCredentialRequest
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import dagger.hilt.android.qualifiers.ApplicationContext
-import edu.cnm.deepdive.seesomething.R
+import edu.cnm.deepdive.seesomethingabq.R
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.CoroutineScope
@@ -28,26 +29,31 @@ class GoogleAuthRepositoryImpl @Inject constructor(
     private val credentialManager = CredentialManager.create(context)
     private val clientId = context.getString(R.string.client_id)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
+    private val TAG = GoogleAuthRepositoryImpl::class.java.simpleName
 
     override fun signInQuickly(activity: Activity): CompletableFuture<GoogleIdTokenCredential> =
         scope.future {
-            attemptSignIn(activity, false, false)
+            attemptSignIn(activity, true, false)
         }
 
     override fun signIn(activity: Activity): CompletableFuture<GoogleIdTokenCredential> =
         scope.future {
-            TODO("Not yet implemented")
+            attemptSignIn(activity, false, false)
         }
 
     override fun refreshToken(
         activity: Activity,
         credential: GoogleIdTokenCredential
     ): CompletableFuture<GoogleIdTokenCredential> =
-        scope.future {
-            TODO("Not yet implemented")
+        if (!isTokenExpired(credential.idToken)) {
+            CompletableFuture.completedFuture(credential)
+        } else {
+            scope.future {
+                attemptSignIn(activity, true, true)
+            }
         }
 
-    override fun signOut(activity: Activity): CompletableFuture<Void?> =
+    override fun signOut(): CompletableFuture<Void?> =
         scope.future {
             credentialManager.clearCredentialState(ClearCredentialStateRequest())
             null
