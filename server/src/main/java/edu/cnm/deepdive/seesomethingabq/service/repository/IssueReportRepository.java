@@ -23,5 +23,4 @@ public interface IssueReportRepository extends JpaRepository<IssueReport, Long> 
   List<IssueReport> getIssueReportsByTimeLastModifiedBetween(
       Instant timeLastModifiedAfter, Instant timeLastModifiedBefore);
 
-  getIssueReportsBy
 }
