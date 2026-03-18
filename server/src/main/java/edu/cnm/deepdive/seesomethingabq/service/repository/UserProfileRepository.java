@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
 /**
  * Repository interface for {@link UserProfile} entity persistence operations.
@@ -24,5 +25,16 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
   Optional<UserProfile> findByExternalId(UUID externalId);
 
   List<UserProfile> findUserProfileByDisplayNameContaining(String displayName, Sort sort, Limit limit);
+
+  @Query("UPDATE user_profile SET user_enabled = false WHERE user_profile_external_id = :externalId")
+  int disableUser(UUID externalId);
+
+  @Query("UPDATE user_profile SET user_enabled = true WHERE user_profile_external_id = :externalId")
+  int enableUser(UUID externalId);
+
+  @Query("UPDATE user_profile SET is_manager = :isManager WHERE user_profile_external_id = :externalId")
+  int setIsManager(UUID externalId, boolean isManager);
+
+
 
 }
