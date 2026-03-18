@@ -29,6 +29,7 @@ public class JwtConverter implements Converter<Jwt, UsernamePasswordAuthenticati
     UserProfile user = new UserProfile();
     user.setDisplayName(source.getClaimAsString("name"));
     user.setAvatar(source.getClaimAsURL("picture"));
+    user.setEmail(source.getClaimAsString("email"));
     String subject = source.getSubject();
     user.setOauthKey(subject);
     user = userService.getOrCreate(subject, user);
