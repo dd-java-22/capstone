@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 /**
@@ -26,13 +27,16 @@ public interface UserProfileRepository extends JpaRepository<UserProfile, Long> 
 
   List<UserProfile> findUserProfileByDisplayNameContaining(String displayName, Sort sort, Limit limit);
 
-  @Query("UPDATE user_profile SET user_enabled = false WHERE user_profile_external_id = :externalId")
+  @Modifying
+  @Query("UPDATE UserProfile SET userEnabled = FALSE WHERE externalId = :externalId")
   int disableUser(UUID externalId);
 
-  @Query("UPDATE user_profile SET user_enabled = true WHERE user_profile_external_id = :externalId")
+  @Modifying
+  @Query("UPDATE UserProfile SET userEnabled = TRUE WHERE externalId = :externalId")
   int enableUser(UUID externalId);
 
-  @Query("UPDATE user_profile SET is_manager = :isManager WHERE user_profile_external_id = :externalId")
+  @Modifying
+  @Query("UPDATE UserProfile SET isManager = :isManager WHERE externalId = :externalId")
   int setIsManager(UUID externalId, boolean isManager);
 
 
