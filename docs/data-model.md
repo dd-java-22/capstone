@@ -37,7 +37,12 @@ The following JPA entity classes correspond to the tables shown in the ERD.
 
 ### Repository interface
 
-- 
+- [AcceptedStateRepository](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/repository/AcceptedStateRepository.java)
+- [IssueReportRepository](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/repository/IssueReportRepository.java)
+- [IssueTypeRepository](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/repository/IssueTypeRepository.java)
+- [ReportImageRepository](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/repository/ReportImageRepository.java)
+- [ReportLocationRepository](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/repository/ReportLocationRepository.java)
+- [UserProfileRepository](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/repository/UserProfileRepository.java)
 
 ### Controller classes
 
