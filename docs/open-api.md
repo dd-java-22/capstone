@@ -16,6 +16,8 @@ order: 40
 
 This is the 1st draft of the Open API spec for our server endpoints.
 
+- [open-api.yaml](https://github.com/dd-java-22/capstone/blob/main/docs/api/server/open-api.yaml)
+
 ```yaml
 openapi: 3.1.0
 info:
