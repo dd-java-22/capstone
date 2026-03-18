@@ -18,7 +18,7 @@ This document tracks all significant uses of AI tools throughout the development
 
 ## Sprint 1
 
-[No AI tools were used during this sprint.]: #
+No AI tools were used during this sprint.
 
 ## Sprint 2
 
@@ -31,6 +31,10 @@ This document tracks all significant uses of AI tools throughout the development
 
 **Output produced:** Initial structure and template for this document, including front matter, section headers, field conventions, and placeholder guidance for future sprints.  
 **Human review/modification:** [Moved this entry to Sprint 2 as it was not completed in Sprint 1]
+
+---
+
+### Rest controller
 
 **Tool used:** Claude Agent
 **Task:** Creating a REST Controller and implementing the application logic services for this project.
@@ -45,6 +49,10 @@ Finite state machine processing (e.g., for games)."
 **Output produced:** A user controller class and user service interface and implementation class.
 **Human review/modification:** Class names were changed to match the project naming convention, a class was moved to the correct package, and methods were changed, removed, or added as needed.
 
+---
+
+### Rest controller tests
+
 **Tool used:** Claude Agent
 **Task:** Creating test classes for the user controller and user service interface and implementation class.
 **Prompt used:**
@@ -54,6 +62,8 @@ Finite state machine processing (e.g., for games)."
 
 **Human review/modification:** Methods within the class were changed, added, or  removed as needed.
 
+---
+
 **Tool used:** Claude Agent
 **Task:** Updating test classes for the user controller and user service interface and implementation class after a significant changes to the current build.
 **Prompt used:**
@@ -62,6 +72,8 @@ Finite state machine processing (e.g., for games)."
 **Output produced:** Test classes for the user controller and user service interface were updated to match the current build.
 
 **Human review/modification:** Test classes were reviewed by team members to ensure that they are still passing.
+
+---
 
 ### OpenAPI spec generation
 
@@ -74,6 +86,23 @@ Finite state machine processing (e.g., for games)."
 
 **Output produced:** open-api.yaml  
 **Human review/modification:** Review will happen in the PR, and I will update anything we find after we discuss as a team 
+
+---
+
+### Entity class generation
+
+**Tool used:** ChatGPT + Claude  
+**Task:** Create entity classes from ERD 
+**Prompt used:**
+> I gave the ERD diagram, milestone spec, and a zip of the entity classes I had made to ChatGPT.
+> I asked it to check my work against the ERD and then generate a sequence of prompts to give
+> to Claude to finish the entity classes. I also used ChatGPT to verify the classes after
+> Claude had finished making them.
+
+**Output produced:** All of the entity classes  
+**Human review/modification:** We went through the entity classes together in class and added more annotations to them.
+
+---
 
 <!--
 Use the following template for each AI-assisted task:

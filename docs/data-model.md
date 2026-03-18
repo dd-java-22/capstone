@@ -50,7 +50,6 @@ The following JPA entity classes correspond to the tables shown in the ERD.
 
 ### Service 
 
-- [UserProfileRepository](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/dao/UserProfileRepository.java)
 - [UserService](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/UserService.java)
 - [UserServiceImpl](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/UserServiceImpl.java)
 - [JwtConverter](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/JwtConverter.java)
