@@ -1,0 +1,1136 @@
+openapi: 3.1.0
+info:
+  title: See Something ABQ API
+  version: 0.1.0-draft
+  summary: First-draft OpenAPI specification for Milestone 2.
+  description: |
+    Draft specification for authenticated web services supporting user profiles,
+    issue reports, issue types, accepted states, report images, and report
+    locations.
+
+    Draft assumptions:
+      * All endpoints require a valid bearer token.
+      * Manager-restricted operations currently map to Spring Security role MANAGER.
+      * Related entities in create/update requests are referenced by IDs.
+      * Issue report responses may optionally embed creator information when
+        includeUser=true is supplied.
+servers:
+  - url: /api
+    description: Application-relative base URL
+security:
+  - bearerAuth: []
+tags:
+  - name: Authentication
+    description: Authentication and authorization behavior for secured endpoints.
+  - name: Users
+    description: Operations for user profile resources.
+  - name: Issue Reports
+    description: Operations for issue report resources.
+  - name: Issue Types
+    description: Operations for issue type lookup resources.
+  - name: Accepted States
+    description: Operations for accepted state lookup resources.
+  - name: Report Images
+    description: Operations for report image resources.
+  - name: Report Locations
+    description: Operations for report location resources.
+paths:
+  /users:
+    get:
+      tags: [Users]
+      summary: Get all user profiles
+      description: Returns all user profiles visible to the authenticated caller.
+      operationId: getUsers
+      responses:
+        '200':
+          description: User profiles retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Users]
+      summary: Create a user profile
+      description: Creates a user profile record for an authenticated user.
+      operationId: createUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+      responses:
+        '201':
+          description: User profile created successfully.
+          headers:
+            Location:
+              description: Relative URL of the created user profile resource.
+              schema:
+                type: string
+                format: uri-reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /users/me:
+    get:
+      tags: [Users]
+      summary: Get the current user's profile
+      description: Returns the user profile associated with the bearer token.
+      operationId: getCurrentUser
+      responses:
+        '200':
+          description: Current user profile retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          description: No user profile exists for the authenticated principal.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+
+  /users/{userId}:
+    parameters:
+      - $ref: '#/components/parameters/UserId'
+    get:
+      tags: [Users]
+      summary: Get a user profile by ID
+      operationId: getUserById
+      responses:
+        '200':
+          description: User profile retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Users]
+      summary: Update a user profile by ID
+      description: Updates mutable fields of a user profile.
+      operationId: updateUser
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserProfileRequest'
+      responses:
+        '200':
+          description: User profile updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Users]
+      summary: Delete a user profile by ID
+      description: Deletes a user profile resource.
+      operationId: deleteUser
+      responses:
+        '204':
+          description: User profile deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /issue-reports:
+    get:
+      tags: [Issue Reports]
+      summary: Get issue reports
+      description: |
+        Returns issue reports, optionally filtered by creator, date range, or
+        accepted state. Results may optionally include embedded user profile
+        information.
+      operationId: getIssueReports
+      parameters:
+        - $ref: '#/components/parameters/UserProfileIdFilter'
+        - $ref: '#/components/parameters/StartDate'
+        - $ref: '#/components/parameters/EndDate'
+        - $ref: '#/components/parameters/AcceptedStateIdFilter'
+        - $ref: '#/components/parameters/IncludeUser'
+        - $ref: '#/components/parameters/Sort'
+      responses:
+        '200':
+          description: Issue reports retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  oneOf:
+                    - $ref: '#/components/schemas/IssueReport'
+                    - $ref: '#/components/schemas/IssueReportWithUser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Issue Reports]
+      summary: Create an issue report
+      operationId: createIssueReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueReportRequest'
+      responses:
+        '201':
+          description: Issue report created successfully.
+          headers:
+            Location:
+              description: Relative URL of the created issue report resource.
+              schema:
+                type: string
+                format: uri-reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueReportWithUser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /issue-reports/{issueReportId}:
+    parameters:
+      - $ref: '#/components/parameters/IssueReportId'
+    get:
+      tags: [Issue Reports]
+      summary: Get an issue report by ID
+      operationId: getIssueReportById
+      parameters:
+        - $ref: '#/components/parameters/IncludeUser'
+      responses:
+        '200':
+          description: Issue report retrieved successfully.
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/IssueReport'
+                  - $ref: '#/components/schemas/IssueReportWithUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Issue Reports]
+      summary: Update an issue report by ID
+      operationId: updateIssueReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueReportRequest'
+      responses:
+        '200':
+          description: Issue report updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueReportWithUser'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Issue Reports]
+      summary: Delete an issue report by ID
+      operationId: deleteIssueReport
+      responses:
+        '204':
+          description: Issue report deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /issue-types:
+    get:
+      tags: [Issue Types]
+      summary: Get all issue types
+      operationId: getIssueTypes
+      responses:
+        '200':
+          description: Issue types retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/IssueType'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Issue Types]
+      summary: Create an issue type
+      description: Requires manager role.
+      operationId: createIssueType
+      security:
+        - bearerAuth: [MANAGER]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTypeRequest'
+      responses:
+        '201':
+          description: Issue type created successfully.
+          headers:
+            Location:
+              description: Relative URL of the created issue type resource.
+              schema:
+                type: string
+                format: uri-reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueType'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /issue-types/{issueTypeId}:
+    parameters:
+      - $ref: '#/components/parameters/IssueTypeId'
+    get:
+      tags: [Issue Types]
+      summary: Get an issue type by ID
+      operationId: getIssueTypeById
+      responses:
+        '200':
+          description: Issue type retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueType'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Issue Types]
+      summary: Update an issue type by ID
+      description: Requires manager role.
+      operationId: updateIssueType
+      security:
+        - bearerAuth: [MANAGER]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IssueTypeRequest'
+      responses:
+        '200':
+          description: Issue type updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IssueType'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Issue Types]
+      summary: Delete an issue type by ID
+      description: Requires manager role.
+      operationId: deleteIssueType
+      security:
+        - bearerAuth: [MANAGER]
+      responses:
+        '204':
+          description: Issue type deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /accepted-states:
+    get:
+      tags: [Accepted States]
+      summary: Get all accepted states
+      operationId: getAcceptedStates
+      responses:
+        '200':
+          description: Accepted states retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AcceptedState'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Accepted States]
+      summary: Create an accepted state
+      description: Requires manager role.
+      operationId: createAcceptedState
+      security:
+        - bearerAuth: [MANAGER]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptedStateRequest'
+      responses:
+        '201':
+          description: Accepted state created successfully.
+          headers:
+            Location:
+              description: Relative URL of the created accepted state resource.
+              schema:
+                type: string
+                format: uri-reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedState'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /accepted-states/{acceptedStateId}:
+    parameters:
+      - $ref: '#/components/parameters/AcceptedStateId'
+    get:
+      tags: [Accepted States]
+      summary: Get an accepted state by ID
+      operationId: getAcceptedStateById
+      responses:
+        '200':
+          description: Accepted state retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedState'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Accepted States]
+      summary: Update an accepted state by ID
+      description: Requires manager role.
+      operationId: updateAcceptedState
+      security:
+        - bearerAuth: [MANAGER]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AcceptedStateRequest'
+      responses:
+        '200':
+          description: Accepted state updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AcceptedState'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Accepted States]
+      summary: Delete an accepted state by ID
+      description: Requires manager role.
+      operationId: deleteAcceptedState
+      security:
+        - bearerAuth: [MANAGER]
+      responses:
+        '204':
+          description: Accepted state deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /report-images:
+    get:
+      tags: [Report Images]
+      summary: Get all report images
+      operationId: getReportImages
+      parameters:
+        - name: issueReportId
+          in: query
+          description: Optional filter by parent issue report ID.
+          schema:
+            type: integer
+            format: int64
+      responses:
+        '200':
+          description: Report images retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReportImage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Report Images]
+      summary: Create a report image
+      operationId: createReportImage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportImageRequest'
+      responses:
+        '201':
+          description: Report image created successfully.
+          headers:
+            Location:
+              description: Relative URL of the created report image resource.
+              schema:
+                type: string
+                format: uri-reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportImage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /report-images/{reportImageId}:
+    parameters:
+      - $ref: '#/components/parameters/ReportImageId'
+    get:
+      tags: [Report Images]
+      summary: Get a report image by ID
+      operationId: getReportImageById
+      responses:
+        '200':
+          description: Report image retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportImage'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Report Images]
+      summary: Update a report image by ID
+      operationId: updateReportImage
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportImageRequest'
+      responses:
+        '200':
+          description: Report image updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportImage'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Report Images]
+      summary: Delete a report image by ID
+      operationId: deleteReportImage
+      responses:
+        '204':
+          description: Report image deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /report-locations:
+    get:
+      tags: [Report Locations]
+      summary: Get all report locations
+      operationId: getReportLocations
+      responses:
+        '200':
+          description: Report locations retrieved successfully.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ReportLocation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      tags: [Report Locations]
+      summary: Create a report location
+      operationId: createReportLocation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportLocationRequest'
+      responses:
+        '201':
+          description: Report location created successfully.
+          headers:
+            Location:
+              description: Relative URL of the created report location resource.
+              schema:
+                type: string
+                format: uri-reference
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportLocation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /report-locations/{reportLocationId}:
+    parameters:
+      - $ref: '#/components/parameters/ReportLocationId'
+    get:
+      tags: [Report Locations]
+      summary: Get a report location by ID
+      operationId: getReportLocationById
+      responses:
+        '200':
+          description: Report location retrieved successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportLocation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      tags: [Report Locations]
+      summary: Update a report location by ID
+      operationId: updateReportLocation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReportLocationRequest'
+      responses:
+        '200':
+          description: Report location updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportLocation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    delete:
+      tags: [Report Locations]
+      summary: Delete a report location by ID
+      operationId: deleteReportLocation
+      responses:
+        '204':
+          description: Report location deleted successfully.
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        Google OAuth2 / OpenID Connect bearer token presented in the Authorization
+        header as `Bearer <token>`. All endpoints require authentication.
+
+  parameters:
+    UserId:
+      name: userId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    IssueReportId:
+      name: issueReportId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    IssueTypeId:
+      name: issueTypeId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    AcceptedStateId:
+      name: acceptedStateId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    ReportImageId:
+      name: reportImageId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    ReportLocationId:
+      name: reportLocationId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    UserProfileIdFilter:
+      name: userProfileId
+      in: query
+      description: Filter issue reports by creator user profile ID.
+      schema:
+        type: integer
+        format: int64
+    AcceptedStateIdFilter:
+      name: acceptedStateId
+      in: query
+      description: Filter issue reports by accepted state ID.
+      schema:
+        type: integer
+        format: int64
+    StartDate:
+      name: startDate
+      in: query
+      description: Inclusive lower bound for issue report last-modified timestamp.
+      schema:
+        type: string
+        format: date-time
+    EndDate:
+      name: endDate
+      in: query
+      description: Inclusive upper bound for issue report last-modified timestamp.
+      schema:
+        type: string
+        format: date-time
+    IncludeUser:
+      name: includeUser
+      in: query
+      description: When true, embeds the userProfile object in issue report responses.
+      schema:
+        type: boolean
+        default: false
+    Sort:
+      name: sort
+      in: query
+      description: |
+        Sorting expression, for example `timeLastModified,desc` or
+        `timeFirstReported,asc`.
+      schema:
+        type: string
+
+  responses:
+    BadRequest:
+      description: Request payload or query parameters are invalid for this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Authentication is missing, expired, or invalid.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Authenticated caller does not have permission to perform this operation.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: The requested resource was not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+  schemas:
+    Error:
+      type: object
+      properties:
+        timestamp:
+          type: string
+          format: date-time
+        status:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        path:
+          type: string
+      required: [timestamp, status, error, message, path]
+
+    UserProfile:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+          format: uuid
+        oauthKey:
+          type: string
+        displayName:
+          type: string
+        email:
+          type: string
+          format: email
+        isManager:
+          type: boolean
+        timeCreated:
+          type: string
+          format: date-time
+        userEnabled:
+          type: boolean
+      required:
+        - id
+        - externalId
+        - oauthKey
+        - displayName
+        - email
+        - isManager
+        - timeCreated
+        - userEnabled
+
+    UserProfileRequest:
+      type: object
+      properties:
+        oauthKey:
+          type: string
+        displayName:
+          type: string
+        email:
+          type: string
+          format: email
+        isManager:
+          type: boolean
+        userEnabled:
+          type: boolean
+      required:
+        - oauthKey
+        - displayName
+        - email
+        - isManager
+        - userEnabled
+
+    AcceptedState:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        statusTag:
+          type: string
+        statusTagDescription:
+          type: string
+      required: [id, statusTag, statusTagDescription]
+
+    AcceptedStateRequest:
+      type: object
+      properties:
+        statusTag:
+          type: string
+        statusTagDescription:
+          type: string
+      required: [statusTag, statusTagDescription]
+
+    IssueType:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        issueTypeTag:
+          type: string
+        issueTypeDescription:
+          type: string
+      required: [id, issueTypeTag, issueTypeDescription]
+
+    IssueTypeRequest:
+      type: object
+      properties:
+        issueTypeTag:
+          type: string
+        issueTypeDescription:
+          type: string
+      required: [issueTypeTag, issueTypeDescription]
+
+    ReportImage:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        issueReportId:
+          type: integer
+          format: int64
+        imageLocator:
+          type: string
+          format: uri
+        filename:
+          type: string
+        mimeType:
+          type: string
+        albumOrder:
+          type: integer
+          format: int32
+      required: [id, issueReportId, imageLocator, filename, mimeType, albumOrder]
+
+    ReportImageRequest:
+      type: object
+      properties:
+        issueReportId:
+          type: integer
+          format: int64
+        imageLocator:
+          type: string
+          format: uri
+        filename:
+          type: string
+        mimeType:
+          type: string
+        albumOrder:
+          type: integer
+          format: int32
+      required: [issueReportId, imageLocator, filename, mimeType, albumOrder]
+
+    ReportLocation:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        latitude:
+          type: number
+          format: double
+        longitude:
+          type: number
+          format: double
+        streetCoordinate:
+          type: string
+          nullable: true
+        locationDescription:
+          type: string
+          nullable: true
+      required: [id]
+
+    ReportLocationRequest:
+      type: object
+      properties:
+        latitude:
+          type: number
+          format: double
+          nullable: true
+        longitude:
+          type: number
+          format: double
+          nullable: true
+        streetCoordinate:
+          type: string
+          nullable: true
+        locationDescription:
+          type: string
+          nullable: true
+
+    IssueReport:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        externalId:
+          type: string
+          format: uuid
+        reportLocation:
+          $ref: '#/components/schemas/ReportLocation'
+        acceptedState:
+          $ref: '#/components/schemas/AcceptedState'
+        issueTypes:
+          type: array
+          items:
+            $ref: '#/components/schemas/IssueType'
+        timeFirstReported:
+          type: string
+          format: date-time
+        timeLastModified:
+          type: string
+          format: date-time
+        textDescription:
+          type: string
+        reportImages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ReportImage'
+      required:
+        - id
+        - externalId
+        - reportLocation
+        - acceptedState
+        - issueTypes
+        - timeFirstReported
+        - timeLastModified
+        - textDescription
+        - reportImages
+
+    IssueReportWithUser:
+      allOf:
+        - $ref: '#/components/schemas/IssueReport'
+        - type: object
+          properties:
+            userProfile:
+              $ref: '#/components/schemas/UserProfile'
+          required: [userProfile]
+
+    IssueReportRequest:
+      type: object
+      properties:
+        userProfileId:
+          type: integer
+          format: int64
+        reportLocationId:
+          type: integer
+          format: int64
+        acceptedStateId:
+          type: integer
+          format: int64
+        issueTypeIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+        textDescription:
+          type: string
+      required:
+        - userProfileId
+        - reportLocationId
+        - acceptedStateId
+        - issueTypeIds
+        - textDescription
