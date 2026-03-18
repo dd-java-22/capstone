@@ -24,6 +24,7 @@ plugins {
     alias(libs.plugins.navigation.safeargs)
     alias(libs.plugins.schema.parser)
     alias(libs.plugins.junit)
+    alias(libs.plugins.kotlin.android)
     checkstyle
 }
 
@@ -45,7 +46,8 @@ android {
             "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
         resValue("string", "app_name", project.property("appName") as String)
-//        resValue("string", "client_id", getLocalProperty("clientId") as String)
+        resValue("string", "client_id", getLocalProperty("clientId") as String)
+
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -76,10 +78,21 @@ android {
         targetCompatibility = JavaVersion.valueOf("VERSION_${libs.versions.java.get()}")
     }
 
+    kotlin {
+        jvmToolchain(libs.versions.java.get().toInt())
+    }
+
     buildFeatures {
         viewBinding = true
         // Enable dataBinding if desired.
         // dataBinding = true
+    }
+
+    packaging {
+        resources {
+            excludes += "/META-INF/NOTICE.md"
+            excludes += "/META-INF/LICENSE.md"
+        }
     }
 
 }
@@ -87,6 +100,12 @@ android {
 dependencies {
 
     // .jar-based libraries included in project
+
+    // Kotlin standard library and coroutines
+    implementation(libs.kotlin)
+    implementation(libs.kotlin.coroutines.core)
+    implementation(libs.kotlin.coroutines.jdk8)
+    implementation(libs.kotlin.coroutines.android)
 
     // Desugaring for subset of JDK
     coreLibraryDesugaring(libs.desugar)
@@ -119,8 +138,10 @@ dependencies {
     // Gson (Google JSON parser) library
     implementation(libs.gson)
 
-    // Google Sign-in library
-    implementation(libs.play.auth)
+    // Credential Manager libraries
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services)
+    implementation(libs.googleid)
 
     // Retrofit (REST client) with Gson integration
     implementation(libs.retrofit.core)
@@ -177,7 +198,7 @@ tasks.named("check").configure {
 }
 
 roomDdl {
-    source.set(project.file("$projectDir/schemas/edu.cnm.deepdive.capstoneproject.service.LocalDatabase/1.json"))
+    source.set(project.file("$projectDir/schemas/edu.cnm.deepdive.seesomethingabq.service.LocalDatabase/1.json"))
     destination.set(project.file("$projectDir/../docs/sql/ddl.sql"))
 }
 
@@ -254,7 +275,12 @@ android.applicationVariants.configureEach {
 }
 
 fun getLocalProperty(name: String): String {
-    return getProperty("$projectDir/local.properties", name)
+    val localPropertiesFile = file("$projectDir/local.properties")
+    return if (localPropertiesFile.exists()) {
+        getProperty("$projectDir/local.properties", name)
+    } else {
+        System.getenv(name) ?: ""
+    }
 }
 
 fun getProperty(filename: String, name: String): String {
