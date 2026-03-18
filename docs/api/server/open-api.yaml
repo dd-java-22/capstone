@@ -181,9 +181,7 @@ paths:
               schema:
                 type: array
                 items:
-                  oneOf:
-                  - $ref: '#/components/schemas/IssueReport'
-                  - $ref: '#/components/schemas/IssueReportWithUser'
+                  $ref: '#/components/schemas/IssueReport'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -213,7 +211,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IssueReportWithUser'
+                $ref: '#/components/schemas/IssueReport'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -239,9 +237,7 @@ paths:
           content:
             application/json:
               schema:
-                oneOf:
-                - $ref: '#/components/schemas/IssueReport'
-                - $ref: '#/components/schemas/IssueReportWithUser'
+                $ref: '#/components/schemas/IssueReport'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -265,7 +261,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/IssueReportWithUser'
+                $ref: '#/components/schemas/IssueReport'
         '400':
           $ref: '#/components/responses/BadRequest'
         '401':
@@ -1180,6 +1176,8 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/ReportImage'
+        userProfile:
+          $ref: '#/components/schemas/UserProfile'
       required:
       - id
       - externalId
@@ -1190,15 +1188,6 @@ components:
       - timeLastModified
       - textDescription
       - reportImages
-    IssueReportWithUser:
-      allOf:
-      - $ref: '#/components/schemas/IssueReport'
-      - type: object
-        properties:
-          userProfile:
-            $ref: '#/components/schemas/UserProfile'
-        required:
-        - userProfile
     IssueReportRequest:
       type: object
       properties:
