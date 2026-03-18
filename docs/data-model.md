@@ -20,6 +20,10 @@ order: 20
 
 [![Entity-relationship diagram](img/ERD.svg)](pdf/ERD.pdf)
 
+## DDL
+
+{% include linked-file.md type="sqlite" file="sql/ddl-server.sql" %}
+
 ## Entity classes
 
 The following JPA entity classes correspond to the tables shown in the ERD.

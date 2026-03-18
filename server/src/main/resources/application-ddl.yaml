@@ -8,13 +8,15 @@ spring:
   jpa:
     properties:
       hibernate:
-        schema-generation:
-          script:
-            append: false
+        hbm2ddl:
+          schema-generation:
+            script:
+              append: false
 
       jakarta:
         persistence:
           schema-generation:
+            create-source: metadata
             scripts:
               action: create
               create-target: ./docs/sql/ddl-server.sql
