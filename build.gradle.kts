@@ -22,4 +22,5 @@ plugins {
     alias(libs.plugins.spring.boot).apply(false)
     alias(libs.plugins.spring.dependency).apply(false)
     alias(libs.plugins.asciidoctor.convert).apply(false)
+    alias(libs.plugins.kotlin.android).apply(false)
 }

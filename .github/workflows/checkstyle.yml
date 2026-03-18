@@ -1,0 +1,27 @@
+name: Checkstyle
+
+on: [pull_request]
+
+jobs:
+  checkstyle:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Set up JDK
+      uses: actions/setup-java@v5
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v5
+
+    - name: Run Checkstyle
+      run: ./gradlew checkstyle
+
+    - name: Review Checkstyle Results
+      uses: lcollins/checkstyle-github-action@64dd6cb4a632cb9e31917ebea89878118255af09
+      with:
+        path: '**/build/reports/checkstyle/*.xml'
