@@ -104,6 +104,25 @@ Finite state machine processing (e.g., for games)."
 
 ---
 
+### mermaid-converter.bat
+
+**Tool used:** Claude
+
+**Task:** Automate mermaid publishing
+
+**Prompt used:**
+> i got the official dockerhub image of mermaid cli. How do I use it from docker desktop
+> 
+then later...
+> can you give me a script file to run that runs these mermaid conversions?
+> 
+**Output produced:** convert-mermaid.bat which publishes everything in docs/mermaid to docs/img and 
+docs/pdf
+
+**Human review/modification:** Debugged some issues in the bat file (e.g. linux file endings workaround)
+
+---
+
 <!--
 Use the following template for each AI-assisted task:
 
