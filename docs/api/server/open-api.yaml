@@ -6,17 +6,15 @@ info:
   description: "Draft specification for authenticated web services supporting user\
     \ profiles,\nissue reports, issue types, accepted states, report images, and report\n\
     locations.\n\nDraft assumptions:\n  * All endpoints require a valid bearer token.\n\
-    \  * Manager-restricted operations use an OAuth2 scope named `manager`.\n  * Related\
-    \ entities in create/update requests are referenced by IDs.\n  * Issue report\
-    \ responses may optionally embed creator information when\n    includeUser=true\
-    \ is supplied.\n  * The server derives the creator of a newly created issue report\
-    \ from the\n    authenticated principal rather than from client-supplied user\
-    \ data."
+    \  * Manager-restricted operations currently map to Spring Security role MANAGER.\n\
+    \  * Related entities in create/update requests are referenced by IDs.\n  * Issue\
+    \ report responses may optionally embed creator information when\n    includeUser=true\
+    \ is supplied.\n"
 servers:
 - url: /api
   description: Application-relative base URL
 security:
-- oauth2: []
+- bearerAuth: []
 tags:
 - name: Authentication
   description: Authentication and authorization behavior for secured endpoints.
@@ -148,21 +146,6 @@ paths:
                 $ref: '#/components/schemas/UserProfile'
         '400':
           $ref: '#/components/responses/BadRequest'
-        '401':
-          $ref: '#/components/responses/Unauthorized'
-        '403':
-          $ref: '#/components/responses/Forbidden'
-        '404':
-          $ref: '#/components/responses/NotFound'
-    delete:
-      tags:
-      - Users
-      summary: Delete a user profile by ID
-      description: Deletes a user profile resource.
-      operationId: deleteUser
-      responses:
-        '204':
-          description: User profile deleted successfully.
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -330,12 +313,11 @@ paths:
       tags:
       - Issue Types
       summary: Create an issue type
-      description: Requires manager role. Requires Spring Security role MANAGER; the
-        server enforces this authorization from authenticated token claims.
+      description: Requires manager role.
       operationId: createIssueType
       security:
-      - oauth2:
-        - manager
+      - bearerAuth:
+        - MANAGER
       requestBody:
         required: true
         content:
@@ -386,12 +368,11 @@ paths:
       tags:
       - Issue Types
       summary: Update an issue type by ID
-      description: Requires manager role. Requires Spring Security role MANAGER; the
-        server enforces this authorization from authenticated token claims.
+      description: Requires manager role.
       operationId: updateIssueType
       security:
-      - oauth2:
-        - manager
+      - bearerAuth:
+        - MANAGER
       requestBody:
         required: true
         content:
@@ -417,12 +398,11 @@ paths:
       tags:
       - Issue Types
       summary: Delete an issue type by ID
-      description: Requires manager role. Requires Spring Security role MANAGER; the
-        server enforces this authorization from authenticated token claims.
+      description: Requires manager role.
       operationId: deleteIssueType
       security:
-      - oauth2:
-        - manager
+      - bearerAuth:
+        - MANAGER
       responses:
         '204':
           description: Issue type deleted successfully.
@@ -455,12 +435,11 @@ paths:
       tags:
       - Accepted States
       summary: Create an accepted state
-      description: Requires manager role. Requires Spring Security role MANAGER; the
-        server enforces this authorization from authenticated token claims.
+      description: Requires manager role.
       operationId: createAcceptedState
       security:
-      - oauth2:
-        - manager
+      - bearerAuth:
+        - MANAGER
       requestBody:
         required: true
         content:
@@ -511,12 +490,11 @@ paths:
       tags:
       - Accepted States
       summary: Update an accepted state by ID
-      description: Requires manager role. Requires Spring Security role MANAGER; the
-        server enforces this authorization from authenticated token claims.
+      description: Requires manager role.
       operationId: updateAcceptedState
       security:
-      - oauth2:
-        - manager
+      - bearerAuth:
+        - MANAGER
       requestBody:
         required: true
         content:
@@ -542,12 +520,11 @@ paths:
       tags:
       - Accepted States
       summary: Delete an accepted state by ID
-      description: Requires manager role. Requires Spring Security role MANAGER; the
-        server enforces this authorization from authenticated token claims.
+      description: Requires manager role.
       operationId: deleteAcceptedState
       security:
-      - oauth2:
-        - manager
+      - bearerAuth:
+        - MANAGER
       responses:
         '204':
           description: Accepted state deleted successfully.
@@ -784,6 +761,66 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+  /users/{userId}/setAccountEnabled:
+    parameters:
+    - $ref: '#/components/parameters/UserId'
+    put:
+      tags:
+      - Users
+      summary: Set account enabled status for a user profile
+      description: Requires manager role. Updates the userEnabled field for the specified user profile.
+      operationId: setUserAccountEnabled
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetAccountEnabledRequest'
+      responses:
+        '200':
+          description: User account enabled status updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /users/{userId}/setIsManager:
+    parameters:
+    - $ref: '#/components/parameters/UserId'
+    put:
+      tags:
+      - Users
+      summary: Set manager status for a user profile
+      description: Requires manager role. Updates the isManager field for the specified user profile.
+      operationId: setUserIsManager
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetIsManagerRequest'
+      responses:
+        '200':
+          description: User manager status updated successfully.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserProfile'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
 components:
   securitySchemes:
     oauth2:
@@ -975,16 +1012,10 @@ components:
         email:
           type: string
           format: email
-        isManager:
-          type: boolean
-        userEnabled:
-          type: boolean
       required:
       - oauthKey
       - displayName
       - email
-      - isManager
-      - userEnabled
     AcceptedState:
       type: object
       properties:
@@ -1169,6 +1200,9 @@ components:
     IssueReportRequest:
       type: object
       properties:
+        userProfileId:
+          type: integer
+          format: int64
         reportLocationId:
           type: integer
           format: int64
@@ -1183,10 +1217,25 @@ components:
         textDescription:
           type: string
       required:
+      - userProfileId
       - reportLocationId
       - acceptedStateId
       - issueTypeIds
       - textDescription
       description: Request payload for creating or updating an issue report. The server
-        derives the creator from the authenticated bearer token; no userProfileId
-        is accepted in this payload.
+       derives the creator from the authenticated bearer token; no userProfileId
+       is accepted in this payload.
+    SetAccountEnabledRequest:
+      type: object
+      properties:
+        userEnabled:
+          type: boolean
+      required:
+      - userEnabled
+    SetIsManagerRequest:
+      type: object
+      properties:
+        isManager:
+          type: boolean
+      required:
+      - isManager
