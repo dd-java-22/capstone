@@ -254,7 +254,12 @@ android.applicationVariants.configureEach {
 }
 
 fun getLocalProperty(name: String): String {
-    return getProperty("$projectDir/local.properties", name)
+    val localPropertiesFile = file("$projectDir/local.properties")
+    return if (localPropertiesFile.exists()) {
+        getProperty("$projectDir/local.properties", name)
+    } else {
+        System.getenv(name) ?: ""
+    }
 }
 
 fun getProperty(filename: String, name: String): String {
