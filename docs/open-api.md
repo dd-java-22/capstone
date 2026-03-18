@@ -24,22 +24,20 @@ info:
   title: See Something ABQ API
   version: 0.1.0-draft
   summary: First-draft OpenAPI specification for Milestone 2.
-  description: |
-    Draft specification for authenticated web services supporting user profiles,
-    issue reports, issue types, accepted states, report images, and report
-    locations.
-
-    Draft assumptions:
-      * All endpoints require a valid bearer token.
-      * Manager-restricted operations currently map to Spring Security role MANAGER.
-      * Related entities in create/update requests are referenced by IDs.
-      * Issue report responses may optionally embed creator information when
-        includeUser=true is supplied.
+  description: "Draft specification for authenticated web services supporting user\
+    \ profiles,\nissue reports, issue types, accepted states, report images, and report\n\
+    locations.\n\nDraft assumptions:\n  * All endpoints require a valid bearer token.\n\
+    \  * Manager-restricted operations use an OAuth2 scope named `manager`.\n  * Related\
+    \ entities in create/update requests are referenced by IDs.\n  * Issue report\
+    \ responses may optionally embed creator information when\n    includeUser=true\
+    \ is supplied.\n  * The server derives the creator of a newly created issue report\
+    \ from the\n    authenticated principal rather than from client-supplied user\
+    \ data."
 servers:
   - url: /api
     description: Application-relative base URL
 security:
-  - bearerAuth: []
+  - oauth2: []
 tags:
   - name: Authentication
     description: Authentication and authorization behavior for secured endpoints.
@@ -58,7 +56,8 @@ tags:
 paths:
   /users:
     get:
-      tags: [Users]
+      tags:
+        - Users
       summary: Get all user profiles
       description: Returns all user profiles visible to the authenticated caller.
       operationId: getUsers
@@ -76,7 +75,8 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     post:
-      tags: [Users]
+      tags:
+        - Users
       summary: Create a user profile
       description: Creates a user profile record for an authenticated user.
       operationId: createUser
@@ -105,10 +105,10 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-
   /users/me:
     get:
-      tags: [Users]
+      tags:
+        - Users
       summary: Get the current user's profile
       description: Returns the user profile associated with the bearer token.
       operationId: getCurrentUser
@@ -127,12 +127,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Error'
-
   /users/{userId}:
     parameters:
       - $ref: '#/components/parameters/UserId'
     get:
-      tags: [Users]
+      tags:
+        - Users
       summary: Get a user profile by ID
       operationId: getUserById
       responses:
@@ -149,7 +149,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [Users]
+      tags:
+        - Users
       summary: Update a user profile by ID
       description: Updates mutable fields of a user profile.
       operationId: updateUser
@@ -175,7 +176,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [Users]
+      tags:
+        - Users
       summary: Delete a user profile by ID
       description: Deletes a user profile resource.
       operationId: deleteUser
@@ -188,15 +190,19 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
   /issue-reports:
     get:
-      tags: [Issue Reports]
+      tags:
+        - Issue Reports
       summary: Get issue reports
-      description: |
-        Returns issue reports, optionally filtered by creator, date range, or
+      description: 'Returns issue reports, optionally filtered by creator, date range,
+        or
+
         accepted state. Results may optionally include embedded user profile
+
         information.
+
+        '
       operationId: getIssueReports
       parameters:
         - $ref: '#/components/parameters/UserProfileIdFilter'
@@ -223,7 +229,8 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     post:
-      tags: [Issue Reports]
+      tags:
+        - Issue Reports
       summary: Create an issue report
       operationId: createIssueReport
       requestBody:
@@ -251,12 +258,15 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-
+      description: Creates a new issue report for the authenticated caller. The server
+        derives the creator from the authenticated bearer token and does not accept
+        a client-supplied userProfileId.
   /issue-reports/{issueReportId}:
     parameters:
       - $ref: '#/components/parameters/IssueReportId'
     get:
-      tags: [Issue Reports]
+      tags:
+        - Issue Reports
       summary: Get an issue report by ID
       operationId: getIssueReportById
       parameters:
@@ -277,7 +287,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [Issue Reports]
+      tags:
+        - Issue Reports
       summary: Update an issue report by ID
       operationId: updateIssueReport
       requestBody:
@@ -301,8 +312,11 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+      description: Updates mutable fields of an issue report by ID. The request body
+        does not include userProfileId.
     delete:
-      tags: [Issue Reports]
+      tags:
+        - Issue Reports
       summary: Delete an issue report by ID
       operationId: deleteIssueReport
       responses:
@@ -314,10 +328,10 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
   /issue-types:
     get:
-      tags: [Issue Types]
+      tags:
+        - Issue Types
       summary: Get all issue types
       operationId: getIssueTypes
       responses:
@@ -334,12 +348,15 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     post:
-      tags: [Issue Types]
+      tags:
+        - Issue Types
       summary: Create an issue type
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role MANAGER; the
+        server enforces this authorization from authenticated token claims.
       operationId: createIssueType
       security:
-        - bearerAuth: [MANAGER]
+        - oauth2:
+            - manager
       requestBody:
         required: true
         content:
@@ -365,12 +382,12 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-
   /issue-types/{issueTypeId}:
     parameters:
       - $ref: '#/components/parameters/IssueTypeId'
     get:
-      tags: [Issue Types]
+      tags:
+        - Issue Types
       summary: Get an issue type by ID
       operationId: getIssueTypeById
       responses:
@@ -387,12 +404,15 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [Issue Types]
+      tags:
+        - Issue Types
       summary: Update an issue type by ID
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role MANAGER; the
+        server enforces this authorization from authenticated token claims.
       operationId: updateIssueType
       security:
-        - bearerAuth: [MANAGER]
+        - oauth2:
+            - manager
       requestBody:
         required: true
         content:
@@ -415,12 +435,15 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [Issue Types]
+      tags:
+        - Issue Types
       summary: Delete an issue type by ID
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role MANAGER; the
+        server enforces this authorization from authenticated token claims.
       operationId: deleteIssueType
       security:
-        - bearerAuth: [MANAGER]
+        - oauth2:
+            - manager
       responses:
         '204':
           description: Issue type deleted successfully.
@@ -430,10 +453,10 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
   /accepted-states:
     get:
-      tags: [Accepted States]
+      tags:
+        - Accepted States
       summary: Get all accepted states
       operationId: getAcceptedStates
       responses:
@@ -450,12 +473,15 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     post:
-      tags: [Accepted States]
+      tags:
+        - Accepted States
       summary: Create an accepted state
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role MANAGER; the
+        server enforces this authorization from authenticated token claims.
       operationId: createAcceptedState
       security:
-        - bearerAuth: [MANAGER]
+        - oauth2:
+            - manager
       requestBody:
         required: true
         content:
@@ -481,12 +507,12 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-
   /accepted-states/{acceptedStateId}:
     parameters:
       - $ref: '#/components/parameters/AcceptedStateId'
     get:
-      tags: [Accepted States]
+      tags:
+        - Accepted States
       summary: Get an accepted state by ID
       operationId: getAcceptedStateById
       responses:
@@ -503,12 +529,15 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [Accepted States]
+      tags:
+        - Accepted States
       summary: Update an accepted state by ID
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role MANAGER; the
+        server enforces this authorization from authenticated token claims.
       operationId: updateAcceptedState
       security:
-        - bearerAuth: [MANAGER]
+        - oauth2:
+            - manager
       requestBody:
         required: true
         content:
@@ -531,12 +560,15 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [Accepted States]
+      tags:
+        - Accepted States
       summary: Delete an accepted state by ID
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role MANAGER; the
+        server enforces this authorization from authenticated token claims.
       operationId: deleteAcceptedState
       security:
-        - bearerAuth: [MANAGER]
+        - oauth2:
+            - manager
       responses:
         '204':
           description: Accepted state deleted successfully.
@@ -546,10 +578,10 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
   /report-images:
     get:
-      tags: [Report Images]
+      tags:
+        - Report Images
       summary: Get all report images
       operationId: getReportImages
       parameters:
@@ -573,7 +605,8 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     post:
-      tags: [Report Images]
+      tags:
+        - Report Images
       summary: Create a report image
       operationId: createReportImage
       requestBody:
@@ -601,12 +634,12 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-
   /report-images/{reportImageId}:
     parameters:
       - $ref: '#/components/parameters/ReportImageId'
     get:
-      tags: [Report Images]
+      tags:
+        - Report Images
       summary: Get a report image by ID
       operationId: getReportImageById
       responses:
@@ -623,7 +656,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [Report Images]
+      tags:
+        - Report Images
       summary: Update a report image by ID
       operationId: updateReportImage
       requestBody:
@@ -648,7 +682,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [Report Images]
+      tags:
+        - Report Images
       summary: Delete a report image by ID
       operationId: deleteReportImage
       responses:
@@ -660,10 +695,10 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
   /report-locations:
     get:
-      tags: [Report Locations]
+      tags:
+        - Report Locations
       summary: Get all report locations
       operationId: getReportLocations
       responses:
@@ -680,7 +715,8 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     post:
-      tags: [Report Locations]
+      tags:
+        - Report Locations
       summary: Create a report location
       operationId: createReportLocation
       requestBody:
@@ -708,12 +744,12 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-
   /report-locations/{reportLocationId}:
     parameters:
       - $ref: '#/components/parameters/ReportLocationId'
     get:
-      tags: [Report Locations]
+      tags:
+        - Report Locations
       summary: Get a report location by ID
       operationId: getReportLocationById
       responses:
@@ -730,7 +766,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
-      tags: [Report Locations]
+      tags:
+        - Report Locations
       summary: Update a report location by ID
       operationId: updateReportLocation
       requestBody:
@@ -755,7 +792,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     delete:
-      tags: [Report Locations]
+      tags:
+        - Report Locations
       summary: Delete a report location by ID
       operationId: deleteReportLocation
       responses:
@@ -767,17 +805,21 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-
 components:
   securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-      description: |
-        Google OAuth2 / OpenID Connect bearer token presented in the Authorization
-        header as `Bearer <token>`. All endpoints require authentication.
-
+    oauth2:
+      type: oauth2
+      description: Google OAuth2 / OpenID Connect bearer token presented in the Authorization
+        header as `Bearer <token>`. All endpoints require authentication. Manager-restricted
+        operations additionally require the `manager` scope, representing Spring Security
+        role `MANAGER` derived from token claims.
+      flows:
+        authorizationCode:
+          authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
+          tokenUrl: https://oauth2.googleapis.com/token
+          scopes:
+            manager: Allows operations restricted to authenticated users with manager
+              privileges.
   parameters:
     UserId:
       name: userId
@@ -859,12 +901,13 @@ components:
     Sort:
       name: sort
       in: query
-      description: |
-        Sorting expression, for example `timeLastModified,desc` or
+      description: 'Sorting expression, for example `timeLastModified,desc` or
+
         `timeFirstReported,asc`.
+
+        '
       schema:
         type: string
-
   responses:
     BadRequest:
       description: Request payload or query parameters are invalid for this operation.
@@ -890,7 +933,6 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-
   schemas:
     Error:
       type: object
@@ -906,8 +948,12 @@ components:
           type: string
         path:
           type: string
-      required: [timestamp, status, error, message, path]
-
+      required:
+        - timestamp
+        - status
+        - error
+        - message
+        - path
     UserProfile:
       type: object
       properties:
@@ -940,7 +986,6 @@ components:
         - isManager
         - timeCreated
         - userEnabled
-
     UserProfileRequest:
       type: object
       properties:
@@ -961,7 +1006,6 @@ components:
         - email
         - isManager
         - userEnabled
-
     AcceptedState:
       type: object
       properties:
@@ -972,8 +1016,10 @@ components:
           type: string
         statusTagDescription:
           type: string
-      required: [id, statusTag, statusTagDescription]
-
+      required:
+        - id
+        - statusTag
+        - statusTagDescription
     AcceptedStateRequest:
       type: object
       properties:
@@ -981,8 +1027,9 @@ components:
           type: string
         statusTagDescription:
           type: string
-      required: [statusTag, statusTagDescription]
-
+      required:
+        - statusTag
+        - statusTagDescription
     IssueType:
       type: object
       properties:
@@ -993,8 +1040,10 @@ components:
           type: string
         issueTypeDescription:
           type: string
-      required: [id, issueTypeTag, issueTypeDescription]
-
+      required:
+        - id
+        - issueTypeTag
+        - issueTypeDescription
     IssueTypeRequest:
       type: object
       properties:
@@ -1002,8 +1051,9 @@ components:
           type: string
         issueTypeDescription:
           type: string
-      required: [issueTypeTag, issueTypeDescription]
-
+      required:
+        - issueTypeTag
+        - issueTypeDescription
     ReportImage:
       type: object
       properties:
@@ -1023,8 +1073,13 @@ components:
         albumOrder:
           type: integer
           format: int32
-      required: [id, issueReportId, imageLocator, filename, mimeType, albumOrder]
-
+      required:
+        - id
+        - issueReportId
+        - imageLocator
+        - filename
+        - mimeType
+        - albumOrder
     ReportImageRequest:
       type: object
       properties:
@@ -1041,8 +1096,12 @@ components:
         albumOrder:
           type: integer
           format: int32
-      required: [issueReportId, imageLocator, filename, mimeType, albumOrder]
-
+      required:
+        - issueReportId
+        - imageLocator
+        - filename
+        - mimeType
+        - albumOrder
     ReportLocation:
       type: object
       properties:
@@ -1061,8 +1120,8 @@ components:
         locationDescription:
           type: string
           nullable: true
-      required: [id]
-
+      required:
+        - id
     ReportLocationRequest:
       type: object
       properties:
@@ -1080,7 +1139,6 @@ components:
         locationDescription:
           type: string
           nullable: true
-
     IssueReport:
       type: object
       properties:
@@ -1120,7 +1178,6 @@ components:
         - timeLastModified
         - textDescription
         - reportImages
-
     IssueReportWithUser:
       allOf:
         - $ref: '#/components/schemas/IssueReport'
@@ -1128,14 +1185,11 @@ components:
           properties:
             userProfile:
               $ref: '#/components/schemas/UserProfile'
-          required: [userProfile]
-
+          required:
+            - userProfile
     IssueReportRequest:
       type: object
       properties:
-        userProfileId:
-          type: integer
-          format: int64
         reportLocationId:
           type: integer
           format: int64
@@ -1150,9 +1204,11 @@ components:
         textDescription:
           type: string
       required:
-        - userProfileId
         - reportLocationId
         - acceptedStateId
         - issueTypeIds
         - textDescription
+      description: Request payload for creating or updating an issue report. The server
+        derives the creator from the authenticated bearer token; no userProfileId
+        is accepted in this payload.
 ```
