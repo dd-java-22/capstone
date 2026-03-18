@@ -313,11 +313,11 @@ paths:
       tags:
       - Issue Types
       summary: Create an issue type
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role `MANAGER`;
+        the server enforces this from authenticated token claims.
       operationId: createIssueType
       security:
-      - bearerAuth:
-        - MANAGER
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -368,11 +368,11 @@ paths:
       tags:
       - Issue Types
       summary: Update an issue type by ID
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role `MANAGER`;
+        the server enforces this from authenticated token claims.
       operationId: updateIssueType
       security:
-      - bearerAuth:
-        - MANAGER
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -398,11 +398,11 @@ paths:
       tags:
       - Issue Types
       summary: Delete an issue type by ID
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role `MANAGER`;
+        the server enforces this from authenticated token claims.
       operationId: deleteIssueType
       security:
-      - bearerAuth:
-        - MANAGER
+      - bearerAuth: []
       responses:
         '204':
           description: Issue type deleted successfully.
@@ -435,11 +435,11 @@ paths:
       tags:
       - Accepted States
       summary: Create an accepted state
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role `MANAGER`;
+        the server enforces this from authenticated token claims.
       operationId: createAcceptedState
       security:
-      - bearerAuth:
-        - MANAGER
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -490,11 +490,11 @@ paths:
       tags:
       - Accepted States
       summary: Update an accepted state by ID
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role `MANAGER`;
+        the server enforces this from authenticated token claims.
       operationId: updateAcceptedState
       security:
-      - bearerAuth:
-        - MANAGER
+      - bearerAuth: []
       requestBody:
         required: true
         content:
@@ -520,11 +520,11 @@ paths:
       tags:
       - Accepted States
       summary: Delete an accepted state by ID
-      description: Requires manager role.
+      description: Requires manager role. Requires Spring Security role `MANAGER`;
+        the server enforces this from authenticated token claims.
       operationId: deleteAcceptedState
       security:
-      - bearerAuth:
-        - MANAGER
+      - bearerAuth: []
       responses:
         '204':
           description: Accepted state deleted successfully.
@@ -768,7 +768,9 @@ paths:
       tags:
       - Users
       summary: Set account enabled status for a user profile
-      description: Requires manager role. Updates the userEnabled field for the specified user profile.
+      description: Requires manager role. Updates the userEnabled field for the specified
+        user profile. Requires Spring Security role `MANAGER`; the server enforces
+        this from authenticated token claims.
       operationId: setUserAccountEnabled
       requestBody:
         required: true
@@ -791,6 +793,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+      security:
+      - bearerAuth: []
   /users/{userId}/setIsManager:
     parameters:
     - $ref: '#/components/parameters/UserId'
@@ -798,7 +802,9 @@ paths:
       tags:
       - Users
       summary: Set manager status for a user profile
-      description: Requires manager role. Updates the isManager field for the specified user profile.
+      description: Requires manager role. Updates the isManager field for the specified
+        user profile. Requires Spring Security role `MANAGER`; the server enforces
+        this from authenticated token claims.
       operationId: setUserIsManager
       requestBody:
         required: true
@@ -821,21 +827,17 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
+      security:
+      - bearerAuth: []
 components:
   securitySchemes:
-    oauth2:
-      type: oauth2
-      description: Google OAuth2 / OpenID Connect bearer token presented in the Authorization
-        header as `Bearer <token>`. All endpoints require authentication. Manager-restricted
-        operations additionally require the `manager` scope, representing Spring Security
-        role `MANAGER` derived from token claims.
-      flows:
-        authorizationCode:
-          authorizationUrl: https://accounts.google.com/o/oauth2/v2/auth
-          tokenUrl: https://oauth2.googleapis.com/token
-          scopes:
-            manager: Allows operations restricted to authenticated users with manager
-              privileges.
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Bearer token presented in the Authorization header as `Bearer <token>`.
+        All endpoints require authentication. Role checks, including `MANAGER` restrictions,
+        are enforced by the server from authenticated token claims.
   parameters:
     UserId:
       name: userId
@@ -1200,9 +1202,6 @@ components:
     IssueReportRequest:
       type: object
       properties:
-        userProfileId:
-          type: integer
-          format: int64
         reportLocationId:
           type: integer
           format: int64
@@ -1217,14 +1216,13 @@ components:
         textDescription:
           type: string
       required:
-      - userProfileId
       - reportLocationId
       - acceptedStateId
       - issueTypeIds
       - textDescription
       description: Request payload for creating or updating an issue report. The server
-       derives the creator from the authenticated bearer token; no userProfileId
-       is accepted in this payload.
+        derives the creator from the authenticated bearer token; clients do not supply
+        `userProfileId`.
     SetAccountEnabledRequest:
       type: object
       properties:
