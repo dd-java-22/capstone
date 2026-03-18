@@ -1,0 +1,25 @@
+spring:
+  application:
+    name: see-something-abq-test
+
+  datasource:
+    url: "jdbc:h2:mem:testdb"
+    driver-class-name: org.h2.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  h2:
+    console:
+      enabled: false
+
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          client-id: test-client-id
