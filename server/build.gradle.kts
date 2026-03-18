@@ -18,6 +18,7 @@ plugins {
     alias(libs.plugins.spring.boot)
     alias(libs.plugins.spring.dependency)
     alias(libs.plugins.asciidoctor.convert)
+    checkstyle
 }
 
 java {
@@ -100,4 +101,19 @@ tasks.test {
 tasks.asciidoctor {
     inputs.dir(project.extra["snippetsDir"]!!)
     dependsOn(tasks.test)
+}
+
+checkstyle {
+    toolVersion = "13.3.0"
+    configFile = rootProject.file("config/checkstyle/checkstyle.xml")
+}
+
+tasks.register("checkstyle", Checkstyle::class) {
+    source("src/main/java")
+    include("**/*.java")
+    classpath = files()
+}
+
+tasks.named("check").configure {
+    dependsOn("checkstyle")
 }
