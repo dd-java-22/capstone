@@ -31,10 +31,6 @@
     tools:ignore="AllowBackup,DataExtractionRules">
 
     <activity
-      android:name=".controller.MainActivity"
-      android:exported="false"/>
-
-    <activity
       android:name=".controller.UserWorkflowActivity"
       android:exported="true"
       android:label="@string/app_user_mode">

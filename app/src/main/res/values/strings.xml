@@ -2,8 +2,6 @@
 <resources>
   <string name="login_button">Login</string>
   <string name="sign_out">Sign Out</string>
-  <string name="login_fragment_label">Login Screen</string>
-  <string name="main_fragment_label">Try logging into server</string>
   <string name="manage_issues">Manage Issues</string>
   <string name="manage_users">Manage Users</string>
   <string name="app_user_mode">See Something ABQ - User</string>
