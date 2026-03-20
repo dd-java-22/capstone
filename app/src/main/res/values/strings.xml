@@ -6,4 +6,6 @@
   <string name="main_fragment_label">Try logging into server</string>
   <string name="manage_issues">Manage Issues</string>
   <string name="manage_users">Manage Users</string>
+  <string name="app_user_mode">See Something ABQ - User</string>
+  <string name="app_manager_mode">See Something ABQ - Manager</string>
 </resources>
