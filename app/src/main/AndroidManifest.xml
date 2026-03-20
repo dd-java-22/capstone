@@ -39,6 +39,14 @@
       </intent-filter>
     </activity>
 
+    <activity
+      android:name=".controller.UserWorkflowActivity"
+      android:exported="false"/>
+
+    <activity
+      android:name=".controller.ManagerWorkflowActivity"
+      android:exported="false"/>
+
   </application>
 
 </manifest>
