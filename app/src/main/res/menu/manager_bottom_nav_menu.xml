@@ -18,10 +18,10 @@
 
   <item
     android:id="@+id/manage_issues_fragment"
-    android:title="Manage Issues"/>
+    android:title="@string/manage_issues"/>
 
   <item
     android:id="@+id/manage_users_fragment"
-    android:title="Manage Users"/>
+    android:title="@string/manage_users"/>
 
 </menu>
