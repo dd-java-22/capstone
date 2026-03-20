@@ -16,9 +16,12 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
+import android.view.View;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
+import androidx.navigation.NavController.OnDestinationChangedListener;
+import androidx.navigation.NavDestination;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
@@ -60,5 +63,17 @@ public class ManagerWorkflowActivity extends AppCompatActivity {
     navController = host.getNavController();
     NavigationUI.setupActionBarWithNavController(this, navController, appBarConfig);
     NavigationUI.setupWithNavController(binding.bottomNavigation, navController);
+
+    // Control bottom navigation visibility based on current destination
+    navController.addOnDestinationChangedListener(
+        (controller, destination, arguments) -> {
+          int destinationId = destination.getId();
+          if (destinationId == R.id.manager_login_fragment) {
+            binding.bottomNavigation.setVisibility(View.GONE);
+          } else {
+            binding.bottomNavigation.setVisibility(View.VISIBLE);
+          }
+        }
+    );
   }
 }
