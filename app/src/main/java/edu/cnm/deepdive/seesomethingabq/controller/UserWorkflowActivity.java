@@ -16,8 +16,13 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
+import android.view.View;
+import androidx.activity.EdgeToEdge;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -48,6 +53,22 @@ public class UserWorkflowActivity extends AppCompatActivity {
   private void setupUI() {
     binding = ActivityUserWorkflowBinding.inflate(getLayoutInflater());
     setContentView(binding.getRoot());
+    EdgeToEdge.enable(this);
+    View root = binding.getRoot();
+    int initialLeft = root.getPaddingLeft();
+    int initialTop = root.getPaddingTop();
+    int initialRight = root.getPaddingRight();
+    int initialBottom = root.getPaddingBottom();
+    ViewCompat.setOnApplyWindowInsetsListener(root, (view, insets) -> {
+      Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+      view.setPadding(
+          initialLeft + systemBars.left,
+          initialTop + systemBars.top,
+          initialRight + systemBars.right,
+          initialBottom + systemBars.bottom
+      );
+      return WindowInsetsCompat.CONSUMED;
+    });
   }
 
   private void setupNavigation() {
