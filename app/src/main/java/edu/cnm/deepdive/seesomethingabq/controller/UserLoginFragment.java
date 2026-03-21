@@ -22,27 +22,50 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.navigation.NavController;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserLoginBinding;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.LoginViewModel;
 
 @AndroidEntryPoint
 public class UserLoginFragment extends Fragment {
 
   private FragmentUserLoginBinding binding;
+  private LoginViewModel loginViewModel;
 
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     binding = FragmentUserLoginBinding.inflate(inflater, container, false);
-    binding.loginButton.setOnClickListener((v) -> {
-      NavController navController = Navigation.findNavController(v);
-      navController.navigate(R.id.navigate_to_user_dashboard_fragment);
-    });
+    binding.loginButton.setOnClickListener((v) -> loginViewModel.signIn(requireActivity()));
     return binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
+    loginViewModel
+        .getCredential()
+        .observe(getViewLifecycleOwner(), (credential) -> {
+          if (credential != null) {
+            Navigation.findNavController(binding.getRoot())
+                .navigate(R.id.navigate_to_user_dashboard_fragment);
+          }
+        });
+    loginViewModel
+        .getThrowable()
+        .observe(getViewLifecycleOwner(), (throwable) -> {
+          if (throwable != null) {
+            binding.loginButton.setEnabled(true);
+            binding.loginButton.setVisibility(View.VISIBLE);
+            // TODO: show a snackbar.
+          }
+        });
+    loginViewModel.signInQuickly(requireActivity());
   }
 
   @Override
