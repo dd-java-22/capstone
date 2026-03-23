@@ -10,7 +10,7 @@ order: 29
 {:.no_toc:}
 
 - ToC
-  {:toc}
+{:toc}
 
 ### Controller classes
 
