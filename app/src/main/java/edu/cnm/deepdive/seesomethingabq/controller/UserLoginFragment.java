@@ -1,3 +1,18 @@
+/*
+ *  Copyright 2026 CNM Ingenuity, Inc.
+ *
+ *  Licensed under the Apache License, Version 2.0 (the "License");
+ *  you may not use this file except in compliance with the License.
+ *  You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
@@ -10,21 +25,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
-import edu.cnm.deepdive.seesomethingabq.databinding.FragmentLoginBinding;
+import edu.cnm.deepdive.seesomethingabq.R;
+import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserLoginBinding;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.LoginViewModel;
 
 @AndroidEntryPoint
-public class LoginFragment extends Fragment {
+public class UserLoginFragment extends Fragment {
 
-  FragmentLoginBinding binding;
-  LoginViewModel loginViewModel;
+  private FragmentUserLoginBinding binding;
+  private LoginViewModel loginViewModel;
 
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
-    binding = FragmentLoginBinding.inflate(inflater, container, false);
-    binding.loginButton.setOnClickListener((v) ->loginViewModel.signIn(requireActivity()));
+    binding = FragmentUserLoginBinding.inflate(inflater, container, false);
+    binding.loginButton.setOnClickListener((v) -> loginViewModel.signIn(requireActivity()));
     return binding.getRoot();
   }
 
@@ -37,7 +53,7 @@ public class LoginFragment extends Fragment {
         .observe(getViewLifecycleOwner(), (credential) -> {
           if (credential != null) {
             Navigation.findNavController(binding.getRoot())
-                .navigate(LoginFragmentDirections.navigateToMainFragment());
+                .navigate(R.id.navigate_to_user_dashboard_fragment);
           }
         });
     loginViewModel
@@ -46,7 +62,7 @@ public class LoginFragment extends Fragment {
           if (throwable != null) {
             binding.loginButton.setEnabled(true);
             binding.loginButton.setVisibility(View.VISIBLE);
-            // TODO: 3/12/2026 show a snackbar.
+            // TODO: show a snackbar.
           }
         });
     loginViewModel.signInQuickly(requireActivity());

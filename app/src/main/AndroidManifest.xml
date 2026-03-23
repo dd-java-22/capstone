@@ -31,13 +31,25 @@
     tools:ignore="AllowBackup,DataExtractionRules">
 
     <activity
-      android:name=".controller.MainActivity"
-      android:exported="true">
+      android:name=".controller.UserWorkflowActivity"
+      android:exported="true"
+      android:label="@string/app_user_mode">
       <intent-filter>
         <action android:name="android.intent.action.MAIN"/>
         <category android:name="android.intent.category.LAUNCHER"/>
       </intent-filter>
     </activity>
+
+    <activity
+      android:name=".controller.ManagerWorkflowActivity"
+      android:exported="true"
+      android:label="@string/app_manager_mode">
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN"/>
+        <category android:name="android.intent.category.LAUNCHER"/>
+      </intent-filter>
+    </activity>
+
 
   </application>
 
