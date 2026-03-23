@@ -10,7 +10,7 @@ order: 40
 {:.no_toc}
 
 - ToC
-  {:toc}
+{:toc}
 
 ## Overview
 
