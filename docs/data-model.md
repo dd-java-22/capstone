@@ -44,12 +44,3 @@ The following JPA entity classes correspond to the tables shown in the ERD.
 - [ReportLocationRepository](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/repository/ReportLocationRepository.java)
 - [UserProfileRepository](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/repository/UserProfileRepository.java)
 
-### Controller classes
-
-- [UserController](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/controller/UserController.java)
-
-### Service 
-
-- [UserService](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/UserService.java)
-- [UserServiceImpl](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/UserServiceImpl.java)
-- [JwtConverter](https://github.com/dd-java-22/capstone/blob/main/server/src/main/java/edu/cnm/deepdive/seesomethingabq/service/JwtConverter.java)
