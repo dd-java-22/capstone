@@ -130,4 +130,52 @@ class UserServiceImplTest {
     verify(repository, never()).save(any(UserProfile.class));
   }
 
+  @Test
+  void testUpdateEmail() {
+    when(repository.findById(1L)).thenReturn(Optional.of(testUser));
+    when(repository.save(any(UserProfile.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    UserProfile result = service.updateEmail(1L, "updated@example.com");
+
+    assertNotNull(result);
+    assertEquals("updated@example.com", result.getEmail());
+    verify(repository, times(1)).save(testUser);
+  }
+
+  @Test
+  void testUpdateEmailUserNotFound() {
+    when(repository.findById(999L)).thenReturn(Optional.empty());
+
+    assertThrows(NoSuchElementException.class, () -> {
+      service.updateEmail(999L, "updated@example.com");
+    });
+
+    verify(repository, never()).save(any(UserProfile.class));
+  }
+
+  @Test
+  void testUpdateAvatar() throws Exception {
+    java.net.URL avatarUrl = new java.net.URL("https://example.com/avatar.jpg");
+    when(repository.findById(1L)).thenReturn(Optional.of(testUser));
+    when(repository.save(any(UserProfile.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    UserProfile result = service.updateAvatar(1L, avatarUrl);
+
+    assertNotNull(result);
+    assertEquals(avatarUrl, result.getAvatar());
+    verify(repository, times(1)).save(testUser);
+  }
+
+  @Test
+  void testUpdateAvatarUserNotFound() throws Exception {
+    java.net.URL avatarUrl = new java.net.URL("https://example.com/avatar.jpg");
+    when(repository.findById(999L)).thenReturn(Optional.empty());
+
+    assertThrows(NoSuchElementException.class, () -> {
+      service.updateAvatar(999L, avatarUrl);
+    });
+
+    verify(repository, never()).save(any(UserProfile.class));
+  }
+
 }
