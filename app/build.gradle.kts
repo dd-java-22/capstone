@@ -25,6 +25,7 @@ plugins {
     alias(libs.plugins.schema.parser)
     alias(libs.plugins.junit)
     alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.kapt")
     checkstyle
 }
 
@@ -41,7 +42,7 @@ android {
         versionCode = (project.property("versionCode") as String).toInt()
         versionName = project.property("version") as String
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "edu.cnm.deepdive.seesomethingabq.SeeSomethingAbqTestRunner"
         testInstrumentationRunnerArguments["runnerBuilder"] =
             "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
@@ -170,6 +171,11 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     androidTestAnnotationProcessor(libs.hilt.compiler)
     androidTestAnnotationProcessor(libs.hilt.android.compiler)
+
+    configurations.all {
+        exclude(group = "de.mannodermaus.junit5", module = "android-test-core-junit6")
+        exclude(group = "de.mannodermaus.junit5", module = "android-test-runner-junit6")
+    }
 
     constraints {
         implementation(libs.kotlin.jdk7) {
