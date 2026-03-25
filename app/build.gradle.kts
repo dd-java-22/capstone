@@ -175,6 +175,15 @@ dependencies {
     configurations.all {
         exclude(group = "de.mannodermaus.junit5", module = "android-test-core-junit6")
         exclude(group = "de.mannodermaus.junit5", module = "android-test-runner-junit6")
+        resolutionStrategy {
+            force("org.junit.jupiter:junit-jupiter-api:5.10.3")
+            force("org.junit.jupiter:junit-jupiter-engine:5.10.3")
+            force("org.junit.jupiter:junit-jupiter-params:5.10.3")
+            force("org.junit.platform:junit-platform-commons:1.10.3")
+            force("org.junit.platform:junit-platform-launcher:1.10.3")
+            force("org.junit.platform:junit-platform-engine:1.10.3")
+            force("org.junit.platform:junit-platform-suite-api:1.10.3")
+        }
     }
 
     constraints {
