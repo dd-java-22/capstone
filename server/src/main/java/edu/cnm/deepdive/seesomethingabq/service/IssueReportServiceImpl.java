@@ -1,8 +1,8 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
-import edu.cnm.deepdive.seesomethingabq.service.dao.IssueReportRepository;
-import edu.cnm.deepdive.seesomethingabq.service.repository.ReportLocationRepository;
+import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
+import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
 import java.util.UUID;
@@ -15,21 +15,20 @@ public class IssueReportServiceImpl implements IssueReportService {
 
   private final IssueReportRepository issueReportRepository;
   private final UserService userService;
-  private final ReportLocationRepository reportLocationRepository;
 
   @Autowired
   public IssueReportServiceImpl(
       IssueReportRepository issueReportRepository,
-      UserService userService,
-      ReportLocationRepository reportLocationRepository) {
+      UserService userService) {
     this.issueReportRepository = issueReportRepository;
     this.userService = userService;
-    this.reportLocationRepository = reportLocationRepository;
   }
+
 
   @Override
   public List<IssueReport> getReportsForCurrentUser(String sortParam) {
-    return issueReportRepository.findAll();
+    UserProfile user = userService.getCurrentUser();
+    return issueReportRepository.getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(user);
   }
 
   @Override
@@ -39,7 +38,7 @@ public class IssueReportServiceImpl implements IssueReportService {
 
   @Override
   public IssueReport getReportByExternalKey(UUID externalKey) {
-    return issueReportRepository.findByExternalKey(externalKey)
+    return issueReportRepository.findByExternalId(externalKey)
         .orElseThrow(() -> new RuntimeException(externalKey + " not found"));
   }
 

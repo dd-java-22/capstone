@@ -59,7 +59,5 @@ public class IssueReportController {
 
 }
 
-
-
 //PUT /issue-reports/{externalKey}
 //DELETE /issue-reports/{externalKey}

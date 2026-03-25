@@ -16,7 +16,7 @@ public interface IssueReportService {
   IssueReport getReportByExternalKey(UUID externalKey);
 
   //PUT /issue-reports/{externalKey}
-  IssueReport updateReport(UUID externalKey,IssueReport report);
+  IssueReport updateReport(UUID externalKey, IssueReport report);
 
   //DELETE /issue-reports/{externalKey}
   void deleteReport(UUID externalKey);
