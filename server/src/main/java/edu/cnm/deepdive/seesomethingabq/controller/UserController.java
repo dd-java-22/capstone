@@ -15,13 +15,13 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateAvatarRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateDisplayNameRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateEmailRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
-import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -54,34 +54,48 @@ public class UserController {
    *
    * @return User profile for the authenticated user.
    */
-
   @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
   public UserProfile get() {
     return service.getMe();
   }
 
-  @GetMapping
-  public List<UserProfile> getAll() {
-    return service.getAll();
-  }
-  /*
+  /**
+   * Updates the display name for the currently authenticated user.
+   *
+   * @param request Request containing the new display name.
+   * @return Updated user profile.
    */
-/**
- * Updates the display name for the currently authenticated user.
- *
- * @param jwt JWT token from the authenticated request.
- * @param updated User profile containing the updated display name.
- * @return Updated user profile.
- *//*
-
-  @PutMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE,
+  @PutMapping(value = "/me/display-name", consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public UserProfile updateCurrentUser(
-      @AuthenticationPrincipal Jwt jwt,
-      @RequestBody UserProfile updated) {
+  public UserProfile updateDisplayName(@RequestBody UpdateDisplayNameRequest request) {
     UserProfile current = service.getCurrentUser();
-    return service.updateDisplayName(current.getId(), updated.getDisplayName());
+    return service.updateDisplayName(current.getId(), request.getDisplayName());
   }
-*/
+
+  /**
+   * Updates the email address for the currently authenticated user.
+   *
+   * @param request Request containing the new email address.
+   * @return Updated user profile.
+   */
+  @PutMapping(value = "/me/email", consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public UserProfile updateEmail(@RequestBody UpdateEmailRequest request) {
+    UserProfile current = service.getCurrentUser();
+    return service.updateEmail(current.getId(), request.getEmail());
+  }
+
+  /**
+   * Updates the avatar URL for the currently authenticated user.
+   *
+   * @param request Request containing the new avatar URL.
+   * @return Updated user profile.
+   */
+  @PutMapping(value = "/me/avatar", consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public UserProfile updateAvatar(@RequestBody UpdateAvatarRequest request) {
+    UserProfile current = service.getCurrentUser();
+    return service.updateAvatar(current.getId(), request.getAvatar());
+  }
 
 }

@@ -16,6 +16,7 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -62,6 +63,24 @@ public interface UserService {
    * @return Updated user profile.
    */
   UserProfile updateDisplayName(Long id, String displayName);
+
+  /**
+   * Updates the email address for the specified user profile.
+   *
+   * @param id User profile ID.
+   * @param email New email address.
+   * @return Updated user profile.
+   */
+  UserProfile updateEmail(Long id, String email);
+
+  /**
+   * Updates the avatar URL for the specified user profile.
+   *
+   * @param id User profile ID.
+   * @param avatar New avatar URL.
+   * @return Updated user profile.
+   */
+  UserProfile updateAvatar(Long id, URL avatar);
 
   List<UserProfile> getAll();
 
