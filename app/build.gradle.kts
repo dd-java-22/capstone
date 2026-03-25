@@ -151,7 +151,7 @@ dependencies {
 
     // Hilt dependency-injection library & annotation processor
     implementation(libs.hilt.android.core)
-    annotationProcessor(libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
 
     // OkHttp logging dependency
     implementation(libs.logging.interceptor)
@@ -169,8 +169,7 @@ dependencies {
     androidTestImplementation(libs.junit.params)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.hilt.android.testing)
-    androidTestAnnotationProcessor(libs.hilt.compiler)
-    androidTestAnnotationProcessor(libs.hilt.android.compiler)
+    kaptAndroidTest(libs.hilt.android.compiler)
 
     configurations.all {
         exclude(group = "de.mannodermaus.junit5", module = "android-test-core-junit6")
