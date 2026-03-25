@@ -84,6 +84,7 @@ android {
 
     buildFeatures {
         viewBinding = true
+        buildConfig = true
         // Enable dataBinding if desired.
         // dataBinding = true
     }
