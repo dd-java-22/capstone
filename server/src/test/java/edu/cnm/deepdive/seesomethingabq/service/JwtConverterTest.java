@@ -38,6 +38,35 @@ class JwtConverterTest {
   private UserService userService;
 
   @Test
+  void convertAddsUserRoleForNormalPersistedUser() throws Exception {
+    UserProfile persisted = new UserProfile();
+    persisted.setOauthKey("sub-100");
+    persisted.setDisplayName("Normal User");
+    persisted.setEmail("normal@example.com");
+    persisted.setIsManager(false);
+
+    when(userService.getOrCreate(anyString(), any(UserProfile.class))).thenReturn(persisted);
+
+    JwtConverter converter = new JwtConverter(userService);
+    Jwt jwt = Jwt.withTokenValue("token")
+        .header("alg", "none")
+        .subject("sub-100")
+        .claim("name", "Normal User")
+        .claim("email", "normal@example.com")
+        .claim("picture", new URL("https://example.com/avatar.png"))
+        .build();
+
+    UsernamePasswordAuthenticationToken token = converter.convert(jwt);
+
+    Set<String> roles = token.getAuthorities()
+        .stream()
+        .map(Object::toString)
+        .collect(Collectors.toSet());
+    assertTrue(roles.contains("ROLE_USER"));
+    assertTrue(!roles.contains("ROLE_MANAGER"));
+  }
+
+  @Test
   void convertAddsManagerRoleWhenPersistedUserIsManager() throws Exception {
     UserProfile persisted = new UserProfile();
     persisted.setOauthKey("sub-123");
@@ -67,4 +96,3 @@ class JwtConverterTest {
   }
 
 }
-
