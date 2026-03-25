@@ -163,8 +163,8 @@ dependencies {
 
     // Libraries for instrumented (run in Android) testing.
     androidTestImplementation(libs.test.runner)
-    androidTestImplementation(libs.junit.android.core)
-    androidTestRuntimeOnly(libs.junit.android.runner)
+    androidTestImplementation("de.mannodermaus.junit5:android-test-core:1.6.0")
+    androidTestRuntimeOnly("de.mannodermaus.junit5:android-test-runner:1.6.0")
     androidTestImplementation(libs.junit.api)
     androidTestImplementation(libs.junit.params)
     androidTestImplementation(libs.espresso.core)
