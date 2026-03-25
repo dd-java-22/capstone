@@ -17,6 +17,7 @@ package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;
+import java.net.URL;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -76,6 +77,28 @@ public class UserServiceImpl implements UserService {
         .findById(id)
         .map(user -> {
           user.setDisplayName(displayName);
+          return repository.save(user);
+        })
+        .orElseThrow(NoSuchElementException::new);
+  }
+
+  @Override
+  public UserProfile updateEmail(Long id, String email) {
+    return repository
+        .findById(id)
+        .map(user -> {
+          user.setEmail(email);
+          return repository.save(user);
+        })
+        .orElseThrow(NoSuchElementException::new);
+  }
+
+  @Override
+  public UserProfile updateAvatar(Long id, URL avatar) {
+    return repository
+        .findById(id)
+        .map(user -> {
+          user.setAvatar(avatar);
           return repository.save(user);
         })
         .orElseThrow(NoSuchElementException::new);
