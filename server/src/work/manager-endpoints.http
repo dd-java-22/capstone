@@ -3,11 +3,11 @@ GET http://localhost:8080/see-something/manager/users
 Authorization: Bearer {{bearerToken}}
 
 ###
-GET http://localhost:8080/see-something/manager/users/{{externalId}}
+GET http://localhost:8080/see-something/manager/users/{{userProfileExternalId}}
 Authorization: Bearer {{bearerToken}}
 
 ###
-PATCH http://localhost:8080/see-something/manager/users/{{externalId}}/enabled
+PATCH http://localhost:8080/see-something/manager/users/{{userProfileExternalId}}/enabled
 Authorization: Bearer {{bearerToken}}
 Content-Type: application/json
 
@@ -16,10 +16,35 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:8080/see-something/manager/users/{{externalId}}/manager-status
+PATCH http://localhost:8080/see-something/manager/users/{{userProfileExternalId}}/manager-status
 Authorization: Bearer {{bearerToken}}
 Content-Type: application/json
 
 {
   "manager": true
+}
+
+###
+GET http://localhost:8080/see-something/manager/issue-reports?
+    pageSize=1&
+    pageNumber=0
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+
+###
+PUT http://localhost:8080/see-something/manager/issue-reports/{{issueReportExternalId}}/issue-types
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+
+{
+  "issueTypeTags": ["Repair"]
+}
+
+###
+PUT http://localhost:8080/see-something/manager/issue-reports/{{issueReportExternalId}}/status
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+
+{
+  "statusTag": "New"
 }

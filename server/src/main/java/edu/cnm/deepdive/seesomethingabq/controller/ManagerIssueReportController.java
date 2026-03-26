@@ -64,7 +64,9 @@ public class ManagerIssueReportController {
         pageSize,
         Sort.by(Direction.DESC, "timeLastModified")
     );
-    return service.getAll(pageable);
+    var result = service.getAll(pageable);
+
+    return result;
   }
 
   @PutMapping(

@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -29,6 +30,7 @@ public class ReportImage {
   // used AI to help with ManyToOne annotation
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "issue_report_id", nullable = false, updatable = false)
+  @JsonIgnore
   private IssueReport issueReport;
 
   @Column(nullable = false, updatable = false)

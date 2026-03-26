@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -34,6 +35,7 @@ public class IssueType {
 
   // used AI to help with ManyToMany annotation
   @ManyToMany(mappedBy = "issueTypes", fetch = FetchType.LAZY)
+  @JsonIgnore
   private final List<IssueReport> issueReports = new LinkedList<>();
 
   public Long getId() {
@@ -56,6 +58,7 @@ public class IssueType {
     this.issueTypeDescription = issueTypeDescription;
   }
 
+  @JsonIgnore
   public List<IssueReport> getIssueReports() {
     return issueReports;
   }

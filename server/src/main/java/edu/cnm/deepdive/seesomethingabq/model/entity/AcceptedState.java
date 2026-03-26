@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -36,6 +37,7 @@ public class AcceptedState {
   // used AI to help with OneToMany annotation
   @OneToMany(mappedBy = "acceptedState", fetch = FetchType.LAZY)
   @OrderBy("timeLastModified DESC")
+  @JsonIgnore
   private final List<IssueReport> issueReports = new LinkedList<>();
 
   public Long getId() {
@@ -58,6 +60,7 @@ public class AcceptedState {
     this.statusTagDescription = statusTagDescription;
   }
 
+  @JsonIgnore
   public List<IssueReport> getIssueReports() {
     return issueReports;
   }
