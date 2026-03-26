@@ -25,6 +25,7 @@ plugins {
     alias(libs.plugins.schema.parser)
     alias(libs.plugins.junit)
     alias(libs.plugins.kotlin.android)
+    id("org.jetbrains.kotlin.kapt")
     checkstyle
 }
 
@@ -41,7 +42,7 @@ android {
         versionCode = (project.property("versionCode") as String).toInt()
         versionName = project.property("version") as String
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner = "edu.cnm.deepdive.seesomethingabq.SeeSomethingAbqTestRunner"
         testInstrumentationRunnerArguments["runnerBuilder"] =
             "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
@@ -134,7 +135,7 @@ dependencies {
 
     // Room annotation processor and runtime library
     implementation(libs.room.runtime)
-    annotationProcessor(libs.room.compiler)
+    kapt(libs.room.compiler)
 
     // Gson (Google JSON parser) library
     implementation(libs.gson)
@@ -150,7 +151,7 @@ dependencies {
 
     // Hilt dependency-injection library & annotation processor
     implementation(libs.hilt.android.core)
-    annotationProcessor(libs.hilt.compiler)
+    kapt(libs.hilt.compiler)
 
     // OkHttp logging dependency
     implementation(libs.logging.interceptor)
@@ -164,12 +165,9 @@ dependencies {
     androidTestImplementation(libs.test.runner)
     androidTestImplementation(libs.junit.android.core)
     androidTestRuntimeOnly(libs.junit.android.runner)
-    androidTestImplementation(libs.junit.api)
-    androidTestImplementation(libs.junit.params)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.hilt.android.testing)
-    androidTestAnnotationProcessor(libs.hilt.compiler)
-    androidTestAnnotationProcessor(libs.hilt.android.compiler)
+    kaptAndroidTest(libs.hilt.android.compiler)
 
     constraints {
         implementation(libs.kotlin.jdk7) {
