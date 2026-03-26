@@ -94,6 +94,21 @@ class ManagerIssueReportControllerUnitTest {
   }
 
   @Test
+  void updateStatusMissingAcceptedStateMapsTo404() {
+    UUID externalId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    IssueReportStatusUpdateRequest request = new IssueReportStatusUpdateRequest();
+    request.setStatusTag("MISSING");
+    when(issueReportService.setAcceptedState(externalId, "MISSING"))
+        .thenThrow(new NoSuchElementException());
+
+    ResponseStatusException ex = assertThrows(
+        ResponseStatusException.class,
+        () -> controller.updateStatus(externalId, request)
+    );
+    assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
+  }
+
+  @Test
   void updateIssueTypesReturnsUpdatedIssueReport() {
     UUID externalId = UUID.fromString("33333333-3333-3333-3333-333333333333");
     IssueReportTypesUpdateRequest request = new IssueReportTypesUpdateRequest();
@@ -139,4 +154,3 @@ class ManagerIssueReportControllerUnitTest {
   }
 
 }
-

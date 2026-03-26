@@ -17,11 +17,14 @@ package edu.cnm.deepdive.seesomethingabq.controller;
 
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,6 +94,37 @@ class ManagerIssueReportControllerTest {
         .andExpect(status().isOk());
   }
 
+  @Test
+  @WithMockUser(roles = "MANAGER")
+  void putStatusAllowedForManagerRole() throws Exception {
+    UUID externalId = UUID.fromString("11111111-1111-1111-1111-111111111111");
+    when(issueReportService.setAcceptedState(externalId, "ACCEPTED")).thenReturn(new IssueReport());
+    mockMvc.perform(
+            put("/manager/issue-reports/{externalId}/status", externalId)
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"statusTag\":\"ACCEPTED\"}")
+        )
+        .andExpect(status().isOk());
+  }
+
+  @Test
+  @WithMockUser(roles = "MANAGER")
+  void putIssueTypesAllowedForManagerRole() throws Exception {
+    UUID externalId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    when(issueReportService.replaceIssueTypes(
+        org.mockito.ArgumentMatchers.eq(externalId),
+        org.mockito.ArgumentMatchers.any()
+    )).thenReturn(new IssueReport());
+    mockMvc.perform(
+            put("/manager/issue-reports/{externalId}/issue-types", externalId)
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"issueTypeTags\":[\"POTHOLE\",\"GRAFFITI\"]}")
+        )
+        .andExpect(status().isOk());
+  }
+
   @TestConfiguration
   static class TestConfig {
 
@@ -108,4 +142,3 @@ class ManagerIssueReportControllerTest {
   }
 
 }
-
