@@ -7,8 +7,9 @@ on:
     branches: [ main ]
 
 jobs:
-  test:
+  unit-tests:
     runs-on: ubuntu-latest
+    name: Unit Tests
 
     steps:
     - uses: actions/checkout@v5
@@ -21,15 +22,59 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v5
+      with:
+        cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
-    - name: Run tests
-      run: ./gradlew test
+    - name: Run unit tests
+      run: ./gradlew test --no-daemon --configuration-cache
 
     - name: Upload test reports
       if: always()
       uses: actions/upload-artifact@v4
       with:
-        name: test-reports
+        name: unit-test-reports
         path: |
           app/build/reports/tests/
           server/build/reports/tests/
+
+  instrumented-tests:
+    runs-on: ubuntu-latest
+    name: Instrumented Tests
+
+    steps:
+    - uses: actions/checkout@v5
+
+    - name: Enable KVM
+      run: |
+        echo 'KERNEL=="kvm", GROUP="kvm", MODE="0666", OPTIONS+="static_node=kvm"' | sudo tee /etc/udev/rules.d/99-kvm4all.rules
+        sudo udevadm control --reload-rules
+        sudo udevadm trigger --name-match=kvm
+
+    - name: Set up JDK
+      uses: actions/setup-java@v5
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v5
+      with:
+        cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
+
+    - name: Run instrumented tests
+      uses: reactivecircus/android-emulator-runner@v2
+      env:
+        clientId: ${{ secrets.CLIENT_ID || 'fake-client-id' }}
+      with:
+        api-level: 36
+        target: google_apis
+        arch: x86_64
+        disable-animations: true
+        script: ./gradlew app:connectedDebugAndroidTest --no-daemon --configuration-cache
+
+    - name: Upload instrumented test reports
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: instrumented-test-reports
+        path: app/build/reports/androidTests/connected/

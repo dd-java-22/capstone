@@ -19,6 +19,9 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateAvatarRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateDisplayNameRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateEmailRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -58,6 +61,65 @@ class UserControllerTest {
     assertNotNull(result);
     assertEquals("test-oauth-key", result.getOauthKey());
     assertEquals("Test User", result.getDisplayName());
+  }
+
+  @Test
+  void testUpdateDisplayName() {
+    UpdateDisplayNameRequest request = new UpdateDisplayNameRequest();
+    request.setDisplayName("Updated Display Name");
+
+    UserProfile updatedUser = new UserProfile();
+    updatedUser.setOauthKey("test-oauth-key");
+    updatedUser.setDisplayName("Updated Display Name");
+    updatedUser.setEmail("test@example.com");
+
+    when(userService.getCurrentUser()).thenReturn(testUser);
+    when(userService.updateDisplayName(null, "Updated Display Name")).thenReturn(updatedUser);
+
+    UserProfile result = controller.updateDisplayName(request);
+
+    assertNotNull(result);
+    assertEquals("Updated Display Name", result.getDisplayName());
+  }
+
+  @Test
+  void testUpdateEmail() {
+    UpdateEmailRequest request = new UpdateEmailRequest();
+    request.setEmail("updated@example.com");
+
+    UserProfile updatedUser = new UserProfile();
+    updatedUser.setOauthKey("test-oauth-key");
+    updatedUser.setDisplayName("Test User");
+    updatedUser.setEmail("updated@example.com");
+
+    when(userService.getCurrentUser()).thenReturn(testUser);
+    when(userService.updateEmail(null, "updated@example.com")).thenReturn(updatedUser);
+
+    UserProfile result = controller.updateEmail(request);
+
+    assertNotNull(result);
+    assertEquals("updated@example.com", result.getEmail());
+  }
+
+  @Test
+  void testUpdateAvatar() throws Exception {
+    java.net.URL avatarUrl = new java.net.URL("https://example.com/avatar.jpg");
+    UpdateAvatarRequest request = new UpdateAvatarRequest();
+    request.setAvatar(avatarUrl);
+
+    UserProfile updatedUser = new UserProfile();
+    updatedUser.setOauthKey("test-oauth-key");
+    updatedUser.setDisplayName("Test User");
+    updatedUser.setEmail("test@example.com");
+    updatedUser.setAvatar(avatarUrl);
+
+    when(userService.getCurrentUser()).thenReturn(testUser);
+    when(userService.updateAvatar(null, avatarUrl)).thenReturn(updatedUser);
+
+    UserProfile result = controller.updateAvatar(request);
+
+    assertNotNull(result);
+    assertEquals(avatarUrl, result.getAvatar());
   }
 
 }

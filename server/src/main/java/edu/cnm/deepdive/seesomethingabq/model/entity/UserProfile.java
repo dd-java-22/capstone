@@ -15,6 +15,7 @@
  */
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -56,6 +57,7 @@ public class UserProfile {
   private UUID externalId;
 
   @Column(nullable = false, updatable = false)
+  @JsonIgnore
   private String oauthKey;
 
   @Column(nullable = false)
