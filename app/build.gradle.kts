@@ -135,7 +135,7 @@ dependencies {
 
     // Room annotation processor and runtime library
     implementation(libs.room.runtime)
-    annotationProcessor(libs.room.compiler)
+    kapt(libs.room.compiler)
 
     // Gson (Google JSON parser) library
     implementation(libs.gson)
@@ -165,16 +165,9 @@ dependencies {
     androidTestImplementation(libs.test.runner)
     androidTestImplementation(libs.junit.android.core)
     androidTestRuntimeOnly(libs.junit.android.runner)
-    androidTestImplementation(libs.junit.api)
-    androidTestImplementation(libs.junit.params)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.hilt.android.testing)
     kaptAndroidTest(libs.hilt.android.compiler)
-
-    configurations.all {
-        exclude(group = "de.mannodermaus.junit5", module = "android-test-core-junit6")
-        exclude(group = "de.mannodermaus.junit5", module = "android-test-runner-junit6")
-    }
 
     constraints {
         implementation(libs.kotlin.jdk7) {
