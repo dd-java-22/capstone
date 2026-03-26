@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential;
 import dagger.hilt.android.lifecycle.HiltViewModel;
+import edu.cnm.deepdive.seesomethingabq.BuildConfig;
 import edu.cnm.deepdive.seesomethingabq.service.repository.GoogleAuthRepository;
 import java.util.function.BiConsumer;
 import javax.inject.Inject;
@@ -31,6 +32,11 @@ public class LoginViewModel extends ViewModel {
         Log.e(TAG, "Sign in failure", ex);
         this.throwable.postValue(ex);
       } else {
+        if (BuildConfig.DEBUG) {
+          // FIXME: 3/25/2026 remove this someday!
+          Log.d(TAG, ">>>> token: " + cred.getIdToken());
+        }
+
         this.credential.postValue(cred);
       }
     };

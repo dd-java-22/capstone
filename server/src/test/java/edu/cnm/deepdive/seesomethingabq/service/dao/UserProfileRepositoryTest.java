@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;
+import java.util.UUID;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,23 @@ class UserProfileRepositoryTest {
     Optional<UserProfile> found = repository.findByOauthKey("non-existent-key");
 
     assertTrue(found.isEmpty());
+  }
+
+  @Test
+  void testFindByExternalId() {
+    UserProfile user = new UserProfile();
+    user.setOauthKey("oauth-key-external-id");
+    user.setDisplayName("External Id User");
+    user.setEmail("externalid@example.com");
+
+    UserProfile saved = repository.save(user);
+    UUID externalId = saved.getExternalId();
+
+    Optional<UserProfile> found = repository.findByExternalId(externalId);
+
+    assertTrue(found.isPresent());
+    assertEquals(saved.getId(), found.get().getId());
+    assertEquals("oauth-key-external-id", found.get().getOauthKey());
   }
 
   @Test

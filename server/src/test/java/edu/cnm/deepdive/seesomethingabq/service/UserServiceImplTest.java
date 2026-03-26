@@ -29,6 +29,7 @@ import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -127,6 +128,81 @@ class UserServiceImplTest {
       service.updateDisplayName(999L, "Updated Name");
     });
 
+    verify(repository, never()).save(any(UserProfile.class));
+  }
+
+  @Test
+  void testGetByExternalIdFound() {
+    UUID externalId = UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+    when(repository.findByExternalId(externalId)).thenReturn(Optional.of(testUser));
+
+    Optional<UserProfile> result = service.getByExternalId(externalId);
+
+    assertTrue(result.isPresent());
+    assertEquals("test-oauth-key", result.get().getOauthKey());
+    verify(repository, times(1)).findByExternalId(externalId);
+  }
+
+  @Test
+  void testGetByExternalIdNotFound() {
+    UUID externalId = UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+    when(repository.findByExternalId(externalId)).thenReturn(Optional.empty());
+
+    Optional<UserProfile> result = service.getByExternalId(externalId);
+
+    assertTrue(result.isEmpty());
+    verify(repository, times(1)).findByExternalId(externalId);
+  }
+
+  @Test
+  void testSetManagerStatusFound() {
+    UUID externalId = UUID.fromString("cccccccc-cccc-cccc-cccc-cccccccccccc");
+    testUser.setIsManager(false);
+    when(repository.findByExternalId(externalId)).thenReturn(Optional.of(testUser));
+    when(repository.save(any(UserProfile.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    UserProfile result = service.setManagerStatus(externalId, true);
+
+    assertNotNull(result);
+    assertTrue(result.isManager());
+    verify(repository, times(1)).findByExternalId(externalId);
+    verify(repository, times(1)).save(testUser);
+  }
+
+  @Test
+  void testSetManagerStatusNotFound() {
+    UUID externalId = UUID.fromString("dddddddd-dddd-dddd-dddd-dddddddddddd");
+    when(repository.findByExternalId(externalId)).thenReturn(Optional.empty());
+
+    assertThrows(IllegalArgumentException.class, () -> service.setManagerStatus(externalId, true));
+
+    verify(repository, times(1)).findByExternalId(externalId);
+    verify(repository, never()).save(any(UserProfile.class));
+  }
+
+  @Test
+  void testSetEnabledFound() {
+    UUID externalId = UUID.fromString("eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee");
+    testUser.setUserEnabled(true);
+    when(repository.findByExternalId(externalId)).thenReturn(Optional.of(testUser));
+    when(repository.save(any(UserProfile.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+    UserProfile result = service.setEnabled(externalId, false);
+
+    assertNotNull(result);
+    assertEquals(false, result.getUserEnabled());
+    verify(repository, times(1)).findByExternalId(externalId);
+    verify(repository, times(1)).save(testUser);
+  }
+
+  @Test
+  void testSetEnabledNotFound() {
+    UUID externalId = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+    when(repository.findByExternalId(externalId)).thenReturn(Optional.empty());
+
+    assertThrows(IllegalArgumentException.class, () -> service.setEnabled(externalId, true));
+
+    verify(repository, times(1)).findByExternalId(externalId);
     verify(repository, never()).save(any(UserProfile.class));
   }
 
