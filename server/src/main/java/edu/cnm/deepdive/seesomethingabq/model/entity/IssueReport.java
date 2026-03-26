@@ -142,6 +142,10 @@ public class IssueReport {
     return reportImages;
   }
 
+  public UUID getExternalId() {
+    return externalId;
+  }
+
   @PrePersist
   void onCreate() {
     this.externalId = UUID.randomUUID();
