@@ -37,12 +37,12 @@ import org.springframework.web.server.ResponseStatusException;
  */
 @RestController
 @RequestMapping("/manager/users")
-public class ManagerController {
+public class ManagerUserController {
 
   private final UserService service;
 
   @Autowired
-  public ManagerController(UserService service) {
+  public ManagerUserController(UserService service) {
     this.service = service;
   }
 

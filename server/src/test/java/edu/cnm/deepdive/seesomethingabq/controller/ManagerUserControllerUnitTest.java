@@ -38,16 +38,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
-class ManagerControllerUnitTest {
+class ManagerUserControllerUnitTest {
 
   @Mock
   private UserService userService;
 
-  private ManagerController controller;
+  private ManagerUserController controller;
 
   @BeforeEach
   void setUp() {
-    controller = new ManagerController(userService);
+    controller = new ManagerUserController(userService);
   }
 
   @Test
