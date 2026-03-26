@@ -6,6 +6,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,12 +29,20 @@ public class IssueReportController {
     this.issueReportService = issueReportService;
   }
 
-  @GetMapping("/mine")
+  @GetMapping(
+      value = "/mine",
+      produces = MediaType.APPLICATION_JSON_VALUE
+  )
   public List<IssueReport> getMyReports(@RequestParam(defaultValue = "last_modified") String sort) {
     return issueReportService.getReportsForCurrentUser(sort);
   }
 
-  @PostMapping
+  @PostMapping(
+      consumes = MediaType.APPLICATION_JSON_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  // TODO: 2026-03-26 Replace entity-based request/response with DTOs (IssueReportRequest, IssueReportView, IssueReportSummary)
+// TODO: 2026-03-26 Add validation (e.g., @Valid, Bean Validation annotations) once DTOs are in place
   public ResponseEntity<IssueReport> createReport(@RequestBody IssueReport report) {
     IssueReport created = issueReportService.createReport(report);
     URI location = URI.create("/issue-reports/" + created.getExternalId());

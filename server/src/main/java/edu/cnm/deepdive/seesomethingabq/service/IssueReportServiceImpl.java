@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
+import edu.cnm.deepdive.seesomethingabq.model.entity.ReportLocation;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import jakarta.transaction.Transactional;
@@ -33,22 +34,48 @@ public class IssueReportServiceImpl implements IssueReportService {
 
   @Override
   public IssueReport createReport(IssueReport report) {
+    // TODO: 2026-03-26 Confirm this is the correct user ownership behavior, or enforce ownership rules here
+    UserProfile currentUser = userService.getCurrentUser();
+    report.setUserProfile(currentUser);
+
+    // TODO: 2026-03-26 Set default AcceptedState (e.g., PENDING) instead of leaving null
+    //  report.setAcceptedState(defaultState);
+
+    ReportLocation location = report.getReportLocation();
+    if (location != null) {
+      // TODO: 2026-03-26 Confirm bidirectional link handling once DTOs/mappers are in place
+      location.setIssueReport(report);
+    }
     return issueReportRepository.save(report);
   }
 
   @Override
   public IssueReport getReportByExternalKey(UUID externalKey) {
-    return issueReportRepository.findByExternalId(externalKey)
-        .orElseThrow(() -> new RuntimeException(externalKey + " not found"));
+    return requireReport(externalKey);
   }
 
   @Override
   public IssueReport updateReport(UUID externalKey, IssueReport report) {
+    // TODO: 2026-03-26 Enforce real ownership instead of always stamping current user
+    UserProfile currentUser = userService.getCurrentUser();
+    report.setUserProfile(currentUser);
+    ReportLocation location = report.getReportLocation();
+    if (location != null) {
+      location.setIssueReport(report);
+    }
     return issueReportRepository.save(report);
   }
 
   @Override
   public void deleteReport(UUID externalKey) {
-    issueReportRepository.delete(getReportByExternalKey(externalKey));
+    issueReportRepository.delete(requireReport(externalKey));
+  }
+
+
+  private IssueReport requireReport(UUID externalKey) {
+    return issueReportRepository.findByExternalId(externalKey)
+        .orElseThrow(() -> new RuntimeException(externalKey + " not found"));
+    // TODO: 3/26/2026 change RuntimeException to appropriate @RestControllerAdvice
+    //  custom exception when ticket #66 is complete.
   }
 }
