@@ -6,7 +6,14 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface IssueTypeRepository extends JpaRepository<IssueType, Long> {
 
   IssueType findByIssueTypeTag(String issueTypeTag);
+
   void deleteIssueTypeByIssueTypeTag(String issueTypeTag);
+
   boolean existsIssueTypeByIssueTypeTag(String issueTypeTag);
-  int deleteByIssueTypeTag(String issueTypeTag);
+
+  boolean existsByIssueTypeTagAndIssueReportsEmpty(String issueTypeTag);
+
+  boolean existsByIssueTypeTag(String issueTypeTag);
+
+  boolean existsbyIssueTypeTagAndIssueReportsNotEmpty(String issueTypeTag);
 }

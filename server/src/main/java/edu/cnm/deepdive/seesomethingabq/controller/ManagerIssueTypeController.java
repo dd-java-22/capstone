@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -31,17 +32,21 @@ public class ManagerIssueTypeController {
   }
 
   @PatchMapping(path = "/{issueTypeTag}", consumes = MediaType.APPLICATION_JSON_VALUE)
-  public IssueType updateIssueTypeDescription(@RequestBody String newIssueTypeDescription) {
-    throw new UnsupportedOperationException("Not yet implemented");
+  public IssueType updateIssueTypeDescription(
+      @PathVariable String issueTypeTag,
+      @RequestBody String newIssueTypeDescription
+  ) {
+    return service.updateIssueTypeDescription(issueTypeTag, newIssueTypeDescription);
   }
 
   @DeleteMapping(path = "/{issueTypeTag}" )
+  @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteUnusedIssueType(@PathVariable String issueTypeTag) {
     try {
-      return service.deleteUnusedIssueType(issueTypeTag);
+      service.deleteUnusedIssueType(issueTypeTag);
     } catch (IllegalArgumentException e) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tag not found", e);
-    } catch (IllegalAccessException e) {
+    } catch (IllegalStateException e) {
       throw new ResponseStatusException(HttpStatus.CONFLICT, "Tag in use", e);
     }
   }

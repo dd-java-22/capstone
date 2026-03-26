@@ -7,5 +7,7 @@ public interface IssueTypeService {
 
   List<IssueType> getAll();
 
-  boolean deleteUnusedIssueType(String issueTypeTag);
+  IssueType updateIssueTypeDescription(String issueTypeTag, String newIssueTypeDescription);
+
+  void deleteUnusedIssueType(String issueTypeTag);
 }
