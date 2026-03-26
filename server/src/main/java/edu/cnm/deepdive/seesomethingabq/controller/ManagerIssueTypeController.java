@@ -28,13 +28,13 @@ public class ManagerIssueTypeController {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
-  @PatchMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public boolean updateIssueTypeDescription(@RequestBody IssueType issueTypeWithNewDescription) {
+  @PatchMapping(path = "/{issueTypeTag}", consumes = MediaType.APPLICATION_JSON_VALUE)
+  public IssueType updateIssueTypeDescription(@RequestBody String newIssueTypeDescription) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
-  @DeleteMapping(path = "/{issueTypeTag}")
-  public boolean deleteIssueType(@PathVariable String issueTypeTag) {
+  @DeleteMapping(path = "/{issueTypeTag}" )
+  public void deleteUnusedIssueType(@PathVariable String issueTypeTag) {
     throw new UnsupportedOperationException("Not yet implemented");
   }
 
