@@ -94,6 +94,10 @@ public class IssueReport {
     return id;
   }
 
+  public UUID getExternalId() {
+    return externalId;
+  }
+
   public UserProfile getUserProfile() {
     return userProfile;
   }

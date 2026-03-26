@@ -16,13 +16,13 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportStatusUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerIssueReportResponse;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import java.util.List;
@@ -58,9 +58,9 @@ class ManagerIssueReportControllerUnitTest {
     when(issueReportService.getAll(org.mockito.ArgumentMatchers.any(Pageable.class)))
         .thenReturn(page);
 
-    Page<IssueReport> result = controller.getAll(10, 0);
+    Page<ManagerIssueReportResponse> result = controller.getAll(10, 0);
 
-    assertSame(page, result);
+    assertEquals(2, result.getContent().size());
     verify(issueReportService).getAll(org.mockito.ArgumentMatchers.any(Pageable.class));
   }
 
@@ -74,7 +74,7 @@ class ManagerIssueReportControllerUnitTest {
 
     IssueReport result = controller.updateStatus(externalId, request);
 
-    assertSame(updated, result);
+    assertEquals(updated, result);
     verify(issueReportService).setAcceptedState(externalId, "ACCEPTED");
   }
 
@@ -119,7 +119,7 @@ class ManagerIssueReportControllerUnitTest {
 
     IssueReport result = controller.updateIssueTypes(externalId, request);
 
-    assertSame(updated, result);
+    assertEquals(updated, result);
     verify(issueReportService).replaceIssueTypes(externalId, List.of("POTHOLE", "GRAFFITI"));
   }
 

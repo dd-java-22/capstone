@@ -17,6 +17,7 @@ package edu.cnm.deepdive.seesomethingabq.controller;
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportStatusUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerIssueReportResponse;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import java.util.NoSuchElementException;
@@ -28,6 +29,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -55,7 +57,8 @@ public class ManagerIssueReportController {
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public Page<IssueReport> getAll(
+  @Transactional(readOnly = true)
+  public Page<ManagerIssueReportResponse> getAll(
       @RequestParam(defaultValue = "" + DEFAULT_PAGE_SIZE) int pageSize,
       @RequestParam(defaultValue = "" + DEFAULT_PAGE_NUMBER) int pageNumber
   ) {
@@ -64,9 +67,7 @@ public class ManagerIssueReportController {
         pageSize,
         Sort.by(Direction.DESC, "timeLastModified")
     );
-    var result = service.getAll(pageable);
-
-    return result;
+    return service.getAll(pageable).map(ManagerIssueReportResponse::fromEntity);
   }
 
   @PutMapping(
@@ -104,4 +105,3 @@ public class ManagerIssueReportController {
   }
 
 }
-
