@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,7 +29,11 @@ public class ManagerIssueTypeController {
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public String createIssueType(@RequestBody IssueType newIssueType) {
-    return service.createNewIssueType(newIssueType);
+    try {
+      return service.createNewIssueType(newIssueType);
+    } catch (IllegalArgumentException e) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Tag already exists", e);
+    }
   }
 
   @PatchMapping(path = "/{issueTypeTag}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -36,7 +41,12 @@ public class ManagerIssueTypeController {
       @PathVariable String issueTypeTag,
       @RequestBody String newIssueTypeDescription
   ) {
-    return service.updateIssueTypeDescription(issueTypeTag, newIssueTypeDescription);
+    try {
+      return service.updateIssueTypeDescription(issueTypeTag, newIssueTypeDescription);
+    } catch (IllegalArgumentException e) {
+      // FIXME: 3/26/2026 I'm giving this error on malformed input body! I gotta differentiate it somehow.
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tag not found", e);
+    }
   }
 
   @DeleteMapping(path = "/{issueTypeTag}" )

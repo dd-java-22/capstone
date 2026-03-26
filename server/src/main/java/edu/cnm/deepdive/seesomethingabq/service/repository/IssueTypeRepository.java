@@ -9,11 +9,5 @@ public interface IssueTypeRepository extends JpaRepository<IssueType, Long> {
 
   void deleteIssueTypeByIssueTypeTag(String issueTypeTag);
 
-  boolean existsIssueTypeByIssueTypeTag(String issueTypeTag);
-
-  boolean existsByIssueTypeTagAndIssueReportsEmpty(String issueTypeTag);
-
   boolean existsByIssueTypeTag(String issueTypeTag);
-
-  boolean existsbyIssueTypeTagAndIssueReportsNotEmpty(String issueTypeTag);
 }

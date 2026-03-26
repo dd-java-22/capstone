@@ -26,6 +26,15 @@ public class IssueTypeServiceImpl implements IssueTypeService {
   }
 
   @Override
+  public String createNewIssueType(IssueType newIssueType) {
+    if (tagRepository.existsByIssueTypeTag(newIssueType.getIssueTypeTag())) {
+      throw new IllegalArgumentException("Issue type tag already exists: " + newIssueType.getIssueTypeTag());
+    }
+    IssueType freshIssueType = tagRepository.save(newIssueType);
+    return freshIssueType.getIssueTypeTag();
+  }
+
+  @Override
   public IssueType updateIssueTypeDescription(String issueTypeTag, String newIssueTypeDescription) {
     IssueType tagToChange = tagRepository.findByIssueTypeTag(issueTypeTag);
     if (tagToChange == null) {
@@ -38,8 +47,9 @@ public class IssueTypeServiceImpl implements IssueTypeService {
   @Override
   public void deleteUnusedIssueType(String issueTypeTag) {
     IssueType doomedTag = tagRepository.findByIssueTypeTag(issueTypeTag);
-    // TODO: 3/26/2026 if throw.
-    if (doomedTag.getIssueReports().isEmpty()) {
+    if (doomedTag == null) {
+      throw new IllegalArgumentException("Issue type tag not found: " + issueTypeTag);
+    }    if (doomedTag.getIssueReports().isEmpty()) {
       tagRepository.delete(doomedTag);
     } else {
       throw new IllegalStateException("Cannot delete issue type with active reports");

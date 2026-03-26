@@ -1,5 +1,8 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,11 +22,13 @@ import java.util.List;
     @UniqueConstraint(name = "uk_issue_type_issue_type_tag", columnNames = "issue_type_tag")
   }
 )
+@JsonPropertyOrder({"issueTypeTag", "issueTypeDescription"})
 public class IssueType {
 
   @Id
   @Column(name = "issue_type_id", nullable = false, updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonIgnore
   private Long id;
 
   @Column(nullable = false)
@@ -34,7 +39,9 @@ public class IssueType {
 
   // used AI to help with ManyToMany annotation
   @ManyToMany(mappedBy = "issueTypes", fetch = FetchType.LAZY)
+  @JsonIgnore
   private final List<IssueReport> issueReports = new LinkedList<>();
+
 
   public Long getId() {
     return id;

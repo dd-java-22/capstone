@@ -10,4 +10,6 @@ public interface IssueTypeService {
   IssueType updateIssueTypeDescription(String issueTypeTag, String newIssueTypeDescription);
 
   void deleteUnusedIssueType(String issueTypeTag);
+
+  String createNewIssueType(IssueType newIssueType);
 }

@@ -1,0 +1,22 @@
+###
+POST http://localhost:8080/see-something/manager/issue-types
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+
+{
+  "issueTypeTag": "HTTPTEST",
+  "issueTypeDescription": "This is the tag created by my tests..."
+}
+
+###
+PATCH http://localhost:8080/see-something/manager/issue-types
+    /HTTPTEST
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+
+{"This is the updated description."}
+
+###
+DELETE http://localhost:8080/see-something/manager/issue-types
+    /HTTPTEST
+Authorization: Bearer {{bearerToken}}
