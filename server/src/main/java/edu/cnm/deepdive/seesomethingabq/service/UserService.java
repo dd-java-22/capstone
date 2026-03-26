@@ -18,7 +18,7 @@ package edu.cnm.deepdive.seesomethingabq.service;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import java.util.List;
 import java.util.Optional;
-import org.springframework.security.oauth2.jwt.Jwt;
+import java.util.UUID;
 
 /**
  * Service interface for user profile business logic operations. Implementations of this interface
@@ -66,5 +66,11 @@ public interface UserService {
   List<UserProfile> getAll();
 
   UserProfile getMe();
+
+  Optional<UserProfile> getByExternalId(UUID externalId);
+
+  UserProfile setManagerStatus(UUID externalId, boolean manager);
+
+  UserProfile setEnabled(UUID externalId, boolean enabled);
 
 }

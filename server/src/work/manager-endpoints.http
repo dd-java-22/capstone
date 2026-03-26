@@ -1,0 +1,25 @@
+###
+GET http://localhost:8080/see-something/manager/users
+Authorization: Bearer {{bearerToken}}
+
+###
+GET http://localhost:8080/see-something/manager/users/{{externalId}}
+Authorization: Bearer {{bearerToken}}
+
+###
+PATCH http://localhost:8080/see-something/manager/users/{{externalId}}/enabled
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+
+{
+  "enabled": true
+}
+
+###
+PATCH http://localhost:8080/see-something/manager/users/{{externalId}}/manager-status
+Authorization: Bearer {{bearerToken}}
+Content-Type: application/json
+
+{
+  "manager": true
+}

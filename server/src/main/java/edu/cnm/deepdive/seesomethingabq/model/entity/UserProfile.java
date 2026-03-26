@@ -89,6 +89,10 @@ public class UserProfile {
     return id;
   }
 
+  public UUID getExternalId() {
+    return externalId;
+  }
+
   public String getOauthKey() {
     return oauthKey;
   }

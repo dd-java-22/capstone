@@ -47,7 +47,9 @@ public class SecurityConfiguration {
     return httpsecurity
         .sessionManagement((configurer) ->
             configurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-        .authorizeHttpRequests((auth) -> auth.anyRequest().authenticated())
+        .authorizeHttpRequests((auth) -> auth
+            .requestMatchers("/manager/**").hasRole("MANAGER")
+            .anyRequest().authenticated())
         .oauth2ResourceServer((customizer) ->
             customizer.jwt((jwt) -> jwt.jwtAuthenticationConverter(converter)))
         .build();
