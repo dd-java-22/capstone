@@ -22,4 +22,11 @@ public class IssueTypeServiceImpl implements IssueTypeService {
   public List<IssueType> getAll() {
     return repository.findAll(Sort.by(Direction.ASC, "issueTypeTag"));
   }
+
+  @Override
+  public boolean deleteUnusedIssueType(String issueTypeTag) {
+    throw new UnsupportedOperationException("Not yet implemented");
+    int numDeleted = repository.deleteByIssueTypeTag(issueTypeTag);
+    IssueType doomedTag =  repository.findByIssueTypeTag(issueTypeTag);
+  }
 }

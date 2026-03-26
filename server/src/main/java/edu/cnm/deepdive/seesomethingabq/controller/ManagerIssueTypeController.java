@@ -3,6 +3,7 @@ package edu.cnm.deepdive.seesomethingabq.controller;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import edu.cnm.deepdive.seesomethingabq.service.IssueTypeService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/manager/issue-types")
@@ -35,7 +37,13 @@ public class ManagerIssueTypeController {
 
   @DeleteMapping(path = "/{issueTypeTag}" )
   public void deleteUnusedIssueType(@PathVariable String issueTypeTag) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    try {
+      return service.deleteUnusedIssueType(issueTypeTag);
+    } catch (IllegalArgumentException e) {
+      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Tag not found", e);
+    } catch (IllegalAccessException e) {
+      throw new ResponseStatusException(HttpStatus.CONFLICT, "Tag in use", e);
+    }
   }
 
 }
