@@ -6,10 +6,13 @@ import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IssueReportRepository extends JpaRepository<IssueReport, Long> {
 
+  Optional<IssueReport> findByExternalId(UUID externalId);
 
   List<IssueReport> getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(
       UserProfile userProfile);
