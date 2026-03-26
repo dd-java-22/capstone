@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,8 +25,6 @@ public class JwtConverter implements Converter<Jwt, UsernamePasswordAuthenticati
 
   @Override
   public UsernamePasswordAuthenticationToken convert(Jwt source) {
-    Collection<SimpleGrantedAuthority> grants =
-        Collections.singleton(new SimpleGrantedAuthority("ROLE_USER"));
     UserProfile user = new UserProfile();
     user.setDisplayName(source.getClaimAsString("name"));
     user.setAvatar(source.getClaimAsURL("picture"));
@@ -33,6 +32,11 @@ public class JwtConverter implements Converter<Jwt, UsernamePasswordAuthenticati
     String subject = source.getSubject();
     user.setOauthKey(subject);
     user = userService.getOrCreate(subject, user);
+    Collection<SimpleGrantedAuthority> grants = new ArrayList<>();
+    grants.add(new SimpleGrantedAuthority("ROLE_USER"));
+    if (user.isManager()) {
+      grants.add(new SimpleGrantedAuthority("ROLE_MANAGER"));
+    }
     return new UsernamePasswordAuthenticationToken(user, source.getTokenValue(), grants);
   }
 
