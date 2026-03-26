@@ -16,6 +16,7 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
+import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -31,7 +32,6 @@ public interface UserService {
    * Returns the user profile associated with the current authenticated request. If the user does
    * not already exist in the system, a new user profile will be created.
    *
-   * @param jwt JWT token from the current authenticated request.
    * @return User profile for the authenticated user.
    */
   UserProfile getCurrentUser();
@@ -49,7 +49,7 @@ public interface UserService {
    * already exist.
    *
    * @param oauthKey OAuth2 key (typically the "sub" claim from the JWT).
-   * @param displayName Optional display name for new user profiles.
+   * @param userProfile Optional display name for new user profiles.
    * @return User profile for the given OAuth2 key.
    */
   UserProfile getOrCreate(String oauthKey, UserProfile userProfile);
@@ -62,6 +62,24 @@ public interface UserService {
    * @return Updated user profile.
    */
   UserProfile updateDisplayName(Long id, String displayName);
+
+  /**
+   * Updates the email address for the specified user profile.
+   *
+   * @param id User profile ID.
+   * @param email New email address.
+   * @return Updated user profile.
+   */
+  UserProfile updateEmail(Long id, String email);
+
+  /**
+   * Updates the avatar URL for the specified user profile.
+   *
+   * @param id User profile ID.
+   * @param avatar New avatar URL.
+   * @return Updated user profile.
+   */
+  UserProfile updateAvatar(Long id, URL avatar);
 
   List<UserProfile> getAll();
 
