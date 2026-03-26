@@ -21,6 +21,7 @@ import java.net.URL;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -112,5 +113,28 @@ public class UserServiceImpl implements UserService {
   @Override
   public UserProfile getMe() {
     return getCurrentUser();
+  }
+
+  @Override
+  public Optional<UserProfile> getByExternalId(UUID externalId) {
+    return repository.findByExternalId(externalId);
+  }
+
+  @Override
+  public UserProfile setManagerStatus(UUID externalId, boolean manager) {
+    UserProfile user = repository
+        .findByExternalId(externalId)
+        .orElseThrow(IllegalArgumentException::new);
+    user.setIsManager(manager);
+    return repository.save(user);
+  }
+
+  @Override
+  public UserProfile setEnabled(UUID externalId, boolean enabled) {
+    UserProfile user = repository
+        .findByExternalId(externalId)
+        .orElseThrow(IllegalArgumentException::new);
+    user.setUserEnabled(enabled);
+    return repository.save(user);
   }
 }
