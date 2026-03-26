@@ -27,8 +27,8 @@ public class ManagerIssueTypeController {
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public boolean createIssueType(@RequestBody IssueType newIssueType) {
-    throw new UnsupportedOperationException("Not yet implemented");
+  public String createIssueType(@RequestBody IssueType newIssueType) {
+    return service.createNewIssueType(newIssueType);
   }
 
   @PatchMapping(path = "/{issueTypeTag}", consumes = MediaType.APPLICATION_JSON_VALUE)
@@ -42,6 +42,7 @@ public class ManagerIssueTypeController {
   @DeleteMapping(path = "/{issueTypeTag}" )
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteUnusedIssueType(@PathVariable String issueTypeTag) {
+    // TODO: 3/26/2026 actually test this lol.
     try {
       service.deleteUnusedIssueType(issueTypeTag);
     } catch (IllegalArgumentException e) {

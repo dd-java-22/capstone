@@ -27,7 +27,12 @@ public class IssueTypeServiceImpl implements IssueTypeService {
 
   @Override
   public IssueType updateIssueTypeDescription(String issueTypeTag, String newIssueTypeDescription) {
-    throw new UnsupportedOperationException("Not yet implemented");
+    IssueType tagToChange = tagRepository.findByIssueTypeTag(issueTypeTag);
+    if (tagToChange == null) {
+      throw new IllegalArgumentException("Issue type tag not found: " + issueTypeTag);
+    }
+    tagToChange.setIssueTypeDescription(newIssueTypeDescription);
+    return tagRepository.save(tagToChange);
   }
 
   @Override
