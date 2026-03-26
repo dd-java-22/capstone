@@ -28,7 +28,7 @@ public class ManagerIssueTypeController {
   }
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-  public String createIssueType(@RequestBody IssueType newIssueType) {
+  public IssueType createIssueType(@RequestBody IssueType newIssueType) {
     try {
       return service.createNewIssueType(newIssueType);
     } catch (IllegalArgumentException e) {

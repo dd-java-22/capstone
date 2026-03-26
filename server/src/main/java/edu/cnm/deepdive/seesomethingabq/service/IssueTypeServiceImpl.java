@@ -26,12 +26,11 @@ public class IssueTypeServiceImpl implements IssueTypeService {
   }
 
   @Override
-  public String createNewIssueType(IssueType newIssueType) {
+  public IssueType createNewIssueType(IssueType newIssueType) {
     if (tagRepository.existsByIssueTypeTag(newIssueType.getIssueTypeTag())) {
       throw new IllegalArgumentException("Issue type tag already exists: " + newIssueType.getIssueTypeTag());
     }
-    IssueType freshIssueType = tagRepository.save(newIssueType);
-    return freshIssueType.getIssueTypeTag();
+    return tagRepository.save(newIssueType);
   }
 
   @Override

@@ -11,5 +11,5 @@ public interface IssueTypeService {
 
   void deleteUnusedIssueType(String issueTypeTag);
 
-  String createNewIssueType(IssueType newIssueType);
+  IssueType createNewIssueType(IssueType newIssueType);
 }
