@@ -22,6 +22,8 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v5
+      with:
+        cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
     - name: Run unit tests
       run: ./gradlew test --no-daemon --configuration-cache
@@ -56,6 +58,8 @@ jobs:
 
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v5
+      with:
+        cache-encryption-key: ${{ secrets.GRADLE_ENCRYPTION_KEY }}
 
     - name: Run instrumented tests
       uses: reactivecircus/android-emulator-runner@v2
