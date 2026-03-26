@@ -158,4 +158,8 @@ public class UserProfile {
   void onCreate() {
     this.externalId = UUID.randomUUID();
   }
+
+  public UUID getExternalId() {
+    return externalId;
+  }
 }
