@@ -35,7 +35,7 @@ public class SecurityConfiguration {
   SecurityConfiguration(
       Converter<Jwt, ? extends AbstractAuthenticationToken> converter,
       @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri,
-      @Value("${spring.security.oauth2.resourceserver.jwt.audiences}") String clientId
+      @Value("${spring.security.oauth2.resourceserver.jwt.client-id}") String clientId
   ) {
     this.converter = converter;
     this.issuerUri = issuerUri;
