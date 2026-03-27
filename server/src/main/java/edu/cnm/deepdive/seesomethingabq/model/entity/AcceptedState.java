@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -21,11 +22,13 @@ import java.util.List;
     @UniqueConstraint(name = "uk_accepted_state_status_tag", columnNames = "status_tag")
   }
 )
+@JsonPropertyOrder({"statusTag", "statusTagDescription"})
 public class AcceptedState {
 
   @Id
   @Column(name = "accepted_state_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonIgnore
   private Long id;
 
   @Column(nullable = false)

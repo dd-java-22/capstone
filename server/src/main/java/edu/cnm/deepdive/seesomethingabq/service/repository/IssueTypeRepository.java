@@ -9,4 +9,9 @@ public interface IssueTypeRepository extends JpaRepository<IssueType, Long> {
 
   List<IssueType> findAllByIssueTypeTagIn(Collection<String> issueTypeTags);
 
+  IssueType findByIssueTypeTag(String issueTypeTag);
+
+  void deleteIssueTypeByIssueTypeTag(String issueTypeTag);
+
+  boolean existsByIssueTypeTag(String issueTypeTag);
 }
