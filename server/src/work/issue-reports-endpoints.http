@@ -1,0 +1,53 @@
+###
+POST http://localhost:8080/see-something/issue-reports
+Content-Type: application/json
+Authorization: Bearer {{bearerToken}}
+
+{
+  "textDescription": "Graffiti on wall behind storefront near Central and 4th",
+  "reportLocation": {
+    "latitude": 35.0847,
+    "longitude": -106.6510,
+    "streetCoordinate": "Central Ave SW & 4th St SW",
+    "locationDescription": "Alley wall behind the northwest corner building"
+  },
+  "issueTypes": [],
+  "reportImages": []
+}
+
+###
+GET http://localhost:8080/see-something/issue-reports/mine?
+    sort={{$random.alphanumeric(8)}}
+Authorization: Bearer {{bearerToken}}
+
+###
+GET http://localhost:8080/see-something/issue-reports/11111111-1111-1111-1111-111111111005
+Authorization: Bearer {{bearerToken}}
+
+###
+PUT http://localhost:8080/see-something/issue-reports/18b6be3c-c995-4c21-9c5d-dd8af1c0a726
+Content-Type: application/json
+Authorization: Bearer {{bearerToken}}
+
+
+{
+  "textDescription": "Trash was partially cleaned up, still some debris",
+  "reportLocation": {
+    "latitude": 35.0844,
+    "longitude": -106.6504,
+    "streetCoordinate": "Central Ave & 4th St",
+    "locationDescription": "Same corner, smaller pile"
+  },
+  "issueTypes": "Trash",
+  "reportImages": [
+    {
+      "filename": "dumped-trash-2.jpg",
+      "imageLocator": "https://example.com/dev-images/dumped-trash-2.jpg",
+      "mimeType": "image/jpeg",
+      "albumOrder": 2
+    }]
+}
+
+###
+DELETE http://localhost:8080/see-something/issue-reports/18b6be3c-c995-4c21-9c5d-dd8af1c0a726
+Authorization: Bearer {{bearerToken}}
