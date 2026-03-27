@@ -155,6 +155,22 @@ docs/pdf
 **Human review/modification:** Debugged some issues in the bat file (e.g. linux file endings workaround)
 
 ---
+## Sprint 3 
+
+### [User Endpoints and User Role Implementation]
+
+**Tool used:** [Claude Agent]  
+**Task:** [Implement the functionality of the UserController endpoints and service interface.]  
+**Prompt used:**
+> [Could you please help me with writing the code for the user controller class and service implementation of this project? Here are the additions I would like to make to the UserController class: "Controller — UserController (already exists, needs additions)
+GET /users/me
+PUT /users/me/display-name
+PUT /users/me/email
+PUT /users/me/avatar
+Implement functions in the service interface + implementation and in the repository that are needed for the round trip.
+Remove the getAll Mapping from the UserController but, leave the service and repository layers alone."
+Do you need any additional information to implement the functions of the service interface or anything in the repository?
+]
 
 <!--
 Use the following template for each AI-assisted task:

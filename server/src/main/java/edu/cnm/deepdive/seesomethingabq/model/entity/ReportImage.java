@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -11,6 +12,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import edu.cnm.deepdive.seesomethingabq.model.converter.UriAttributeConverter;
 import java.net.URI;
 import java.util.UUID;
 
@@ -36,7 +38,8 @@ public class ReportImage {
   @JoinColumn(name = "issue_report_id", nullable = false, updatable = false)
   private IssueReport issueReport;
 
-  @Column(nullable = false, updatable = false)
+  @Convert(converter = UriAttributeConverter.class)
+  @Column(nullable = false, updatable = false, length = 255, columnDefinition = "varchar(255)")
   private URI imageLocator;
 
   @Column(nullable = false, updatable = false)
