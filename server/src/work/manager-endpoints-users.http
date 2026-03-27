@@ -23,28 +23,3 @@ Content-Type: application/json
 {
   "manager": true
 }
-
-###
-GET http://localhost:8080/see-something/manager/issue-reports?
-    pageSize=1&
-    pageNumber=0
-Authorization: Bearer {{bearerToken}}
-Content-Type: application/json
-
-###
-PUT http://localhost:8080/see-something/manager/issue-reports/{{issueReportExternalId}}/issue-types
-Authorization: Bearer {{bearerToken}}
-Content-Type: application/json
-
-{
-  "issueTypeTags": ["Repair"]
-}
-
-###
-PUT http://localhost:8080/see-something/manager/issue-reports/{{issueReportExternalId}}/status
-Authorization: Bearer {{bearerToken}}
-Content-Type: application/json
-
-{
-  "statusTag": "New"
-}
