@@ -1,0 +1,26 @@
+###
+GET http://localhost:8080/see-something/manager/accepted-states
+Authorization: Bearer {{bearerToken}}
+
+###
+POST http://localhost:8080/see-something/manager/accepted-states
+Content-Type: application/json
+Authorization: Bearer {{bearerToken}}
+
+{
+  "statusTag": "asdf",
+  "statusTagDescription": "asdf"
+}
+
+###
+PATCH http://localhost:8080/see-something/manager/accepted-states/New
+Content-Type: application/json
+Authorization: Bearer {{bearerToken}}
+
+{
+  "statusTagDescription": "asdf"
+}
+
+###
+DELETE http://localhost:8080/see-something/manager/accepted-states/asdf
+Authorization: Bearer {{bearerToken}}

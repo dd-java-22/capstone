@@ -1,7 +1,3 @@
 ###
 GET http://localhost:8080/see-something/users/me
 Authorization: Bearer {{bearerToken}}
-
-###
-GET http://localhost:8080/see-something/users
-Authorization: Bearer {{bearerToken}}
