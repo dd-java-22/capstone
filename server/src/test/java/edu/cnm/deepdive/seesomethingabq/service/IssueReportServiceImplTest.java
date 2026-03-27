@@ -102,7 +102,7 @@ class IssueReportServiceImplTest {
     AcceptedState state = new AcceptedState();
     state.setStatusTag("ACCEPTED");
     when(issueReportRepository.findByExternalId(externalId)).thenReturn(Optional.of(report));
-    when(acceptedStateRepository.findByStatusTag("ACCEPTED")).thenReturn(Optional.of(state));
+    when(acceptedStateRepository.findByStatusTag("ACCEPTED")).thenReturn(state);
     when(issueReportRepository.save(report)).thenReturn(report);
 
     IssueReport result = service.setAcceptedState(externalId, "ACCEPTED");
@@ -128,7 +128,7 @@ class IssueReportServiceImplTest {
     UUID externalId = UUID.fromString("55555555-5555-5555-5555-555555555555");
     IssueReport report = new IssueReport();
     when(issueReportRepository.findByExternalId(externalId)).thenReturn(Optional.of(report));
-    when(acceptedStateRepository.findByStatusTag("MISSING")).thenReturn(Optional.empty());
+    when(acceptedStateRepository.findByStatusTag("MISSING")).thenReturn(null);
 
     assertThrows(NoSuchElementException.class, () -> service.setAcceptedState(externalId, "MISSING"));
     verify(issueReportRepository).findByExternalId(externalId);

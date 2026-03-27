@@ -53,10 +53,16 @@ public class IssueReportServiceImpl implements IssueReportService {
     IssueReport report = issueReportRepository
         .findByExternalId(externalId)
         .orElseThrow(NoSuchElementException::new);
+
     AcceptedState acceptedState = acceptedStateRepository
-        .findByStatusTag(statusTag)
-        .orElseThrow(NoSuchElementException::new);
-    report.setAcceptedState(acceptedState);
+        .findByStatusTag(statusTag);
+
+    if (acceptedState != null) {
+      report.setAcceptedState(acceptedState);
+    } else {
+      throw new NoSuchElementException();
+    }
+
     return issueReportRepository.save(report);
   }
 

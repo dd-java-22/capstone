@@ -6,8 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AcceptedStateRepository extends JpaRepository<AcceptedState, Long> {
 
-  // My side added Optional - is it correct?
-  Optional<AcceptedState> findByStatusTag(String statusTag);
+  AcceptedState findByStatusTag(String statusTag);
 
   boolean existsByStatusTag(String statusTag);
 
