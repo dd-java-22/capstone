@@ -31,7 +31,6 @@ public interface UserService {
    * Returns the user profile associated with the current authenticated request. If the user does
    * not already exist in the system, a new user profile will be created.
    *
-   * @param jwt JWT token from the current authenticated request.
    * @return User profile for the authenticated user.
    */
   UserProfile getCurrentUser();
@@ -49,7 +48,7 @@ public interface UserService {
    * already exist.
    *
    * @param oauthKey OAuth2 key (typically the "sub" claim from the JWT).
-   * @param displayName Optional display name for new user profiles.
+   * @param userProfile Optional display name for new user profiles.
    * @return User profile for the given OAuth2 key.
    */
   UserProfile getOrCreate(String oauthKey, UserProfile userProfile);
