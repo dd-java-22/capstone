@@ -6,6 +6,8 @@ import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IssueReportRepository extends JpaRepository<IssueReport, Long> {
@@ -22,5 +24,7 @@ public interface IssueReportRepository extends JpaRepository<IssueReport, Long> 
 
   List<IssueReport> getIssueReportsByTimeLastModifiedBetween(
       Instant timeLastModifiedAfter, Instant timeLastModifiedBefore);
+
+  Optional<IssueReport> findByExternalId(UUID externalId);
 
 }
