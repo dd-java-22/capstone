@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
@@ -10,9 +11,11 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import edu.cnm.deepdive.seesomethingabq.model.converter.UriAttributeConverter;
 import java.net.URI;
+import java.util.UUID;
 
 @Entity
 @Table(
@@ -26,11 +29,16 @@ public class ReportImage {
   @Id
   @Column(name = "report_image_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonIgnore
   private Long id;
+
+  @Column(name = "report_image_external_key", updatable = false)
+  private UUID externalKey;
 
   // used AI to help with ManyToOne annotation
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
   @JoinColumn(name = "issue_report_id", nullable = false, updatable = false)
+  @JsonIgnore
   private IssueReport issueReport;
 
   @Convert(converter = UriAttributeConverter.class)
@@ -88,5 +96,14 @@ public class ReportImage {
 
   public void setAlbumOrder(int albumOrder) {
     this.albumOrder = albumOrder;
+  }
+
+  public UUID getExternalKey() {
+    return externalKey;
+  }
+
+  @PrePersist
+  void onCreate() {
+    this.externalKey = UUID.randomUUID();
   }
 }
