@@ -45,9 +45,14 @@ public class IssueReportServiceImpl implements IssueReportService {
     report.setUserProfile(currentUser);
 
     AcceptedState defaultState = acceptedStateRepository
-        .findByStatusTag("New")
-        .orElseThrow();
-    report.setAcceptedState(defaultState);
+        .findByStatusTag("New");
+
+    if (defaultState != null) {
+      report.setAcceptedState(defaultState);
+    } else {
+      // FIXME: 3/27/2026 throw correct exception or remove this code as needed
+      throw new IllegalArgumentException();
+    }
 
     ReportLocation location = report.getReportLocation();
     if (location != null) {
