@@ -1,8 +1,11 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import edu.cnm.deepdive.seesomethingabq.exception.AccessDeniedException;
+import edu.cnm.deepdive.seesomethingabq.exception.BadRequestException;
+import edu.cnm.deepdive.seesomethingabq.exception.ConflictException;
 import edu.cnm.deepdive.seesomethingabq.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
+import java.time.Instant;
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,52 +18,58 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+  // Simple DTO for consistent error responses
+  public record ErrorResponse(String message, Instant timestamp) {}
+
   /**
    * Handles resource not found exceptions.
-   *
-   * @param ex The exception that was thrown.
-   * @return Error message.
    */
-  @ExceptionHandler({ResourceNotFoundException.class, NoSuchElementException.class,
-      EntityNotFoundException.class})
+  @ExceptionHandler({
+      ResourceNotFoundException.class,
+      NoSuchElementException.class,
+      EntityNotFoundException.class
+  })
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public String handleNotFound(Exception ex) {
-    return ex.getMessage();
+  public ErrorResponse handleNotFound(Exception ex) {
+    return new ErrorResponse(ex.getMessage(), Instant.now());
   }
 
   /**
    * Handles access denied exceptions.
-   *
-   * @param ex The exception that was thrown.
-   * @return Error message.
    */
   @ExceptionHandler(AccessDeniedException.class)
   @ResponseStatus(HttpStatus.FORBIDDEN)
-  public String handleAccessDenied(AccessDeniedException ex) {
-    return ex.getMessage();
+  public ErrorResponse handleAccessDenied(AccessDeniedException ex) {
+    return new ErrorResponse(ex.getMessage(), Instant.now());
   }
 
   /**
-   * Handles illegal argument exceptions.
-   *
-   * @param ex The exception that was thrown.
-   * @return Error message.
+   * Handles bad request exceptions.
    */
-  @ExceptionHandler(IllegalArgumentException.class)
+  @ExceptionHandler({
+      IllegalArgumentException.class,
+      BadRequestException.class
+  })
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public String handleBadRequest(IllegalArgumentException ex) {
-    return ex.getMessage();
+  public ErrorResponse handleBadRequest(Exception ex) {
+    return new ErrorResponse(ex.getMessage(), Instant.now());
+  }
+
+  /**
+   * Handles conflict exceptions (duplicate types, states, etc.).
+   */
+  @ExceptionHandler(ConflictException.class)
+  @ResponseStatus(HttpStatus.CONFLICT)
+  public ErrorResponse handleConflict(ConflictException ex) {
+    return new ErrorResponse(ex.getMessage(), Instant.now());
   }
 
   /**
    * Handles all other unhandled exceptions.
-   *
-   * @param ex The exception that was thrown.
-   * @return Generic error message.
    */
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public String handleInternalError(Exception ex) {
-    return "An unexpected error occurred: " + ex.getMessage();
+  public ErrorResponse handleInternalError(Exception ex) {
+    return new ErrorResponse("An unexpected error occurred: " + ex.getMessage(), Instant.now());
   }
 }
