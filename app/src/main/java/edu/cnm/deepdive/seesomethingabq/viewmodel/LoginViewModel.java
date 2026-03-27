@@ -32,10 +32,10 @@ public class LoginViewModel extends ViewModel {
         Log.e(TAG, "Sign in failure", ex);
         this.throwable.postValue(ex);
       } else {
-//        if (BuildConfig.DEBUG) {
+        if (BuildConfig.DEBUG) {
           // FIXME: 3/25/2026 remove this someday!
           Log.d(TAG, ">>>> token: " + cred.getIdToken());
-//        }
+        }
 
         this.credential.postValue(cred);
       }

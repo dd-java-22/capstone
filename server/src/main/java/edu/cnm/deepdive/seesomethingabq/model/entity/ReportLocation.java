@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -28,6 +29,7 @@ public class ReportLocation {
 
   // used AI to help with OneToOne annotation
   @OneToOne(mappedBy = "reportLocation", optional = false)
+  @JsonIgnore
   private IssueReport issueReport;
 
   public Long getId() {
