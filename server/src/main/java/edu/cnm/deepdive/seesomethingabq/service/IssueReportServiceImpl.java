@@ -1,8 +1,10 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
+import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportLocation;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
+import edu.cnm.deepdive.seesomethingabq.service.repository.AcceptedStateRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import jakarta.transaction.Transactional;
 import java.util.List;
@@ -16,20 +18,24 @@ public class IssueReportServiceImpl implements IssueReportService {
 
   private final IssueReportRepository issueReportRepository;
   private final UserService userService;
+  private final AcceptedStateRepository acceptedStateRepository;
 
   @Autowired
   public IssueReportServiceImpl(
       IssueReportRepository issueReportRepository,
-      UserService userService) {
+      UserService userService,
+      AcceptedStateRepository acceptedStateRepository
+  ) {
     this.issueReportRepository = issueReportRepository;
     this.userService = userService;
+    this.acceptedStateRepository = acceptedStateRepository;
   }
-
 
   @Override
   public List<IssueReport> getReportsForCurrentUser(String sortParam) {
     UserProfile user = userService.getCurrentUser();
-    return issueReportRepository.getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(user);
+    return issueReportRepository
+        .getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(user);
   }
 
   @Override
@@ -38,8 +44,10 @@ public class IssueReportServiceImpl implements IssueReportService {
     UserProfile currentUser = userService.getCurrentUser();
     report.setUserProfile(currentUser);
 
-    // TODO: 2026-03-26 Set default AcceptedState (e.g., PENDING) instead of leaving null
-    //  report.setAcceptedState(defaultState);
+    AcceptedState defaultState = acceptedStateRepository
+        .findByStatusTag("New")
+        .orElseThrow();
+    report.setAcceptedState(defaultState);
 
     ReportLocation location = report.getReportLocation();
     if (location != null) {
@@ -56,14 +64,36 @@ public class IssueReportServiceImpl implements IssueReportService {
 
   @Override
   public IssueReport updateReport(UUID externalKey, IssueReport report) {
+    IssueReport existing = requireReport(externalKey);
+
+    // Server-controlled fields stay on 'existing':
+    // - id, externalId, userProfile, acceptedState, timestamps
+
     // TODO: 2026-03-26 Enforce real ownership instead of always stamping current user
     UserProfile currentUser = userService.getCurrentUser();
-    report.setUserProfile(currentUser);
-    ReportLocation location = report.getReportLocation();
-    if (location != null) {
-      location.setIssueReport(report);
+    existing.setUserProfile(currentUser);
+
+    // Copy editable fields from incoming 'report' into 'existing'.
+    existing.setTextDescription(report.getTextDescription());
+
+    ReportLocation incomingLocation = report.getReportLocation();
+    if (incomingLocation != null) {
+      ReportLocation existingLocation = existing.getReportLocation();
+      if (existingLocation == null) {
+        existingLocation = incomingLocation;
+        existingLocation.setIssueReport(existing);
+        existing.setReportLocation(existingLocation);
+      } else {
+        existingLocation.setLatitude(incomingLocation.getLatitude());
+        existingLocation.setLongitude(incomingLocation.getLongitude());
+        existingLocation.setStreetCoordinate(incomingLocation.getStreetCoordinate());
+        existingLocation.setLocationDescription(incomingLocation.getLocationDescription());
+      }
     }
-    return issueReportRepository.save(report);
+
+    // TODO: 2026-03-27 Update issueTypes and reportImages when DTOs and mapping rules are in place.
+
+    return issueReportRepository.save(existing);
   }
 
   @Override
@@ -71,11 +101,11 @@ public class IssueReportServiceImpl implements IssueReportService {
     issueReportRepository.delete(requireReport(externalKey));
   }
 
-
   private IssueReport requireReport(UUID externalKey) {
     return issueReportRepository.findByExternalId(externalKey)
         .orElseThrow(() -> new RuntimeException(externalKey + " not found"));
     // TODO: 3/26/2026 change RuntimeException to appropriate @RestControllerAdvice
     //  custom exception when ticket #66 is complete.
   }
+
 }

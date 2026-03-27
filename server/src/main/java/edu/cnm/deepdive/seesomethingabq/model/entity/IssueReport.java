@@ -57,10 +57,8 @@ public class IssueReport {
   @JoinColumn(name = "report_location_id", nullable = false)
   private ReportLocation reportLocation;
 
-  // TODO: 3/26/2026 Mapping relaxed to allow null for endpoint testing. 
-  //  Restore nullable and optional to true. 
-  @ManyToOne(fetch = FetchType.EAGER, optional = true)
-  @JoinColumn(name = "accepted_state_id", nullable = true)
+  @ManyToOne(fetch = FetchType.EAGER, optional = false)
+  @JoinColumn(name = "accepted_state_id", nullable = false)
   private AcceptedState acceptedState;
 
   // used AI to help with JoinTable annotation
