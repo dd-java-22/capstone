@@ -32,8 +32,8 @@ public class ReportImage {
   @JsonIgnore
   private Long id;
 
-  @Column(name = "report_image_external_key", updatable = false)
-  private UUID externalKey;
+  @Column(name = "report_image_external_id", updatable = false)
+  private UUID externalId;
 
   // used AI to help with ManyToOne annotation
   @ManyToOne(fetch = FetchType.LAZY, optional = false)
@@ -98,12 +98,12 @@ public class ReportImage {
     this.albumOrder = albumOrder;
   }
 
-  public UUID getExternalKey() {
-    return externalKey;
+  public UUID getExternalId() {
+    return externalId;
   }
 
   @PrePersist
   void onCreate() {
-    this.externalKey = UUID.randomUUID();
+    this.externalId = UUID.randomUUID();
   }
 }
