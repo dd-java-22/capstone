@@ -16,8 +16,8 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerUserResponse;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest;
-import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
 import java.util.List;
 import java.util.UUID;
@@ -47,14 +47,17 @@ public class ManagerUserController {
   }
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<UserProfile> getAll() {
-    return service.getAll();
+  public List<ManagerUserResponse> getAll() {
+    return service.getAll().stream()
+        .map(ManagerUserResponse::fromEntity)
+        .toList();
   }
 
   @GetMapping(value = "/{externalId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public UserProfile get(@PathVariable UUID externalId) {
+  public ManagerUserResponse get(@PathVariable UUID externalId) {
     return service
         .getByExternalId(externalId)
+        .map(ManagerUserResponse::fromEntity)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
   }
 
@@ -63,12 +66,12 @@ public class ManagerUserController {
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public UserProfile updateManagerStatus(
+  public ManagerUserResponse updateManagerStatus(
       @PathVariable UUID externalId,
       @RequestBody ManagerStatusUpdateRequest request
   ) {
     try {
-      return service.setManagerStatus(externalId, request.isManager());
+      return ManagerUserResponse.fromEntity(service.setManagerStatus(externalId, request.isManager()));
     } catch (IllegalArgumentException ex) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, null, ex);
     }
@@ -79,12 +82,12 @@ public class ManagerUserController {
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public UserProfile updateEnabled(
+  public ManagerUserResponse updateEnabled(
       @PathVariable UUID externalId,
       @RequestBody UserEnabledUpdateRequest request
   ) {
     try {
-      return service.setEnabled(externalId, request.isEnabled());
+      return ManagerUserResponse.fromEntity(service.setEnabled(externalId, request.isEnabled()));
     } catch (IllegalArgumentException ex) {
       throw new ResponseStatusException(HttpStatus.NOT_FOUND, null, ex);
     }
