@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -51,7 +52,8 @@ public class IssueReport {
   @JoinColumn(name = "user_profile_id", nullable = false, updatable = false)
   private UserProfile userProfile;
 
-  @OneToOne(fetch = FetchType.EAGER, optional = false)
+  // TODO: 3/26/2026 Revisit cascade strategy for reportLocation (ALL vs PERSIST/MERGE/REMOVE). 
+  @OneToOne(fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL)
   @JoinColumn(name = "report_location_id", nullable = false)
   private ReportLocation reportLocation;
 

@@ -29,7 +29,6 @@ public class ReportLocation {
 
   // used AI to help with OneToOne annotation
   @OneToOne(mappedBy = "reportLocation", optional = false)
-  @JoinColumn(name = "issue_report_id", nullable = false, updatable = false)
   @JsonIgnore
   private IssueReport issueReport;
 
