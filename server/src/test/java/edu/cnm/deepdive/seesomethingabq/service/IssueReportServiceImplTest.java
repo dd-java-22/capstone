@@ -24,7 +24,6 @@ import static org.mockito.Mockito.when;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
-import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.AcceptedStateRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueTypeRepository;
@@ -79,29 +78,6 @@ class IssueReportServiceImplTest {
 
     assertSame(page, result);
     verify(issueReportRepository).findAll(pageable);
-  }
-
-  @Test
-  void getByExternalIdFoundReturnsOptionalWithValue() {
-    UUID externalId = UUID.fromString("11111111-1111-1111-1111-111111111111");
-    IssueReport report = new IssueReport();
-    when(issueReportRepository.findByExternalId(externalId)).thenReturn(Optional.of(report));
-
-    Optional<IssueReport> result = service.getByExternalId(externalId);
-
-    assertSame(report, result.orElseThrow());
-    verify(issueReportRepository).findByExternalId(externalId);
-  }
-
-  @Test
-  void getByExternalIdNotFoundReturnsEmptyOptional() {
-    UUID externalId = UUID.fromString("22222222-2222-2222-2222-222222222222");
-    when(issueReportRepository.findByExternalId(externalId)).thenReturn(Optional.empty());
-
-    Optional<IssueReport> result = service.getByExternalId(externalId);
-
-    assertEquals(Optional.empty(), result);
-    verify(issueReportRepository).findByExternalId(externalId);
   }
 
   @Test

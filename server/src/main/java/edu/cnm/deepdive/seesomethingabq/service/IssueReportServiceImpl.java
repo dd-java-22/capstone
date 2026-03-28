@@ -9,11 +9,9 @@ import edu.cnm.deepdive.seesomethingabq.service.repository.AcceptedStateReposito
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueTypeRepository;
 
-import java.util.Collection;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -46,39 +44,10 @@ public class IssueReportServiceImpl implements IssueReportService {
   }
 
   @Override
-  public Page<IssueReport> getAll(Pageable pageable) {
-    return issueReportRepository.findAll(pageable);
-  }
-
-  @Override
-  public Optional<IssueReport> getByExternalId(UUID externalId) {
-    return issueReportRepository.findByExternalId(externalId);
-  }
-
-  @Override
   public List<IssueReport> getReportsForCurrentUser(String sortParam) {
     UserProfile user = userService.getCurrentUser();
     return issueReportRepository
       .getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(user);
-  }
-
-  @Override
-  @Transactional
-  public IssueReport setAcceptedState(UUID externalId, String statusTag) {
-    IssueReport report = issueReportRepository
-      .findByExternalId(externalId)
-      .orElseThrow(NoSuchElementException::new);
-
-    AcceptedState acceptedState = acceptedStateRepository
-      .findByStatusTag(statusTag);
-
-    if (acceptedState != null) {
-      report.setAcceptedState(acceptedState);
-    } else {
-      throw new NoSuchElementException();
-    }
-
-    return issueReportRepository.save(report);
   }
 
   @Override
@@ -90,12 +59,11 @@ public class IssueReportServiceImpl implements IssueReportService {
     AcceptedState defaultState = acceptedStateRepository
       .findByStatusTag("New");
 
-    if (defaultState != null) {
-      report.setAcceptedState(defaultState);
-      // FIXME: 3/27/2026 throw correct exception or remove this code as needed
-    } else {
-      throw new IllegalArgumentException();
+    if (defaultState == null) {
+      throw new IllegalStateException("Default accepted state 'New' not found.");
     }
+
+    report.setAcceptedState(defaultState);
 
     ReportLocation location = report.getReportLocation();
     if (location != null) {
@@ -103,31 +71,6 @@ public class IssueReportServiceImpl implements IssueReportService {
       location.setIssueReport(report);
     }
 
-    return issueReportRepository.save(report);
-  }
-
-  @Override
-  @Transactional
-  public IssueReport replaceIssueTypes(UUID externalId, Iterable<String> issueTypeTags) {
-    IssueReport report = issueReportRepository
-      .findByExternalId(externalId)
-      .orElseThrow(NoSuchElementException::new);
-
-    Set<String> requested = new LinkedHashSet<>();
-    if (issueTypeTags != null) {
-      for (String tag : issueTypeTags) {
-        if (tag != null && !tag.isBlank()) {
-          requested.add(tag);
-        }
-      }
-    }
-    Collection<String> requestedTags = requested;
-    List<IssueType> resolved = issueTypeRepository.findAllByIssueTypeTagIn(requestedTags);
-    if (resolved.size() != requestedTags.size()) {
-      throw new IllegalArgumentException("Invalid issueTypeTags set.");
-    }
-    report.getIssueTypes().clear();
-    report.getIssueTypes().addAll(resolved);
     return issueReportRepository.save(report);
   }
 
@@ -173,6 +116,55 @@ public class IssueReportServiceImpl implements IssueReportService {
   @Override
   public void deleteReport(UUID externalKey) {
     issueReportRepository.delete(requireReport(externalKey));
+  }
+
+  @Override
+  public Page<IssueReport> getAll(Pageable pageable) {
+    return issueReportRepository.findAll(pageable);
+  }
+
+  @Override
+  @Transactional
+  public IssueReport replaceIssueTypes(UUID externalId, Iterable<String> issueTypeTags) {
+    IssueReport report = issueReportRepository
+      .findByExternalId(externalId)
+      .orElseThrow(NoSuchElementException::new);
+
+    Set<String> requested = new LinkedHashSet<>();
+    if (issueTypeTags != null) {
+      for (String tag : issueTypeTags) {
+        if (tag != null && !tag.isBlank()) {
+          requested.add(tag);
+        }
+      }
+    }
+
+    List<IssueType> resolved = issueTypeRepository.findAllByIssueTypeTagIn(requested);
+    if (resolved.size() != requested.size()) {
+      throw new IllegalArgumentException("Invalid issueTypeTags set.");
+    }
+    report.getIssueTypes().clear();
+    report.getIssueTypes().addAll(resolved);
+    return issueReportRepository.save(report);
+  }
+
+  @Override
+  @Transactional
+  public IssueReport setAcceptedState(UUID externalId, String statusTag) {
+    IssueReport report = issueReportRepository
+      .findByExternalId(externalId)
+      .orElseThrow(NoSuchElementException::new);
+
+    AcceptedState acceptedState = acceptedStateRepository
+      .findByStatusTag(statusTag);
+
+    if (acceptedState != null) {
+      report.setAcceptedState(acceptedState);
+    } else {
+      throw new NoSuchElementException();
+    }
+
+    return issueReportRepository.save(report);
   }
 
   private IssueReport requireReport(UUID externalKey) {

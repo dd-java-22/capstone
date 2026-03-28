@@ -12,22 +12,25 @@ public interface IssueReportService {
   //GET /issue-reports/mine?sort={sort}
   List<IssueReport> getReportsForCurrentUser(String sortParam);
 
-  Page<IssueReport> getAll(Pageable pageable);
-
   //POST /issue-reports
   IssueReport createReport(IssueReport report);
 
   //GET /issue-reports/{externalKey}
   IssueReport getReportByExternalKey(UUID externalKey);
-  Optional<IssueReport> getByExternalId(UUID externalId); // FIXME: 3/27/2026 choose one way to get reports by UUID
-
-  IssueReport setAcceptedState(UUID externalId, String statusTag);
 
   //PUT /issue-reports/{externalKey}
   IssueReport updateReport(UUID externalKey, IssueReport report);
-  IssueReport replaceIssueTypes(UUID externalId, Iterable<String> issueTypeTags);
 
   //DELETE /issue-reports/{externalKey}
   void deleteReport(UUID externalKey);
+
+  // GET /managers/issue-reports/
+  Page<IssueReport> getAll(Pageable pageable);
+
+  // PUT /manager/issue-reports/{externalId}/status/
+  IssueReport replaceIssueTypes(UUID externalId, Iterable<String> issueTypeTags);
+
+  // PUT /manager/issue-reports/{externalId}/issue-types/
+  IssueReport setAcceptedState(UUID externalId, String statusTag);
 }
 
