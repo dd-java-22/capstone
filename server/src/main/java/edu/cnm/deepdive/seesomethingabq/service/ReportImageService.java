@@ -13,10 +13,10 @@ public interface ReportImageService {
    * Retrieves a specific image from an issue report.
    *
    * @param externalKey The external ID (UUID) of the issue report.
-   * @param imageKey The external key (UUID) of the image.
+   * @param imageId The external ID (UUID) of the image.
    * @return The requested report image.
    */
-  ReportImage getImage(UUID externalKey, UUID imageKey);
+  ReportImage getImage(UUID externalKey, UUID imageId);
 
   /**
    * Adds a new image to an issue report.

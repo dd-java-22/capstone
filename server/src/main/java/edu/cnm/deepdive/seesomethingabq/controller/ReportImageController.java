@@ -39,13 +39,13 @@ public class ReportImageController {
    * Retrieves a specific image from an issue report. Access is restricted to the report owner and
    * managers.
    *
-   * @param externalKey The external ID (UUID) of the issue report.
-   * @param imageKey The external key (UUID) of the image.
-   * @return The requested report image.
-   */
-  @GetMapping(value = "/{imageKey}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ReportImage getImage(@PathVariable UUID externalKey, @PathVariable UUID imageKey) {
-    return service.getImage(externalKey, imageKey);
+ * @param externalKey The external ID (UUID) of the issue report.
+ * @param imageId The external ID (UUID) of the image.
+ * @return The requested report image.
+ */
+  @GetMapping(value = "/{imageId}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public ReportImage getImage(@PathVariable UUID externalKey, @PathVariable UUID imageId) {
+    return service.getImage(externalKey, imageId);
   }
 
   /**
