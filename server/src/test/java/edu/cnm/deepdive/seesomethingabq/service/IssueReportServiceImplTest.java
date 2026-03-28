@@ -24,6 +24,7 @@ import static org.mockito.Mockito.when;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
+import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.AcceptedStateRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueTypeRepository;
@@ -53,11 +54,19 @@ class IssueReportServiceImplTest {
   @Mock
   private IssueTypeRepository issueTypeRepository;
 
+  @Mock
+  private UserService userService;
+
   private IssueReportService service;
 
   @BeforeEach
   void setUp() {
-    service = new IssueReportServiceImpl(issueReportRepository, acceptedStateRepository, issueTypeRepository);
+    service = new IssueReportServiceImpl(
+      issueReportRepository,
+      userService,
+      acceptedStateRepository,
+      issueTypeRepository
+    );
   }
 
   @Test
