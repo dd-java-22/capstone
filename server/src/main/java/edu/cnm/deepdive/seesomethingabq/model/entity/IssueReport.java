@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -43,6 +44,7 @@ public class IssueReport {
   @Id
   @Column(name = "issue_report_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonIgnore
   private Long id;
 
   @Column(name = "issue_report_external_id", updatable = false)

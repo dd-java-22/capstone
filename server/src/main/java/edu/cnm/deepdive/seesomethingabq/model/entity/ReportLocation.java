@@ -17,6 +17,7 @@ public class ReportLocation {
   @Id
   @Column(name = "report_location_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonIgnore
   private Long id;
 
   private Double latitude;
