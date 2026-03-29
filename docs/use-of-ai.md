@@ -155,6 +155,36 @@ docs/pdf
 **Human review/modification:** Debugged some issues in the bat file (e.g. linux file endings workaround)
 
 ---
+
+### Ticket 36 — Login on New Activities
+
+**Tool used:** ChatGPT + Claude
+
+**Prompt used:**  
+Discussed refactoring approach to reuse existing login logic across new activities. Generated guidance and implementation approach, then used Claude to apply the changes.
+
+**Output produced:**  
+Updated activities to use existing login flow, removed unused `MainActivity`, and ensured consistent authentication handling across user and manager flows.
+
+**Human review/modification:**  
+PR review + manual testing
+
+---
+
+### Ticket 34 — Basic Navigation
+
+**Tool used:** ChatGPT + Claude
+
+**Prompt used:**  
+Discussed navigation structure and provided requirements. Generated implementation approach for activities, fragments, and navigation flow, then used Claude to implement changes.
+
+**Output produced:**  
+Created user and manager activities, added placeholder fragments for all expected screens, and implemented initial navigation between fragments.
+
+**Human review/modification:**  
+PR review + manual testing
+
+---
 ## Sprint 3 
 
 ### [User Endpoints and User Role Implementation]
@@ -171,6 +201,83 @@ Implement functions in the service interface + implementation and in the reposit
 Remove the getAll Mapping from the UserController but, leave the service and repository layers alone."
 Do you need any additional information to implement the functions of the service interface or anything in the repository?
 ]
+
+---
+ 
+### Ticket 39 & 42 — OpenAPI Update + Security Consistency
+
+**Tool used:** ChatGPT
+
+**Prompt used:**  
+Discussed current API state and provided project zip. Requested regeneration of the OpenAPI specification to reflect current endpoints and to resolve inconsistent use of the `security` property by standardizing on global JWT bearer authentication.
+
+**Output produced:**  
+Generated updated `open-api.yaml` aligned with current controllers and endpoints, removed redundant per-endpoint security definitions, and standardized authentication documentation.
+
+**Human review/modification:**  
+PR review + manual testing
+
+---
+
+### Ticket 58 — Manager Issue Reports Endpoints
+
+**Tool used:** ChatGPT + Codex
+
+**Prompt used:**  
+Reviewed requirements and provided project zip. Generated a sequence of structured prompts for Codex to implement `/manager/issue-reports` endpoints, including controller, service, repository updates, DTOs, and tests.
+
+**Output produced:**  
+Implemented manager-specific issue report endpoints with corresponding controller, service layer logic, DTOs, and supporting repository methods.
+
+**Human review/modification:**  
+PR review + manual testing
+
+---
+
+### Ticket 59 — Manager Accepted States Endpoints
+
+**Tool used:** ChatGPT + Codex
+
+**Prompt used:**  
+Reviewed ticket requirements and provided project zip. Generated step-by-step Codex prompts to implement `/manager/accepted-states` endpoints, including PATCH behavior and validation constraints.
+
+**Output produced:**  
+Added manager endpoints for accepted states, including controller, service methods, DTO handling, and repository integration.
+
+**Human review/modification:**  
+PR review + manual testing
+
+---
+
+### Ticket 57 — Manager Users Endpoints
+
+**Tool used:** ChatGPT + Codex
+
+**Prompt used:**  
+Discussed requirements and provided project zip. Generated Codex prompt sequence to implement `/manager/users` endpoints, including account enable/disable and manager role updates.
+
+**Output produced:**  
+Implemented manager user administration endpoints with controller logic, service layer updates, and supporting DTOs.
+
+**Human review/modification:**  
+PR review + manual testing
+
+---
+
+### SQL Seed Data Generation
+
+**Tool used:** ChatGPT
+
+**Prompt used:**  
+Provided database schema and requested generation of an idempotent SQL seed script covering all tables, including relationships and sample data.
+
+**Output produced:**  
+Generated SQL file with sample data for all tables, including relationship mappings and multiple example records.
+
+**Human review/modification:**  
+PR review + manual testing
+
+---
 
 <!--
 Use the following template for each AI-assisted task:
