@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import java.net.URI;
@@ -33,7 +34,8 @@ public class IssueReportController {
       value = "/mine",
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public List<IssueReport> getMyReports(@RequestParam(defaultValue = "last_modified") String sort) {
+  public List<IssueReportSummary> getMyReports(
+      @RequestParam(defaultValue = "last_modified") String sort) {
     return issueReportService.getReportsForCurrentUser(sort);
   }
 
@@ -67,6 +69,3 @@ public class IssueReportController {
 
 
 }
-
-//PUT /issue-reports/{externalKey}
-//DELETE /issue-reports/{externalKey}

@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
@@ -18,6 +19,7 @@ import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,10 +34,10 @@ public class IssueReportServiceImpl implements IssueReportService {
 
   @Autowired
   public IssueReportServiceImpl(
-    IssueReportRepository issueReportRepository,
-    UserService userService,
-    AcceptedStateRepository acceptedStateRepository,
-    IssueTypeRepository issueTypeRepository
+      IssueReportRepository issueReportRepository,
+      UserService userService,
+      AcceptedStateRepository acceptedStateRepository,
+      IssueTypeRepository issueTypeRepository
   ) {
     this.issueReportRepository = issueReportRepository;
     this.userService = userService;
@@ -44,10 +46,14 @@ public class IssueReportServiceImpl implements IssueReportService {
   }
 
   @Override
-  public List<IssueReport> getReportsForCurrentUser(String sortParam) {
-    UserProfile user = userService.getCurrentUser();
-    return issueReportRepository
-      .getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(user);
+  public List<IssueReportSummary> getReportsForCurrentUser(String sortParam) {
+    UserProfile currentUser = userService.getCurrentUser();
+    Sort sort = parseSort(sortParam);
+    List<IssueReport> reports =
+        issueReportRepository.findByUserProfile(currentUser, sort);
+    return reports.stream()
+        .map(this::toSummary)
+        .toList();
   }
 
   @Override
@@ -57,7 +63,7 @@ public class IssueReportServiceImpl implements IssueReportService {
     report.setUserProfile(currentUser);
 
     AcceptedState defaultState = acceptedStateRepository
-      .findByStatusTag("New");
+        .findByStatusTag("New");
 
     if (defaultState == null) {
       throw new IllegalStateException("Default accepted state 'New' not found.");
@@ -127,8 +133,8 @@ public class IssueReportServiceImpl implements IssueReportService {
   @Transactional
   public IssueReport replaceIssueTypes(UUID externalId, Iterable<String> issueTypeTags) {
     IssueReport report = issueReportRepository
-      .findByExternalId(externalId)
-      .orElseThrow(NoSuchElementException::new);
+        .findByExternalId(externalId)
+        .orElseThrow(NoSuchElementException::new);
 
     Set<String> requested = new LinkedHashSet<>();
     if (issueTypeTags != null) {
@@ -152,11 +158,11 @@ public class IssueReportServiceImpl implements IssueReportService {
   @Transactional
   public IssueReport setAcceptedState(UUID externalId, String statusTag) {
     IssueReport report = issueReportRepository
-      .findByExternalId(externalId)
-      .orElseThrow(NoSuchElementException::new);
+        .findByExternalId(externalId)
+        .orElseThrow(NoSuchElementException::new);
 
     AcceptedState acceptedState = acceptedStateRepository
-      .findByStatusTag(statusTag);
+        .findByStatusTag(statusTag);
 
     if (acceptedState != null) {
       report.setAcceptedState(acceptedState);
@@ -169,9 +175,72 @@ public class IssueReportServiceImpl implements IssueReportService {
 
   private IssueReport requireReport(UUID externalKey) {
     return issueReportRepository.findByExternalId(externalKey)
-      .orElseThrow(() -> new RuntimeException(externalKey + " not found"));
+        .orElseThrow(() -> new RuntimeException(externalKey + " not found"));
     // TODO: 3/26/2026 change RuntimeException to appropriate @RestControllerAdvice
     //  custom exception when ticket #66 is complete.
   }
 
+
+  /**
+   * Parses the {@code sortParam} string from the controller into a Spring Data {@link Sort}.
+   * <p>
+   * Supported formats:
+   * <ul>
+   *   <li>{@code "last_modified"} &rarr; sort by {@code timeLastModified} descending (default direction)</li>
+   *   <li>{@code "last_modified,asc"} or {@code "last_modified,desc"}</li>
+   *   <li>{@code "first_reported,asc"} or {@code "first_reported,desc"}</li>
+   *   <li>Multiple clauses separated by {@code ';'}, e.g.
+   *       {@code "last_modified,desc;first_reported,desc"}</li>
+   * </ul>
+   * Unknown field keys are ignored. If no valid clauses are found, the method
+   * falls back to {@code timeLastModified} descending.
+   */
+  private Sort parseSort(String sortParam) {
+    if (sortParam == null || sortParam.isBlank()) {
+      return Sort.by(Sort.Order.desc("timeLastModified"));
+    }
+    Sort sort = Sort.unsorted();
+    String[] clauses = sortParam.split(";");
+    for (String clause : clauses) {
+      String trimmed = clause.trim();
+      if (trimmed.isEmpty()) {
+        continue;
+      }
+      String[] parts = trimmed.split(",");
+      String fieldKey = parts[0].trim();
+      String direction = parts.length > 1 ? parts[1].trim().toLowerCase() : "desc";
+
+      String property;
+      switch (fieldKey) {
+        case "last_modified":
+          property = "timeLastModified";
+          break;
+        case "first_reported":
+          property = "timeFirstReported";
+          break;
+        default:
+          continue;
+      }
+
+      Sort.Order order = "asc".equals(direction)
+          ? Sort.Order.asc(property)
+          : Sort.Order.desc(property);
+
+      sort = sort.and(Sort.by(order));
+    }
+    if (sort.isUnsorted()) {
+      sort = Sort.by(Sort.Order.desc("timeLastModified"));
+    }
+    return sort;
+  }
+
+  private IssueReportSummary toSummary(IssueReport report) {
+    IssueReportSummary dto = new IssueReportSummary();
+    dto.setExternalId(report.getExternalId());
+    dto.setDescription(report.getTextDescription());
+    dto.setAcceptedState(report.getAcceptedState().getStatusTag());
+    dto.setTimeFirstReported(report.getTimeFirstReported());
+    dto.setTimeLastModified(report.getTimeLastModified());
+    return dto;
+  }
 }
