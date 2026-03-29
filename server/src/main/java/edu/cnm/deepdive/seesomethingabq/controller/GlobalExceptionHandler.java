@@ -56,11 +56,14 @@ public class GlobalExceptionHandler {
   }
 
   /**
-   * Handles conflict exceptions (duplicate types, states, etc.).
+   * Handles conflict exceptions (duplicate types, states, deleting in-use resources, etc.).
    */
-  @ExceptionHandler(ConflictException.class)
+  @ExceptionHandler({
+      ConflictException.class,
+      IllegalStateException.class
+  })
   @ResponseStatus(HttpStatus.CONFLICT)
-  public ErrorResponse handleConflict(ConflictException ex) {
+  public ErrorResponse handleConflict(Exception ex) {
     return new ErrorResponse(ex.getMessage(), Instant.now());
   }
 

@@ -15,9 +15,7 @@
  */
 package edu.cnm.deepdive.seesomethingabq.service;
 
-import edu.cnm.deepdive.seesomethingabq.exception.BadRequestException;
-import edu.cnm.deepdive.seesomethingabq.exception.ConflictException;
-import edu.cnm.deepdive.seesomethingabq.exception.ResourceNotFoundException;
+import edu.cnm.deepdive.seesomethingabq.exception.UserNotFoundException;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;
 import java.net.URL;
@@ -127,7 +125,7 @@ public class UserServiceImpl implements UserService {
   public UserProfile setManagerStatus(UUID externalId, boolean manager) {
     UserProfile user = repository
         .findByExternalId(externalId)
-        .orElseThrow(IllegalArgumentException::new);
+        .orElseThrow(() -> new UserNotFoundException("User not found: " + externalId));
     user.setIsManager(manager);
     return repository.save(user);
   }
@@ -136,26 +134,9 @@ public class UserServiceImpl implements UserService {
   public UserProfile setEnabled(UUID externalId, boolean enabled) {
     UserProfile user = repository
         .findByExternalId(externalId)
-        .orElseThrow(IllegalArgumentException::new);
+        .orElseThrow(() -> new UserNotFoundException("User not found: " + externalId));
     user.setUserEnabled(enabled);
     return repository.save(user);
-  }
-  public class UserNotFoundException extends ResourceNotFoundException {
-    public UserNotFoundException(String message) {
-      super(message);
-    }
-  }
-
-  public class InvalidUserException extends BadRequestException {
-    public InvalidUserException(String message) {
-      super(message);
-    }
-  }
-
-  public class DuplicateUserException extends ConflictException {
-    public DuplicateUserException(String message) {
-      super(message);
-    }
   }
 
 }
