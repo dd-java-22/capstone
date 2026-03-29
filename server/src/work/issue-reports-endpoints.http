@@ -21,17 +21,27 @@ GET http://localhost:8080/see-something/issue-reports/mine?
 Authorization: Bearer {{bearerToken}}
 
 ###
+GET http://localhost:8080/see-something/issue-reports/mine?sort=last_modified,asc
+    sort={{$random.alphanumeric(8)}}
+Authorization: Bearer {{bearerToken}}
+
+###
+GET http://localhost:8080/see-something/issue-reports/mine?sort=first_reported,desc
+    sort={{$random.alphanumeric(8)}}
+Authorization: Bearer {{bearerToken}}
+
+###
 GET http://localhost:8080/see-something/issue-reports/11111111-1111-1111-1111-111111111005
 Authorization: Bearer {{bearerToken}}
 
 ###
-PUT http://localhost:8080/see-something/issue-reports/18b6be3c-c995-4c21-9c5d-dd8af1c0a726
+PUT http://localhost:8080/see-something/issue-reports/98ad2745-b3a3-4124-9507-824d6354d864
 Content-Type: application/json
 Authorization: Bearer {{bearerToken}}
 
 
 {
-  "textDescription": "Trash was partially cleaned up, still some debris",
+  "textDescription": "Fresh graffiti added existing tag",
   "reportLocation": {
     "latitude": 35.0844,
     "longitude": -106.6504,
@@ -41,10 +51,10 @@ Authorization: Bearer {{bearerToken}}
   "issueTypes": "Trash",
   "reportImages": [
     {
-      "filename": "dumped-trash-2.jpg",
-      "imageLocator": "https://example.com/dev-images/dumped-trash-2.jpg",
+      "filename": "graffiti-addition.jpg",
+      "imageLocator": "https://example.com/dev-images/graffiti-addition.jpg",
       "mimeType": "image/jpeg",
-      "albumOrder": 2
+      "albumOrder": 3
     }]
 }
 

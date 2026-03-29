@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import java.util.Optional;
 import java.util.List;
@@ -10,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 public interface IssueReportService {
 
   //GET /issue-reports/mine?sort={sort}
-  List<IssueReport> getReportsForCurrentUser(String sortParam);
+  List<IssueReportSummary> getReportsForCurrentUser(String sortParam);
 
   //POST /issue-reports
   IssueReport createReport(IssueReport report);
