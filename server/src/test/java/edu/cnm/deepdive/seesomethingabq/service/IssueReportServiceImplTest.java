@@ -18,15 +18,20 @@ package edu.cnm.deepdive.seesomethingabq.service;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
+import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.AcceptedStateRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueTypeRepository;
+import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
@@ -34,12 +39,14 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 @ExtendWith(MockitoExtension.class)
 class IssueReportServiceImplTest {
@@ -57,6 +64,8 @@ class IssueReportServiceImplTest {
   private UserService userService;
 
   private IssueReportService service;
+
+  private UserProfile currentUser;
 
   @BeforeEach
   void setUp() {
@@ -179,4 +188,95 @@ class IssueReportServiceImplTest {
     );
   }
 
+  @Test
+  void getReportsForCurrentUser_lastModifiedAsc_ordersOldThenNew() {
+    IssueReport older = new IssueReport();
+    older.setTextDescription("OLDER");
+    AcceptedState olderState = new AcceptedState();
+    olderState.setStatusTag("OLDER_STATE");
+    older.setAcceptedState(olderState);
+
+    IssueReport newer = new IssueReport();
+    newer.setTextDescription("NEWER");
+    AcceptedState newerState = new AcceptedState();
+    newerState.setStatusTag("NEWER_STATE");
+    newer.setAcceptedState(newerState);
+
+    UserProfile user = new UserProfile();
+    when(userService.getCurrentUser()).thenReturn(user);
+
+    when(issueReportRepository.findByUserProfile(any(UserProfile.class), any(Sort.class)))
+        .thenAnswer(invocation -> {
+          Sort sort = invocation.getArgument(1, Sort.class);
+          Sort.Order order = sort.getOrderFor("timeLastModified");
+          if (order != null && order.isAscending()) {
+            return List.of(older, newer);
+          } else {
+            return List.of(newer, older);
+          }
+        });
+
+    List<IssueReportSummary> results =
+        service.getReportsForCurrentUser("last_modified,asc");
+
+    assertThat(results)
+        .extracting(IssueReportSummary::getDescription)
+        .containsExactly("OLDER", "NEWER");
+  }
+
+  @Test
+  void getReportsForCurrentUser_lastModifiedDesc_ordersNewThenOld() {
+    IssueReport older = new IssueReport();
+    older.setTextDescription("OLDER");
+    AcceptedState olderState = new AcceptedState();
+    olderState.setStatusTag("OLDER_STATE");
+    older.setAcceptedState(olderState);
+
+    IssueReport newer = new IssueReport();
+    newer.setTextDescription("NEWER");
+    AcceptedState newerState = new AcceptedState();
+    newerState.setStatusTag("NEWER_STATE");
+    newer.setAcceptedState(newerState);
+
+    UserProfile user = new UserProfile();
+    when(userService.getCurrentUser()).thenReturn(user);
+
+    when(issueReportRepository.findByUserProfile(any(UserProfile.class), any(Sort.class)))
+        .thenAnswer(invocation -> {
+          Sort sort = invocation.getArgument(1, Sort.class);
+          Sort.Order order = sort.getOrderFor("timeLastModified");
+          if (order != null && order.isAscending()) {
+            return List.of(older, newer);
+          } else {
+            return List.of(newer, older);
+          }
+        });
+
+    List<IssueReportSummary> results =
+        service.getReportsForCurrentUser("last_modified,desc");
+
+    assertThat(results)
+        .extracting(IssueReportSummary::getDescription)
+        .containsExactly("NEWER", "OLDER");
+  }
+
+  @Test
+  void getReportsForCurrentUser_parsesFirstReportedAscIntoSort() {
+    UserProfile user = new UserProfile();
+    when(userService.getCurrentUser()).thenReturn(user);
+    when(issueReportRepository.findByUserProfile(any(UserProfile.class), any(Sort.class)))
+        .thenReturn(List.of());
+
+    ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
+
+    service.getReportsForCurrentUser("first_reported,asc");
+
+    verify(issueReportRepository)
+        .findByUserProfile(any(UserProfile.class), sortCaptor.capture());
+
+    Sort sort = sortCaptor.getValue();
+    Sort.Order order = sort.getOrderFor("timeFirstReported");
+    assertThat(order).isNotNull();
+    assertThat(order.isAscending()).isTrue();
+  }
 }
