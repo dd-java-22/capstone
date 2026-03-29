@@ -279,6 +279,57 @@ PR review + manual testing
 
 ---
 
+### Issue Report endpoints (Ticket #54)
+
+**Tool used:** Perplexity AI & Claude Sonnet 4.6
+
+
+**Task:** Creation of controller, repository, and service classes associated with Issue Report endpoints.
+
+
+**Prompt used:**
+> Several prompts were used. Firt to generate the classes themselves, and then to assist in the debugging of any issues that arose.
+
+**Output produced:** `IssueReportController`, `IssueReportService`, `IssueReportServiceImpl`, `IssueReportRepository` classes/interfaces.
+
+
+**Human review/modification:** Reviewed each file and shaped the naming and styles to fit the standards consistent with the rest of the project. Subject to peer review in the PR as well.
+
+---
+
+### Sort param fix (Ticket #76)
+
+**Tool used:** Perplexity AI & Claude Sonnet 4.6
+
+
+**Task:** Implement flexible sorting and summary DTO for current-user issue reports.
+
+
+**Prompt used:**
+> Provided context and requested solution that incorporated a DTO.
+
+**Output produced:**
+
+Created `IssueReportSummary` DTO
+
+Updated `IssueReportController`:
+- GET /issue-reports/mine now returns `List<IssueReportSummary>`.
+- Continues to accept sort query parameter (default "last_modified") and passes it to the service.
+
+Updated `IssueReportService` / `IssueReportServiceImpl`:
+- `getReportsForCurrentUser(String sortParam)` now returns List<IssueReportSummary>.
+- Introduced `parseSort(String sortParam)` to convert values like last_modified,asc or first_reported,desc (and multi-clause strings) into a Spring Sort.
+- Maps `IssueReport` entities to `IssueReportSummary` via a new `toSummary` helper.
+
+Updated `IssueReportRepository`:
+- Added `List<IssueReport> findByUserProfile(UserProfile userProfile, Sort sort)` to support flexible sorting for the current-user reports query.
+
+
+**Human review/modification:** Reviewed the changes, and worked out some bugs as well as modifications to some of the naming. Tested all sorted endpoints to confirm desired functionality. PR was reviewed by others prior to merging.
+
+---
+
+
 <!--
 Use the following template for each AI-assisted task:
 
