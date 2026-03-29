@@ -224,19 +224,37 @@ paths:
         - name: sort
           in: query
           required: false
-          description: Sort selector. The current implementation accepts this parameter but presently returns results ordered by time first reported descending.
+          description: |
+            Sort selector for the current user's issue reports.
+
+            Supported field keys:
+            - `last_modified`
+            - `first_reported`
+
+            Supported formats:
+            - `last_modified`
+            - `last_modified,asc`
+            - `last_modified,desc`
+            - `first_reported,asc`
+            - `first_reported,desc`
+            - multiple clauses separated by semicolons, for example
+              `last_modified,desc;first_reported,desc`
+
+            Unknown field keys are ignored. If no valid clauses are provided,
+            results default to `last_modified` descending.
           schema:
             type: string
             default: last_modified
+            example: last_modified,desc;first_reported,desc
       responses:
         '200':
-          description: Issue reports retrieved successfully.
+          description: Issue report summaries retrieved successfully.
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/IssueReport'
+                  $ref: '#/components/schemas/IssueReportSummary'
         '401':
           $ref: '#/components/responses/Unauthorized'
 
@@ -946,6 +964,29 @@ components:
           description: Present in the current entity shape, but image creation is handled through the dedicated image endpoint.
           items:
             $ref: '#/components/schemas/ReportImage'
+
+    IssueReportSummary:
+      type: object
+      required:
+        - externalId
+        - description
+        - acceptedState
+        - timeFirstReported
+        - timeLastModified
+      properties:
+        externalId:
+          type: string
+          format: uuid
+        description:
+          type: string
+        acceptedState:
+          type: string
+        timeFirstReported:
+          type: string
+          format: date-time
+        timeLastModified:
+          type: string
+          format: date-time
 
     IssueReportStatusUpdateRequest:
       type: object
