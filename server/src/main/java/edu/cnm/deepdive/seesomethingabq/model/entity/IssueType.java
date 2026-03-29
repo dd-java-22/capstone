@@ -42,7 +42,6 @@ public class IssueType {
   @JsonIgnore
   private final List<IssueReport> issueReports = new LinkedList<>();
 
-
   public Long getId() {
     return id;
   }
@@ -63,6 +62,7 @@ public class IssueType {
     this.issueTypeDescription = issueTypeDescription;
   }
 
+  @JsonIgnore
   public List<IssueReport> getIssueReports() {
     return issueReports;
   }

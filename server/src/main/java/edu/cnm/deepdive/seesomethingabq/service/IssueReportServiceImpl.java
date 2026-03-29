@@ -2,15 +2,24 @@ package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
+import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportLocation;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.AcceptedStateRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
-import jakarta.transaction.Transactional;
+import edu.cnm.deepdive.seesomethingabq.service.repository.IssueTypeRepository;
+
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Transactional
@@ -19,23 +28,26 @@ public class IssueReportServiceImpl implements IssueReportService {
   private final IssueReportRepository issueReportRepository;
   private final UserService userService;
   private final AcceptedStateRepository acceptedStateRepository;
+  private final IssueTypeRepository issueTypeRepository;
 
   @Autowired
   public IssueReportServiceImpl(
-      IssueReportRepository issueReportRepository,
-      UserService userService,
-      AcceptedStateRepository acceptedStateRepository
+    IssueReportRepository issueReportRepository,
+    UserService userService,
+    AcceptedStateRepository acceptedStateRepository,
+    IssueTypeRepository issueTypeRepository
   ) {
     this.issueReportRepository = issueReportRepository;
     this.userService = userService;
     this.acceptedStateRepository = acceptedStateRepository;
+    this.issueTypeRepository = issueTypeRepository;
   }
 
   @Override
   public List<IssueReport> getReportsForCurrentUser(String sortParam) {
     UserProfile user = userService.getCurrentUser();
     return issueReportRepository
-        .getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(user);
+      .getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(user);
   }
 
   @Override
@@ -45,20 +57,20 @@ public class IssueReportServiceImpl implements IssueReportService {
     report.setUserProfile(currentUser);
 
     AcceptedState defaultState = acceptedStateRepository
-        .findByStatusTag("New");
+      .findByStatusTag("New");
 
-    if (defaultState != null) {
-      report.setAcceptedState(defaultState);
-    } else {
-      // FIXME: 3/27/2026 throw correct exception or remove this code as needed
-      throw new IllegalArgumentException();
+    if (defaultState == null) {
+      throw new IllegalStateException("Default accepted state 'New' not found.");
     }
+
+    report.setAcceptedState(defaultState);
 
     ReportLocation location = report.getReportLocation();
     if (location != null) {
       // TODO: 2026-03-26 Confirm bidirectional link handling once DTOs/mappers are in place
       location.setIssueReport(report);
     }
+
     return issueReportRepository.save(report);
   }
 
@@ -106,9 +118,58 @@ public class IssueReportServiceImpl implements IssueReportService {
     issueReportRepository.delete(requireReport(externalKey));
   }
 
+  @Override
+  public Page<IssueReport> getAll(Pageable pageable) {
+    return issueReportRepository.findAll(pageable);
+  }
+
+  @Override
+  @Transactional
+  public IssueReport replaceIssueTypes(UUID externalId, Iterable<String> issueTypeTags) {
+    IssueReport report = issueReportRepository
+      .findByExternalId(externalId)
+      .orElseThrow(NoSuchElementException::new);
+
+    Set<String> requested = new LinkedHashSet<>();
+    if (issueTypeTags != null) {
+      for (String tag : issueTypeTags) {
+        if (tag != null && !tag.isBlank()) {
+          requested.add(tag);
+        }
+      }
+    }
+
+    List<IssueType> resolved = issueTypeRepository.findAllByIssueTypeTagIn(requested);
+    if (resolved.size() != requested.size()) {
+      throw new IllegalArgumentException("Invalid issueTypeTags set.");
+    }
+    report.getIssueTypes().clear();
+    report.getIssueTypes().addAll(resolved);
+    return issueReportRepository.save(report);
+  }
+
+  @Override
+  @Transactional
+  public IssueReport setAcceptedState(UUID externalId, String statusTag) {
+    IssueReport report = issueReportRepository
+      .findByExternalId(externalId)
+      .orElseThrow(NoSuchElementException::new);
+
+    AcceptedState acceptedState = acceptedStateRepository
+      .findByStatusTag(statusTag);
+
+    if (acceptedState != null) {
+      report.setAcceptedState(acceptedState);
+    } else {
+      throw new NoSuchElementException();
+    }
+
+    return issueReportRepository.save(report);
+  }
+
   private IssueReport requireReport(UUID externalKey) {
     return issueReportRepository.findByExternalId(externalKey)
-        .orElseThrow(() -> new RuntimeException(externalKey + " not found"));
+      .orElseThrow(() -> new RuntimeException(externalKey + " not found"));
     // TODO: 3/26/2026 change RuntimeException to appropriate @RestControllerAdvice
     //  custom exception when ticket #66 is complete.
   }

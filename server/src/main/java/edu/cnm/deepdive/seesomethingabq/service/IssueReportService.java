@@ -1,8 +1,11 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
+import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface IssueReportService {
 
@@ -20,8 +23,14 @@ public interface IssueReportService {
 
   //DELETE /issue-reports/{externalKey}
   void deleteReport(UUID externalKey);
+
+  // GET /managers/issue-reports/
+  Page<IssueReport> getAll(Pageable pageable);
+
+  // PUT /manager/issue-reports/{externalId}/status/
+  IssueReport replaceIssueTypes(UUID externalId, Iterable<String> issueTypeTags);
+
+  // PUT /manager/issue-reports/{externalId}/issue-types/
+  IssueReport setAcceptedState(UUID externalId, String statusTag);
 }
-
-
-
 

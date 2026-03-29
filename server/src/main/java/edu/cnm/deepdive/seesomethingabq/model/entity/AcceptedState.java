@@ -63,6 +63,7 @@ public class AcceptedState {
     this.statusTagDescription = statusTagDescription;
   }
 
+  @JsonIgnore
   public List<IssueReport> getIssueReports() {
     return issueReports;
   }

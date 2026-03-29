@@ -45,8 +45,8 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://example.com/issuer",
     "spring.security.oauth2.resourceserver.jwt.audiences=test-client-id"
 })
-@ContextConfiguration(classes = {ManagerControllerTest.TestConfig.class})
-class ManagerControllerTest {
+@ContextConfiguration(classes = {ManagerUserControllerTest.TestConfig.class})
+class ManagerUserControllerTest {
 
   @Autowired
   private WebApplicationContext context;

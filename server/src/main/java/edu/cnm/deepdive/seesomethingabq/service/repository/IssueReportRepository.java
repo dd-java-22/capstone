@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface IssueReportRepository extends JpaRepository<IssueReport, Long> {
 
+  Optional<IssueReport> findByExternalId(UUID externalId);
 
   List<IssueReport> getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(
       UserProfile userProfile);
@@ -24,7 +25,4 @@ public interface IssueReportRepository extends JpaRepository<IssueReport, Long> 
 
   List<IssueReport> getIssueReportsByTimeLastModifiedBetween(
       Instant timeLastModifiedAfter, Instant timeLastModifiedBefore);
-
-  Optional<IssueReport> findByExternalId(UUID externalId);
-
 }

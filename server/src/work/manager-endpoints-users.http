@@ -3,11 +3,11 @@ GET http://localhost:8080/see-something/manager/users
 Authorization: Bearer {{bearerToken}}
 
 ###
-GET http://localhost:8080/see-something/manager/users/{{externalId}}
+GET http://localhost:8080/see-something/manager/users/{{userProfileExternalId}}
 Authorization: Bearer {{bearerToken}}
 
 ###
-PATCH http://localhost:8080/see-something/manager/users/{{externalId}}/enabled
+PATCH http://localhost:8080/see-something/manager/users/{{userProfileExternalId}}/enabled
 Authorization: Bearer {{bearerToken}}
 Content-Type: application/json
 
@@ -16,7 +16,7 @@ Content-Type: application/json
 }
 
 ###
-PATCH http://localhost:8080/see-something/manager/users/{{externalId}}/manager-status
+PATCH http://localhost:8080/see-something/manager/users/{{userProfileExternalId}}/manager-status
 Authorization: Bearer {{bearerToken}}
 Content-Type: application/json
 
