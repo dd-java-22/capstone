@@ -1,5 +1,8 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
+import edu.cnm.deepdive.seesomethingabq.exception.ConflictException;
+import edu.cnm.deepdive.seesomethingabq.exception.DuplicateIssueTypeException;
+import edu.cnm.deepdive.seesomethingabq.exception.IssueTypeNotFoundException;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
@@ -28,7 +31,7 @@ public class IssueTypeServiceImpl implements IssueTypeService {
   @Override
   public IssueType createNewIssueType(IssueType newIssueType) {
     if (tagRepository.existsByIssueTypeTag(newIssueType.getIssueTypeTag())) {
-      throw new IllegalArgumentException("Issue type tag already exists: " + newIssueType.getIssueTypeTag());
+      throw new DuplicateIssueTypeException("Issue type tag already exists: " + newIssueType.getIssueTypeTag());
     }
     return tagRepository.save(newIssueType);
   }
@@ -37,7 +40,7 @@ public class IssueTypeServiceImpl implements IssueTypeService {
   public IssueType updateIssueTypeDescription(String issueTypeTag, String newIssueTypeDescription) {
     IssueType tagToChange = tagRepository.findByIssueTypeTag(issueTypeTag);
     if (tagToChange == null) {
-      throw new IllegalArgumentException("Issue type tag not found: " + issueTypeTag);
+      throw new IssueTypeNotFoundException("Issue type tag not found: " + issueTypeTag);
     }
     tagToChange.setIssueTypeDescription(newIssueTypeDescription);
     return tagRepository.save(tagToChange);
@@ -47,11 +50,11 @@ public class IssueTypeServiceImpl implements IssueTypeService {
   public void deleteUnusedIssueType(String issueTypeTag) {
     IssueType doomedTag = tagRepository.findByIssueTypeTag(issueTypeTag);
     if (doomedTag == null) {
-      throw new IllegalArgumentException("Issue type tag not found: " + issueTypeTag);
+      throw new IssueTypeNotFoundException("Issue type tag not found: " + issueTypeTag);
     }    if (doomedTag.getIssueReports().isEmpty()) {
       tagRepository.delete(doomedTag);
     } else {
-      throw new IllegalStateException("Cannot delete issue type with active reports");
+      throw new ConflictException("Cannot delete issue type with active reports");
     }
   }
 }

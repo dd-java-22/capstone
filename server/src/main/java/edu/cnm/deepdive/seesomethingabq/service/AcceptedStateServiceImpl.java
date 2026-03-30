@@ -1,5 +1,8 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
+import edu.cnm.deepdive.seesomethingabq.exception.AcceptedStateNotFoundException;
+import edu.cnm.deepdive.seesomethingabq.exception.ConflictException;
+import edu.cnm.deepdive.seesomethingabq.exception.DuplicateAcceptedStateException;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.service.repository.AcceptedStateRepository;
 import java.util.List;
@@ -26,7 +29,7 @@ public class AcceptedStateServiceImpl implements AcceptedStateService {
   @Override
   public AcceptedState createNewAcceptedState(AcceptedState newAcceptedState) {
     if (repository.existsByStatusTag(newAcceptedState.getStatusTag())) {
-      throw new IllegalArgumentException("Accepted state status tag already exists: "
+      throw new DuplicateAcceptedStateException("Accepted state status tag already exists: "
           + newAcceptedState.getStatusTag());
     }
     return repository.save(newAcceptedState);
@@ -36,7 +39,7 @@ public class AcceptedStateServiceImpl implements AcceptedStateService {
   public AcceptedState updateAcceptedStateDescription(String statusTag, String newDescription) {
     AcceptedState stateToChange = repository.findByStatusTag(statusTag);
     if (stateToChange == null) {
-      throw new IllegalArgumentException("Accepted state status tag not found: " + statusTag);
+      throw new AcceptedStateNotFoundException("Accepted state status tag not found: " + statusTag);
     }
     stateToChange.setStatusTagDescription(newDescription);
     return repository.save(stateToChange);
@@ -46,12 +49,12 @@ public class AcceptedStateServiceImpl implements AcceptedStateService {
   public void deleteUnusedAcceptedState(String statusTag) {
     AcceptedState doomedState = repository.findByStatusTag(statusTag);
     if (doomedState == null) {
-      throw new IllegalArgumentException("Accepted state status tag not found: " + statusTag);
+      throw new AcceptedStateNotFoundException("Accepted state status tag not found: " + statusTag);
     }
     if (doomedState.getIssueReports().isEmpty()) {
       repository.delete(doomedState);
     } else {
-      throw new IllegalStateException("Cannot delete accepted state with active reports");
+      throw new ConflictException("Cannot delete accepted state with active reports");
     }
   }
 

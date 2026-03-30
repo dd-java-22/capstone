@@ -24,6 +24,10 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+
+import edu.cnm.deepdive.seesomethingabq.exception.AcceptedStateNotFoundException;
+import edu.cnm.deepdive.seesomethingabq.exception.ConflictException;
+import edu.cnm.deepdive.seesomethingabq.exception.DuplicateAcceptedStateException;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.service.repository.AcceptedStateRepository;
@@ -76,7 +80,7 @@ class AcceptedStateServiceImplTest {
     input.setStatusTag("DUP");
     when(repository.existsByStatusTag("DUP")).thenReturn(true);
 
-    assertThrows(IllegalArgumentException.class, () -> service.createNewAcceptedState(input));
+    assertThrows(DuplicateAcceptedStateException.class, () -> service.createNewAcceptedState(input));
 
     verify(repository, never()).save(any(AcceptedState.class));
   }
@@ -101,7 +105,7 @@ class AcceptedStateServiceImplTest {
   void testUpdateAcceptedStateDescriptionMissingTagThrows() {
     when(repository.findByStatusTag("MISSING")).thenReturn(null);
 
-    assertThrows(IllegalArgumentException.class,
+    assertThrows(AcceptedStateNotFoundException.class,
         () -> service.updateAcceptedStateDescription("MISSING", "New"));
 
     verify(repository, never()).save(any(AcceptedState.class));
@@ -122,7 +126,7 @@ class AcceptedStateServiceImplTest {
   void testDeleteUnusedAcceptedStateMissingTagThrows() {
     when(repository.findByStatusTag("MISSING")).thenReturn(null);
 
-    assertThrows(IllegalArgumentException.class, () -> service.deleteUnusedAcceptedState("MISSING"));
+    assertThrows(AcceptedStateNotFoundException.class, () -> service.deleteUnusedAcceptedState("MISSING"));
 
     verify(repository, never()).delete(any(AcceptedState.class));
   }
@@ -134,7 +138,7 @@ class AcceptedStateServiceImplTest {
     doomed.getIssueReports().add(new IssueReport());
     when(repository.findByStatusTag("IN_USE")).thenReturn(doomed);
 
-    assertThrows(IllegalStateException.class, () -> service.deleteUnusedAcceptedState("IN_USE"));
+    assertThrows(ConflictException.class, () -> service.deleteUnusedAcceptedState("IN_USE"));
 
     verify(repository, never()).delete(any(AcceptedState.class));
   }

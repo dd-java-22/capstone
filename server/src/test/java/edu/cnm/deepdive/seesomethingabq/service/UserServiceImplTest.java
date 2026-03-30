@@ -25,6 +25,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import edu.cnm.deepdive.seesomethingabq.exception.UserNotFoundException;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;
 import java.util.NoSuchElementException;
@@ -225,7 +226,7 @@ class UserServiceImplTest {
     UUID externalId = UUID.fromString("dddddddd-dddd-dddd-dddd-dddddddddddd");
     when(repository.findByExternalId(externalId)).thenReturn(Optional.empty());
 
-    assertThrows(IllegalArgumentException.class, () -> service.setManagerStatus(externalId, true));
+    assertThrows(UserNotFoundException.class, () -> service.setManagerStatus(externalId, true));
 
     verify(repository, times(1)).findByExternalId(externalId);
     verify(repository, never()).save(any(UserProfile.class));
@@ -251,7 +252,7 @@ class UserServiceImplTest {
     UUID externalId = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
     when(repository.findByExternalId(externalId)).thenReturn(Optional.empty());
 
-    assertThrows(IllegalArgumentException.class, () -> service.setEnabled(externalId, true));
+    assertThrows(UserNotFoundException.class, () -> service.setEnabled(externalId, true));
 
     verify(repository, times(1)).findByExternalId(externalId);
     verify(repository, never()).save(any(UserProfile.class));
