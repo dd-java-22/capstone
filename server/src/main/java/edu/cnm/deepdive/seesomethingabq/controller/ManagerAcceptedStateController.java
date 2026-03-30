@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/manager/accepted-states")
@@ -36,11 +35,7 @@ public class ManagerAcceptedStateController {
 
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public AcceptedState createAcceptedState(@RequestBody AcceptedState newAcceptedState) {
-    try {
-      return service.createNewAcceptedState(newAcceptedState);
-    } catch (IllegalArgumentException e) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Status tag already exists", e);
-    }
+    return service.createNewAcceptedState(newAcceptedState);
   }
 
   @PatchMapping(path = "/{statusTag}", consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -49,23 +44,13 @@ public class ManagerAcceptedStateController {
       @PathVariable String statusTag,
       @RequestBody AcceptedStateDescriptionUpdateRequest request
   ) {
-    try {
-      return service.updateAcceptedStateDescription(statusTag, request.getStatusTagDescription());
-    } catch (IllegalArgumentException e) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Status tag not found", e);
-    }
+    return service.updateAcceptedStateDescription(statusTag, request.getStatusTagDescription());
   }
 
   @DeleteMapping(path = "/{statusTag}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteUnusedAcceptedState(@PathVariable String statusTag) {
-    try {
-      service.deleteUnusedAcceptedState(statusTag);
-    } catch (IllegalArgumentException e) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Status tag not found", e);
-    } catch (IllegalStateException e) {
-      throw new ResponseStatusException(HttpStatus.CONFLICT, "Status tag in use", e);
-    }
+    service.deleteUnusedAcceptedState(statusTag);
   }
 
 }
