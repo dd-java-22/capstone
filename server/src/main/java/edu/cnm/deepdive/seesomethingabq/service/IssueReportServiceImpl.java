@@ -1,5 +1,7 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
+import edu.cnm.deepdive.seesomethingabq.exception.AcceptedStateNotFoundException;
+import edu.cnm.deepdive.seesomethingabq.exception.IssueReportNotFoundException;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
@@ -65,8 +67,10 @@ public class IssueReportServiceImpl implements IssueReportService {
     AcceptedState defaultState = acceptedStateRepository
         .findByStatusTag("New");
 
-    if (defaultState == null) {
-      throw new IllegalStateException("Default accepted state 'New' not found.");
+    if (defaultState != null) {
+      report.setAcceptedState(defaultState);
+    } else {
+      throw new AcceptedStateNotFoundException("Default accepted state 'New' not found");
     }
 
     report.setAcceptedState(defaultState);
@@ -175,9 +179,7 @@ public class IssueReportServiceImpl implements IssueReportService {
 
   private IssueReport requireReport(UUID externalKey) {
     return issueReportRepository.findByExternalId(externalKey)
-        .orElseThrow(() -> new RuntimeException(externalKey + " not found"));
-    // TODO: 3/26/2026 change RuntimeException to appropriate @RestControllerAdvice
-    //  custom exception when ticket #66 is complete.
+        .orElseThrow(() -> new IssueReportNotFoundException("Issue report not found: " + externalKey));
   }
 
 

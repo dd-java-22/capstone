@@ -15,6 +15,7 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import edu.cnm.deepdive.seesomethingabq.exception.UserNotFoundException;
 import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
@@ -22,7 +23,6 @@ import edu.cnm.deepdive.seesomethingabq.service.UserService;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  * REST controller for manager-only user administration operations.
@@ -55,7 +54,7 @@ public class ManagerUserController {
   public UserProfile get(@PathVariable UUID externalId) {
     return service
         .getByExternalId(externalId)
-        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+        .orElseThrow(() -> new UserNotFoundException("User not found: " + externalId));
   }
 
   @PatchMapping(
@@ -67,11 +66,7 @@ public class ManagerUserController {
       @PathVariable UUID externalId,
       @RequestBody ManagerStatusUpdateRequest request
   ) {
-    try {
-      return service.setManagerStatus(externalId, request.isManager());
-    } catch (IllegalArgumentException ex) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, null, ex);
-    }
+    return service.setManagerStatus(externalId, request.isManager());
   }
 
   @PatchMapping(
@@ -83,11 +78,7 @@ public class ManagerUserController {
       @PathVariable UUID externalId,
       @RequestBody UserEnabledUpdateRequest request
   ) {
-    try {
-      return service.setEnabled(externalId, request.isEnabled());
-    } catch (IllegalArgumentException ex) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, null, ex);
-    }
+    return service.setEnabled(externalId, request.isEnabled());
   }
 
 }

@@ -22,6 +22,9 @@ import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import edu.cnm.deepdive.seesomethingabq.exception.AcceptedStateNotFoundException;
+import edu.cnm.deepdive.seesomethingabq.exception.ConflictException;
+import edu.cnm.deepdive.seesomethingabq.exception.DuplicateAcceptedStateException;
 import edu.cnm.deepdive.seesomethingabq.model.dto.AcceptedStateDescriptionUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.service.AcceptedStateService;
@@ -31,8 +34,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 class ManagerAcceptedStateControllerUnitTest {
@@ -73,11 +74,10 @@ class ManagerAcceptedStateControllerUnitTest {
   @Test
   void createAcceptedStateDuplicateMapsTo409() {
     AcceptedState input = new AcceptedState();
-    when(acceptedStateService.createNewAcceptedState(input)).thenThrow(new IllegalArgumentException());
+    when(acceptedStateService.createNewAcceptedState(input)).thenThrow(new DuplicateAcceptedStateException("Duplicate state"));
 
-    ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+    assertThrows(DuplicateAcceptedStateException.class,
         () -> controller.createAcceptedState(input));
-    assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
     verify(acceptedStateService).createNewAcceptedState(input);
   }
 
@@ -103,11 +103,10 @@ class ManagerAcceptedStateControllerUnitTest {
     AcceptedStateDescriptionUpdateRequest request = new AcceptedStateDescriptionUpdateRequest();
     request.setStatusTagDescription(newDescription);
     when(acceptedStateService.updateAcceptedStateDescription(statusTag, newDescription))
-        .thenThrow(new IllegalArgumentException());
+        .thenThrow(new AcceptedStateNotFoundException("Status tag not found"));
 
-    ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+    assertThrows(AcceptedStateNotFoundException.class,
         () -> controller.updateAcceptedStateDescription(statusTag, request));
-    assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     verify(acceptedStateService).updateAcceptedStateDescription(statusTag, newDescription);
   }
 
@@ -123,26 +122,24 @@ class ManagerAcceptedStateControllerUnitTest {
   @Test
   void deleteAcceptedStateMissingTagMapsTo404() {
     String statusTag = "MISSING";
-    doThrow(new IllegalArgumentException())
+    doThrow(new AcceptedStateNotFoundException("Status tag not found"))
         .when(acceptedStateService)
         .deleteUnusedAcceptedState(statusTag);
 
-    ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+    assertThrows(AcceptedStateNotFoundException.class,
         () -> controller.deleteUnusedAcceptedState(statusTag));
-    assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     verify(acceptedStateService).deleteUnusedAcceptedState(statusTag);
   }
 
   @Test
   void deleteAcceptedStateInUseMapsTo409() {
     String statusTag = "IN_USE";
-    doThrow(new IllegalStateException())
+    doThrow(new ConflictException("Status tag in use"))
         .when(acceptedStateService)
         .deleteUnusedAcceptedState(statusTag);
 
-    ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+    assertThrows(ConflictException.class,
         () -> controller.deleteUnusedAcceptedState(statusTag));
-    assertEquals(HttpStatus.CONFLICT, ex.getStatusCode());
     verify(acceptedStateService).deleteUnusedAcceptedState(statusTag);
   }
 

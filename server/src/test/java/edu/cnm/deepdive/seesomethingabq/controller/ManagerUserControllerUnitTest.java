@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import edu.cnm.deepdive.seesomethingabq.exception.UserNotFoundException;
 import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
@@ -34,8 +35,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 class ManagerUserControllerUnitTest {
@@ -82,9 +81,8 @@ class ManagerUserControllerUnitTest {
     UUID externalId = UUID.fromString("22222222-2222-2222-2222-222222222222");
     when(userService.getByExternalId(externalId)).thenReturn(Optional.empty());
 
-    ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+    assertThrows(UserNotFoundException.class,
         () -> controller.get(externalId));
-    assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     verify(userService).getByExternalId(externalId);
   }
 
@@ -108,11 +106,10 @@ class ManagerUserControllerUnitTest {
     UUID externalId = UUID.fromString("44444444-4444-4444-4444-444444444444");
     ManagerStatusUpdateRequest request = new ManagerStatusUpdateRequest();
     request.setManager(false);
-    when(userService.setManagerStatus(externalId, false)).thenThrow(new IllegalArgumentException());
+    when(userService.setManagerStatus(externalId, false)).thenThrow(new UserNotFoundException("User not found"));
 
-    ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+    assertThrows(UserNotFoundException.class,
         () -> controller.updateManagerStatus(externalId, request));
-    assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     verify(userService).setManagerStatus(externalId, false);
   }
 
@@ -136,11 +133,10 @@ class ManagerUserControllerUnitTest {
     UUID externalId = UUID.fromString("66666666-6666-6666-6666-666666666666");
     UserEnabledUpdateRequest request = new UserEnabledUpdateRequest();
     request.setEnabled(true);
-    when(userService.setEnabled(externalId, true)).thenThrow(new IllegalArgumentException());
+    when(userService.setEnabled(externalId, true)).thenThrow(new UserNotFoundException("User not found"));
 
-    ResponseStatusException ex = assertThrows(ResponseStatusException.class,
+    assertThrows(UserNotFoundException.class,
         () -> controller.updateEnabled(externalId, request));
-    assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
     verify(userService).setEnabled(externalId, true);
   }
 
