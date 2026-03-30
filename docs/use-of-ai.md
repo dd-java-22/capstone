@@ -328,6 +328,57 @@ Updated `IssueReportRepository`:
 **Human review/modification:** Reviewed the changes, and worked out some bugs as well as modifications to some of the naming. Tested all sorted endpoints to confirm desired functionality. PR was reviewed by others prior to merging.
 
 ---
+### Report Image endpoints (Ticket #56)
+
+**Tool used:** Claude Agent
+
+
+**Task:** Creation of controller, repository, and service classes associated with Report Image endpoints.
+
+
+**Prompt used:**
+> Several prompts were used. Initially to generate the classes for the contoller, repository, and service interface, and then to assist in creating test classes to ensure the service layer is working as expected.
+
+**Output produced:** `ReportImageController`, `ReportImageService`, `ReportImageServiceImpl`, `IssueReportRepository` classes/interfaces.
+
+
+**Human review/modification:** Reviewed each file and shaped the naming and styles to fit the standards consistent with the rest of the project. Subject to peer review in the PR as well.
+
+---
+### Custom Exception Classes (Ticket #66)
+
+**Tool used:** Claude Agent & MS Copilot.
+
+
+**Task:** Creation of custom exception classes and the REST controller advice for handling of them in the application.
+
+
+**Prompt used:**
+> Several prompts were used. The first created the custim exception classes, and the next mapped them to appropriate HTTP status codes using a combination of @ExcdptionHandler and @ResponseStatus in the @RestControllerAdvice-annotated class.
+
+**Output produced:** `IssueReportController`, `IssueReportService`, `IssueReportServiceImpl`, `IssueReportRepository` classes/interfaces.
+
+
+**Human review/modification:** Reviewed each file and shaped the naming and styles to fit the standards consistent with the rest of the project. Subject to peer review in the PR as well.
+
+---
+### Summary of Current State (Ticket #40)
+
+**Tool used:** Claude Agent
+
+
+**Task:** Creation of the current-state.md file in the docs directory. 
+
+
+**Prompt used:**
+> "Please summarize the current state of the project based on the current state if readiness for the project.
+
+**Output produced:** `current-state.md`.
+
+
+**Human review/modification:** Reviewed each file and shaped the naming and styles to fit the standards consistent with the rest of the project. Subject to peer review in the PR as well.
+
+---
 
 
 <!--
