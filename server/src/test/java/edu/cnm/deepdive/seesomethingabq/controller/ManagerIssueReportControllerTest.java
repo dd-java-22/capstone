@@ -15,11 +15,14 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import static org.hamcrest.Matchers.containsString;
+import static org.hamcrest.Matchers.not;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
@@ -98,7 +101,10 @@ class ManagerIssueReportControllerTest {
   @WithMockUser(roles = "MANAGER")
   void getAllWithInvalidPageNumberReturns400() throws Exception {
     mockMvc.perform(get("/manager/issue-reports").param("pageNumber", "not-an-int"))
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value(containsString("pageNumber")))
+        .andExpect(jsonPath("$.message").value(containsString("parameter")))
+        .andExpect(jsonPath("$.message").value(not(containsString("An unexpected error occurred"))));
   }
 
   @Test
@@ -110,7 +116,25 @@ class ManagerIssueReportControllerTest {
                 .contentType("application/json")
                 .content("{\"statusTag\":\"ACCEPTED\"}")
         )
-        .andExpect(status().isBadRequest());
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value(containsString("externalId")))
+        .andExpect(jsonPath("$.message").value(containsString("parameter")))
+        .andExpect(jsonPath("$.message").value(not(containsString("An unexpected error occurred"))));
+  }
+
+  @Test
+  @WithMockUser(roles = "MANAGER")
+  void putStatusWithMalformedJsonReturns400() throws Exception {
+    mockMvc.perform(
+            put("/manager/issue-reports/{externalId}/status",
+                "11111111-1111-1111-1111-111111111111")
+                .with(csrf())
+                .contentType("application/json")
+                .content("{")
+        )
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value(containsString("Malformed request body")))
+        .andExpect(jsonPath("$.message").value(not(containsString("An unexpected error occurred"))));
   }
 
   @Test
