@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.configuration;
 
+import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,6 +21,7 @@ import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.JwtDecoders;
 import org.springframework.security.oauth2.jwt.JwtValidators;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
+import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -30,16 +32,19 @@ public class SecurityConfiguration {
   private final Converter<Jwt, ? extends AbstractAuthenticationToken> converter;
   private final String issuerUri;
   private final String clientId;
+  private final UserProfileRepository userProfileRepository;
 
   @Autowired
   SecurityConfiguration(
       Converter<Jwt, ? extends AbstractAuthenticationToken> converter,
       @Value("${spring.security.oauth2.resourceserver.jwt.issuer-uri}") String issuerUri,
-      @Value("${spring.security.oauth2.resourceserver.jwt.client-id}") String clientId
+      @Value("${spring.security.oauth2.resourceserver.jwt.client-id}") String clientId,
+      UserProfileRepository userProfileRepository
   ) {
     this.converter = converter;
     this.issuerUri = issuerUri;
     this.clientId = clientId;
+    this.userProfileRepository = userProfileRepository;
   }
 
   @Bean
@@ -52,6 +57,7 @@ public class SecurityConfiguration {
             .anyRequest().authenticated())
         .oauth2ResourceServer((customizer) ->
             customizer.jwt((jwt) -> jwt.jwtAuthenticationConverter(converter)))
+        .addFilterAfter(new UserEnabledFilter(userProfileRepository), BearerTokenAuthenticationFilter.class)
         .build();
   }
 
