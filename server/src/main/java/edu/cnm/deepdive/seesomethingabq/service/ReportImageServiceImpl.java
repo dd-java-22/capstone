@@ -31,7 +31,7 @@ public class ReportImageServiceImpl implements ReportImageService {
   }
 
   @Override
-  public ReportImage getImage(UUID externalKey, UUID imageKey) {
+  public ReportImage getImage(UUID externalKey, UUID imageId) {
     UserProfile currentUser = userService.getCurrentUser();
     IssueReport report = issueReportRepository.findByExternalId(externalKey)
         .orElseThrow(() -> new ResourceNotFoundException("Issue report not found"));
@@ -41,7 +41,7 @@ public class ReportImageServiceImpl implements ReportImageService {
       throw new AccessDeniedException("You do not have permission to view this image");
     }
 
-    return reportImageRepository.findByIssueReportAndExternalKey(report, imageKey)
+    return reportImageRepository.findByIssueReportAndExternalId(report, imageId)
         .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
   }
 

@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
@@ -43,10 +44,8 @@ public class IssueReportController {
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  // TODO: 2026-03-26 Replace entity-based request/response with DTOs (IssueReportRequest, IssueReportView, IssueReportSummary)
-// TODO: 2026-03-26 Add validation (e.g., @Valid, Bean Validation annotations) once DTOs are in place
-  public ResponseEntity<IssueReport> createReport(@RequestBody IssueReport report) {
-    IssueReport created = issueReportService.createReport(report);
+  public ResponseEntity<IssueReport> createReport(@RequestBody IssueReportRequest request) {
+    IssueReport created = issueReportService.createReport(request);
     URI location = URI.create("/issue-reports/" + created.getExternalId());
     return ResponseEntity.created(location).body(created);
   }
@@ -57,8 +56,8 @@ public class IssueReportController {
   }
 
   @PutMapping("/{externalKey}")
-  public IssueReport updateReport(@PathVariable UUID externalKey, @RequestBody IssueReport report) {
-    return issueReportService.updateReport(externalKey, report);
+  public IssueReport updateReport(@PathVariable UUID externalKey, @RequestBody IssueReportRequest request) {
+    return issueReportService.updateReport(externalKey, request);
   }
 
   @DeleteMapping("/{externalKey}")

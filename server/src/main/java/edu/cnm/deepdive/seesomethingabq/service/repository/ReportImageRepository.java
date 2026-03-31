@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface ReportImageRepository extends JpaRepository<ReportImage, Long> {
 
-  Optional<ReportImage> findByIssueReportAndExternalKey(IssueReport issueReport, UUID externalKey);
+  Optional<ReportImage> findByIssueReportAndExternalId(IssueReport issueReport, UUID externalId);
 
 }
