@@ -30,6 +30,8 @@ import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -44,6 +46,9 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.WebApplicationContext;
 
 @SpringBootTest
@@ -124,6 +129,21 @@ class ManagerIssueReportControllerTest {
 
   @Test
   @WithMockUser(roles = "MANAGER")
+  void putIssueTypesWithInvalidExternalIdReturns400() throws Exception {
+    mockMvc.perform(
+            put("/manager/issue-reports/{externalId}/issue-types", "not-a-uuid")
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"issueTypeTags\":[\"POTHOLE\",\"GRAFFITI\"]}")
+        )
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value(containsString("externalId")))
+        .andExpect(jsonPath("$.message").value(containsString("parameter")))
+        .andExpect(jsonPath("$.message").value(not(containsString("An unexpected error occurred"))));
+  }
+
+  @Test
+  @WithMockUser(roles = "MANAGER")
   void putStatusWithMalformedJsonReturns400() throws Exception {
     mockMvc.perform(
             put("/manager/issue-reports/{externalId}/status",
@@ -134,6 +154,16 @@ class ManagerIssueReportControllerTest {
         )
         .andExpect(status().isBadRequest())
         .andExpect(jsonPath("$.message").value(containsString("Malformed request body")))
+        .andExpect(jsonPath("$.message").value(not(containsString("An unexpected error occurred"))));
+  }
+
+  @Test
+  @WithMockUser(roles = "MANAGER")
+  void conversionFailedExceptionReturns400AndDoesNotUseGeneric500Body() throws Exception {
+    mockMvc.perform(get("/test/conversion").param("pageNumber", "not-an-int"))
+        .andExpect(status().isBadRequest())
+        .andExpect(jsonPath("$.message").value(containsString("pageNumber")))
+        .andExpect(jsonPath("$.message").value(containsString("parameter")))
         .andExpect(jsonPath("$.message").value(not(containsString("An unexpected error occurred"))));
   }
 
@@ -180,6 +210,26 @@ class ManagerIssueReportControllerTest {
     @Bean(name = "provideDecoder")
     public JwtDecoder provideDecoder() {
       return org.mockito.Mockito.mock(JwtDecoder.class);
+    }
+
+    @Bean
+    public ConversionFailedThrowingController conversionFailedThrowingController() {
+      return new ConversionFailedThrowingController();
+    }
+
+  }
+
+  @RestController
+  static class ConversionFailedThrowingController {
+
+    @GetMapping("/test/conversion")
+    public String throwConversionFailed(@RequestParam String pageNumber) {
+      throw new ConversionFailedException(
+          TypeDescriptor.valueOf(String.class),
+          TypeDescriptor.valueOf(Integer.class),
+          pageNumber,
+          new NumberFormatException("For input string: \"" + pageNumber + "\"")
+      );
     }
 
   }
