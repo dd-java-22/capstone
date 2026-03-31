@@ -27,6 +27,12 @@
 --   11111111-1111-1111-1111-111111111003
 --   11111111-1111-1111-1111-111111111004
 --   11111111-1111-1111-1111-111111111005
+-- report_image.report_image_external_id
+--   22222222-2222-2222-2222-222222222001
+--   22222222-2222-2222-2222-222222222002
+--   22222222-2222-2222-2222-222222222003
+--   22222222-2222-2222-2222-222222222004
+--   22222222-2222-2222-2222-222222222005
 
 -- ---------------------------------------------------------------------------
 -- user_profile
@@ -314,6 +320,7 @@ INSERT INTO issue_report_issue_type (
 -- ---------------------------------------------------------------------------
 
 MERGE INTO report_image (
+  report_image_external_id,
   issue_report_id,
   image_locator,
   filename,
@@ -321,6 +328,7 @@ MERGE INTO report_image (
   album_order
 ) KEY (filename) VALUES
   (
+    '22222222-2222-2222-2222-222222222001',
     (SELECT issue_report_id
      FROM issue_report
      WHERE issue_report_external_id = '11111111-1111-1111-1111-111111111001'),
@@ -330,6 +338,7 @@ MERGE INTO report_image (
     1
   ),
   (
+    '22222222-2222-2222-2222-222222222002',
     (SELECT issue_report_id
      FROM issue_report
      WHERE issue_report_external_id = '11111111-1111-1111-1111-111111111002'),
@@ -339,6 +348,7 @@ MERGE INTO report_image (
     1
   ),
   (
+    '22222222-2222-2222-2222-222222222003',
     (SELECT issue_report_id
      FROM issue_report
      WHERE issue_report_external_id = '11111111-1111-1111-1111-111111111003'),
@@ -348,6 +358,7 @@ MERGE INTO report_image (
     1
   ),
   (
+    '22222222-2222-2222-2222-222222222004',
     (SELECT issue_report_id
      FROM issue_report
      WHERE issue_report_external_id = '11111111-1111-1111-1111-111111111004'),
@@ -357,6 +368,7 @@ MERGE INTO report_image (
     1
   ),
   (
+    '22222222-2222-2222-2222-222222222005',
     (SELECT issue_report_id
      FROM issue_report
      WHERE issue_report_external_id = '11111111-1111-1111-1111-111111111004'),

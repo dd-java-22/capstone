@@ -81,6 +81,7 @@ dependencies {
     implementation(libs.spring.boot.starter.security)
     implementation(libs.spring.boot.starter.thymeleaf)
     implementation(libs.spring.boot.starter.web)
+    implementation("org.springframework.boot:spring-boot-starter-validation")
     implementation(libs.thymeleaf.spring.security)
     runtimeOnly(libs.h2)
     annotationProcessor(libs.spring.boot.configuration.processor)

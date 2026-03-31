@@ -5,6 +5,7 @@ import edu.cnm.deepdive.seesomethingabq.exception.BadRequestException;
 import edu.cnm.deepdive.seesomethingabq.exception.ConflictException;
 import edu.cnm.deepdive.seesomethingabq.exception.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.validation.ConstraintViolationException;
 import java.time.Instant;
 import java.util.NoSuchElementException;
 import org.springframework.http.HttpStatus;
@@ -53,6 +54,20 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleBadRequest(Exception ex) {
     return new ErrorResponse(ex.getMessage(), Instant.now());
+  }
+
+  /**
+   * Handles Bean Validation failures (e.g., invalid ReportLocation).
+   */
+  @ExceptionHandler(ConstraintViolationException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleConstraintViolation(ConstraintViolationException ex) {
+    String message = ex.getConstraintViolations().stream()
+        .map(v -> v.getMessage())
+        .distinct()
+        .reduce((a, b) -> a + "; " + b)
+        .orElse(ex.getMessage());
+    return new ErrorResponse(message, Instant.now());
   }
 
   /**

@@ -1,8 +1,8 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
-import java.util.Optional;
 import java.util.List;
 import java.util.UUID;
 import org.springframework.data.domain.Page;
@@ -14,13 +14,13 @@ public interface IssueReportService {
   List<IssueReportSummary> getReportsForCurrentUser(String sortParam);
 
   //POST /issue-reports
-  IssueReport createReport(IssueReport report);
+  IssueReport createReport(IssueReportRequest request);
 
   //GET /issue-reports/{externalKey}
   IssueReport getReportByExternalKey(UUID externalKey);
 
   //PUT /issue-reports/{externalKey}
-  IssueReport updateReport(UUID externalKey, IssueReport report);
+  IssueReport updateReport(UUID externalKey, IssueReportRequest request);
 
   //DELETE /issue-reports/{externalKey}
   void deleteReport(UUID externalKey);

@@ -2,6 +2,7 @@ package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.exception.AcceptedStateNotFoundException;
 import edu.cnm.deepdive.seesomethingabq.exception.IssueReportNotFoundException;
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
@@ -12,11 +13,17 @@ import edu.cnm.deepdive.seesomethingabq.service.repository.AcceptedStateReposito
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueTypeRepository;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -33,18 +40,21 @@ public class IssueReportServiceImpl implements IssueReportService {
   private final UserService userService;
   private final AcceptedStateRepository acceptedStateRepository;
   private final IssueTypeRepository issueTypeRepository;
+  private final Validator validator;
 
   @Autowired
   public IssueReportServiceImpl(
       IssueReportRepository issueReportRepository,
       UserService userService,
       AcceptedStateRepository acceptedStateRepository,
-      IssueTypeRepository issueTypeRepository
+      IssueTypeRepository issueTypeRepository,
+      Validator validator
   ) {
     this.issueReportRepository = issueReportRepository;
     this.userService = userService;
     this.acceptedStateRepository = acceptedStateRepository;
     this.issueTypeRepository = issueTypeRepository;
+    this.validator = validator;
   }
 
   @Override
@@ -59,10 +69,13 @@ public class IssueReportServiceImpl implements IssueReportService {
   }
 
   @Override
-  public IssueReport createReport(IssueReport report) {
+  public IssueReport createReport(IssueReportRequest request) {
     // TODO: 2026-03-26 Confirm this is the correct user ownership behavior, or enforce ownership rules here
     UserProfile currentUser = userService.getCurrentUser();
+
+    IssueReport report = new IssueReport();
     report.setUserProfile(currentUser);
+    report.setTextDescription(request.getTextDescription());
 
     AcceptedState defaultState = acceptedStateRepository
         .findByStatusTag("New");
@@ -73,13 +86,16 @@ public class IssueReportServiceImpl implements IssueReportService {
       throw new AcceptedStateNotFoundException("Default accepted state 'New' not found");
     }
 
-    report.setAcceptedState(defaultState);
+    // reportLocation is required (IssueReport.reportLocation is optional=false).
+    ReportLocation location = new ReportLocation();
+    applyLocation(location, request);
+    location.setIssueReport(report);
+    report.setReportLocation(location);
+    validate(location);
 
-    ReportLocation location = report.getReportLocation();
-    if (location != null) {
-      // TODO: 2026-03-26 Confirm bidirectional link handling once DTOs/mappers are in place
-      location.setIssueReport(report);
-    }
+    // Resolve issueTypes from request tags (images are handled separately).
+    report.getIssueTypes().clear();
+    report.getIssueTypes().addAll(resolveIssueTypes(request.getIssueTypes()));
 
     return issueReportRepository.save(report);
   }
@@ -90,35 +106,33 @@ public class IssueReportServiceImpl implements IssueReportService {
   }
 
   @Override
-  public IssueReport updateReport(UUID externalKey, IssueReport report) {
+  public IssueReport updateReport(UUID externalKey, IssueReportRequest request) {
     IssueReport existing = requireReport(externalKey);
 
     // Server-controlled fields stay on 'existing':
     // - id, externalId, userProfile, acceptedState, timestamps
 
-    // TODO: 2026-03-26 Enforce real ownership instead of always stamping current user
-    UserProfile currentUser = userService.getCurrentUser();
-    existing.setUserProfile(currentUser);
+    existing.setTextDescription(request.getTextDescription());
 
-    // Copy editable fields from incoming 'report' into 'existing'.
-    existing.setTextDescription(report.getTextDescription());
-
-    ReportLocation incomingLocation = report.getReportLocation();
-    if (incomingLocation != null) {
-      ReportLocation existingLocation = existing.getReportLocation();
-      if (existingLocation == null) {
-        existingLocation = incomingLocation;
-        existingLocation.setIssueReport(existing);
-        existing.setReportLocation(existingLocation);
-      } else {
-        existingLocation.setLatitude(incomingLocation.getLatitude());
-        existingLocation.setLongitude(incomingLocation.getLongitude());
-        existingLocation.setStreetCoordinate(incomingLocation.getStreetCoordinate());
-        existingLocation.setLocationDescription(incomingLocation.getLocationDescription());
+    if (hasAnyLocationField(request)) {
+      // Any location field present => treat as a location update; validate the resulting location.
+      ReportLocation location = existing.getReportLocation();
+      if (location == null) {
+        location = new ReportLocation();
       }
+      // Ensure both sides of the association are set consistently.
+      location.setIssueReport(existing);
+      existing.setReportLocation(location);
+      applyLocation(location, request);
+      validate(location);
     }
 
-    // TODO: 2026-03-27 Update issueTypes and reportImages when DTOs and mapping rules are in place.
+    if (request.getIssueTypes() != null) {
+      // If a list is provided, fully replace issueTypes (do not keep stale associations).
+      List<IssueType> resolved = resolveIssueTypes(request.getIssueTypes());
+      existing.getIssueTypes().clear();
+      existing.getIssueTypes().addAll(resolved);
+    }
 
     return issueReportRepository.save(existing);
   }
@@ -244,5 +258,80 @@ public class IssueReportServiceImpl implements IssueReportService {
     dto.setTimeFirstReported(report.getTimeFirstReported());
     dto.setTimeLastModified(report.getTimeLastModified());
     return dto;
+  }
+
+  private void applyLocation(ReportLocation location, IssueReportRequest request) {
+    location.setLatitude(request.getLatitude());
+    location.setLongitude(request.getLongitude());
+    location.setStreetCoordinate(request.getStreetCoordinate());
+    location.setLocationDescription(request.getLocationDescription());
+  }
+
+  private void validate(Object target) {
+    var violations = validator.validate(target);
+    if (!violations.isEmpty()) {
+      throw new ConstraintViolationException(violations);
+    }
+  }
+
+  private boolean hasAnyLocationField(IssueReportRequest request) {
+    return request.getLatitude() != null
+        || request.getLongitude() != null
+        || request.getStreetCoordinate() != null
+        || request.getLocationDescription() != null;
+  }
+
+  private List<IssueType> resolveIssueTypes(Iterable<String> submittedTags) {
+    LinkedHashSet<String> normalized = normalizeTags(submittedTags);
+    if (normalized.isEmpty()) {
+      return List.of();
+    }
+
+    List<IssueType> resolved = issueTypeRepository.findAllByIssueTypeTagIn(normalized);
+
+    // Validate: reject any submitted nonblank tag that doesn't resolve to an IssueType.
+    Set<String> resolvedTags = resolved.stream()
+        .map(IssueType::getIssueTypeTag)
+        .filter(Objects::nonNull)
+        .collect(java.util.stream.Collectors.toSet());
+    List<String> missing = normalized.stream()
+        .filter(tag -> !resolvedTags.contains(tag))
+        .toList();
+    if (!missing.isEmpty()) {
+      throw new IllegalArgumentException("Unrecognized issueTypes: " + missing);
+    }
+
+    // Preserve stable order of the request tags where practical.
+    Map<String, IssueType> byTag = new HashMap<>();
+    for (IssueType type : resolved) {
+      if (type.getIssueTypeTag() != null) {
+        byTag.put(type.getIssueTypeTag(), type);
+      }
+    }
+    List<IssueType> ordered = new ArrayList<>(normalized.size());
+    for (String tag : normalized) {
+      IssueType type = byTag.get(tag);
+      if (type != null) {
+        ordered.add(type);
+      }
+    }
+    return ordered;
+  }
+
+  private LinkedHashSet<String> normalizeTags(Iterable<String> submittedTags) {
+    LinkedHashSet<String> normalized = new LinkedHashSet<>();
+    if (submittedTags == null) {
+      return normalized;
+    }
+    for (String tag : submittedTags) {
+      if (tag == null) {
+        continue;
+      }
+      String trimmed = tag.trim();
+      if (!trimmed.isBlank()) {
+        normalized.add(trimmed);
+      }
+    }
+    return normalized;
   }
 }
