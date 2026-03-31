@@ -31,6 +31,7 @@ public class JwtConverter implements Converter<Jwt, UsernamePasswordAuthenticati
     user.setEmail(source.getClaimAsString("email"));
     String subject = source.getSubject();
     user.setOauthKey(subject);
+    user.setUserEnabled(true);
     user = userService.getOrCreate(subject, user);
     Collection<SimpleGrantedAuthority> grants = new ArrayList<>();
     grants.add(new SimpleGrantedAuthority("ROLE_USER"));
