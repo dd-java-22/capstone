@@ -4,8 +4,12 @@ Content-Type: application/json
 Authorization: Bearer {{bearerToken}}
 
 {
-  "textDescription": "adsf4 Graffiti on wall behind storefront near Central and 4th",
-  "issueTypes": ["Trash", "trash"]
+  "textDescription": "Graffiti on wall behind storefront near Central and 4th",
+  "latitude": 35.0847,
+  "longitude": -106.6510,
+  "streetCoordinate": "Central Ave SW & 4th St SW",
+  "locationDescription": "Alley wall behind the northwest corner building",
+  "issueTypes": ["Trash", "Pothole"]
 }
 
 ###
@@ -34,15 +38,12 @@ Authorization: Bearer {{bearerToken}}
 
 
 {
-  "textDescription": "test",
-  "reportLocation": {
-    "latitude": 35.0844,
-    "longitude": -106.6504,
-    "streetCoordinate": "Central Ave & 4th St",
-    "locationDescription": "Same corner, smaller pile"
-  },
-  "issueTypes": ["Trash", "Pothole"],
-  "reportImages": []
+  "textDescription": "Updated description",
+  "latitude": 35.0844,
+  "longitude": -106.6504,
+  "streetCoordinate": "Central Ave & 4th St",
+  "locationDescription": "Same corner, smaller pile",
+  "issueTypes": ["Trash"]
 }
 
 ###

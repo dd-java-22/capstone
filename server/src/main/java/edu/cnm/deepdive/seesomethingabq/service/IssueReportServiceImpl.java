@@ -22,6 +22,8 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validator;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -38,18 +40,21 @@ public class IssueReportServiceImpl implements IssueReportService {
   private final UserService userService;
   private final AcceptedStateRepository acceptedStateRepository;
   private final IssueTypeRepository issueTypeRepository;
+  private final Validator validator;
 
   @Autowired
   public IssueReportServiceImpl(
       IssueReportRepository issueReportRepository,
       UserService userService,
       AcceptedStateRepository acceptedStateRepository,
-      IssueTypeRepository issueTypeRepository
+      IssueTypeRepository issueTypeRepository,
+      Validator validator
   ) {
     this.issueReportRepository = issueReportRepository;
     this.userService = userService;
     this.acceptedStateRepository = acceptedStateRepository;
     this.issueTypeRepository = issueTypeRepository;
+    this.validator = validator;
   }
 
   @Override
@@ -86,6 +91,7 @@ public class IssueReportServiceImpl implements IssueReportService {
     applyLocation(location, request);
     location.setIssueReport(report);
     report.setReportLocation(location);
+    validate(location);
 
     // Resolve issueTypes from request tags (images are handled separately).
     report.getIssueTypes().clear();
@@ -111,10 +117,12 @@ public class IssueReportServiceImpl implements IssueReportService {
     ReportLocation location = existing.getReportLocation();
     if (location == null) {
       location = new ReportLocation();
-      location.setIssueReport(existing);
-      existing.setReportLocation(location);
     }
+    // Ensure both sides of the association are set consistently.
+    location.setIssueReport(existing);
+    existing.setReportLocation(location);
     applyLocation(location, request);
+    validate(location);
 
     if (request.getIssueTypes() != null) {
       // If a list is provided, fully replace issueTypes (do not keep stale associations).
@@ -254,6 +262,13 @@ public class IssueReportServiceImpl implements IssueReportService {
     location.setLongitude(request.getLongitude());
     location.setStreetCoordinate(request.getStreetCoordinate());
     location.setLocationDescription(request.getLocationDescription());
+  }
+
+  private void validate(Object target) {
+    var violations = validator.validate(target);
+    if (!violations.isEmpty()) {
+      throw new ConstraintViolationException(violations);
+    }
   }
 
   private List<IssueType> resolveIssueTypes(Iterable<String> submittedTags) {

@@ -23,14 +23,19 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.ArgumentMatchers.any;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
+import edu.cnm.deepdive.seesomethingabq.model.entity.ReportLocation;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.AcceptedStateRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueTypeRepository;
+import jakarta.validation.ConstraintViolationException;
+import jakarta.validation.Validation;
+import jakarta.validation.Validator;
 import java.time.Instant;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -66,14 +71,17 @@ class IssueReportServiceImplTest {
   private IssueReportService service;
 
   private UserProfile currentUser;
+  private Validator validator;
 
   @BeforeEach
   void setUp() {
+    validator = Validation.buildDefaultValidatorFactory().getValidator();
     service = new IssueReportServiceImpl(
       issueReportRepository,
       userService,
       acceptedStateRepository,
-      issueTypeRepository
+      issueTypeRepository,
+      validator
     );
   }
 
@@ -278,5 +286,165 @@ class IssueReportServiceImplTest {
     Sort.Order order = sort.getOrderFor("timeFirstReported");
     assertThat(order).isNotNull();
     assertThat(order.isAscending()).isTrue();
+  }
+
+  @Test
+  void createReport_validWithLatitudeAndLongitudeOnly_saves() {
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("TEST");
+    request.setLatitude(35.1);
+    request.setLongitude(-106.6);
+    request.setIssueTypes(List.of());
+
+    UserProfile user = new UserProfile();
+    when(userService.getCurrentUser()).thenReturn(user);
+    AcceptedState state = new AcceptedState();
+    state.setStatusTag("New");
+    when(acceptedStateRepository.findByStatusTag("New")).thenReturn(state);
+    when(issueReportRepository.save(org.mockito.ArgumentMatchers.any(IssueReport.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0, IssueReport.class));
+
+    IssueReport created = service.createReport(request);
+
+    assertSame(user, created.getUserProfile());
+    assertEquals("TEST", created.getTextDescription());
+    assertThat(created.getReportLocation().getLatitude()).isEqualTo(35.1);
+    assertThat(created.getReportLocation().getLongitude()).isEqualTo(-106.6);
+    assertSame(created, created.getReportLocation().getIssueReport());
+  }
+
+  @Test
+  void createReport_validWithStreetCoordinateOnly_saves() {
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("TEST");
+    request.setStreetCoordinate(" Central & 4th ");
+    request.setIssueTypes(List.of());
+
+    when(userService.getCurrentUser()).thenReturn(new UserProfile());
+    AcceptedState state = new AcceptedState();
+    state.setStatusTag("New");
+    when(acceptedStateRepository.findByStatusTag("New")).thenReturn(state);
+    when(issueReportRepository.save(org.mockito.ArgumentMatchers.any(IssueReport.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0, IssueReport.class));
+
+    IssueReport created = service.createReport(request);
+
+    assertThat(created.getReportLocation().getStreetCoordinate()).isEqualTo(" Central & 4th ");
+  }
+
+  @Test
+  void createReport_validWithLocationDescriptionOnly_saves() {
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("TEST");
+    request.setLocationDescription(" Behind the store ");
+    request.setIssueTypes(List.of());
+
+    when(userService.getCurrentUser()).thenReturn(new UserProfile());
+    AcceptedState state = new AcceptedState();
+    state.setStatusTag("New");
+    when(acceptedStateRepository.findByStatusTag("New")).thenReturn(state);
+    when(issueReportRepository.save(org.mockito.ArgumentMatchers.any(IssueReport.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0, IssueReport.class));
+
+    IssueReport created = service.createReport(request);
+
+    assertThat(created.getReportLocation().getLocationDescription()).isEqualTo(" Behind the store ");
+  }
+
+  @Test
+  void createReport_validWithStreetCoordinateAndOnlyOneCoordinate_saves() {
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("TEST");
+    request.setLatitude(35.1);
+    request.setStreetCoordinate("Central & 4th");
+    request.setIssueTypes(List.of());
+
+    when(userService.getCurrentUser()).thenReturn(new UserProfile());
+    AcceptedState state = new AcceptedState();
+    state.setStatusTag("New");
+    when(acceptedStateRepository.findByStatusTag("New")).thenReturn(state);
+    when(issueReportRepository.save(org.mockito.ArgumentMatchers.any(IssueReport.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0, IssueReport.class));
+
+    IssueReport created = service.createReport(request);
+
+    assertThat(created.getReportLocation().getLatitude()).isEqualTo(35.1);
+    assertThat(created.getReportLocation().getLongitude()).isNull();
+    assertThat(created.getReportLocation().getStreetCoordinate()).isEqualTo("Central & 4th");
+  }
+
+  @Test
+  void createReport_validWithLocationDescriptionAndOnlyOneCoordinate_saves() {
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("TEST");
+    request.setLongitude(-106.6);
+    request.setLocationDescription("Behind store");
+    request.setIssueTypes(List.of());
+
+    when(userService.getCurrentUser()).thenReturn(new UserProfile());
+    AcceptedState state = new AcceptedState();
+    state.setStatusTag("New");
+    when(acceptedStateRepository.findByStatusTag("New")).thenReturn(state);
+    when(issueReportRepository.save(org.mockito.ArgumentMatchers.any(IssueReport.class)))
+        .thenAnswer(invocation -> invocation.getArgument(0, IssueReport.class));
+
+    IssueReport created = service.createReport(request);
+
+    assertThat(created.getReportLocation().getLatitude()).isNull();
+    assertThat(created.getReportLocation().getLongitude()).isEqualTo(-106.6);
+    assertThat(created.getReportLocation().getLocationDescription()).isEqualTo("Behind store");
+  }
+
+  @Test
+  void createReport_invalidWhenAllLocationOptionsAbsent_throws() {
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("TEST");
+    request.setStreetCoordinate("   ");
+    request.setLocationDescription(null);
+    request.setLatitude(35.1);
+    request.setLongitude(null);
+    request.setIssueTypes(List.of());
+
+    when(userService.getCurrentUser()).thenReturn(new UserProfile());
+    AcceptedState state = new AcceptedState();
+    state.setStatusTag("New");
+    when(acceptedStateRepository.findByStatusTag("New")).thenReturn(state);
+
+    assertThrows(ConstraintViolationException.class, () -> service.createReport(request));
+  }
+
+  @Test
+  void updateReport_updatesReportLocationFieldsInPlace() {
+    UUID externalId = UUID.fromString("99999999-9999-9999-9999-999999999999");
+    IssueReport existing = new IssueReport();
+    ReportLocation location = new ReportLocation();
+    location.setIssueReport(existing);
+    location.setLatitude(1.0);
+    location.setLongitude(2.0);
+    location.setStreetCoordinate("OLD");
+    location.setLocationDescription("OLD DESC");
+    existing.setReportLocation(location);
+
+    when(issueReportRepository.findByExternalId(externalId)).thenReturn(Optional.of(existing));
+    when(issueReportRepository.save(existing)).thenReturn(existing);
+
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("UPDATED");
+    request.setLatitude(35.0844);
+    request.setLongitude(-106.6504);
+    request.setStreetCoordinate("Central Ave & 4th St");
+    request.setLocationDescription("Same corner");
+    request.setIssueTypes(null); // ensure issueTypes behavior remains unchanged for this test
+
+    IssueReport updated = service.updateReport(externalId, request);
+
+    assertSame(existing, updated);
+    assertEquals("UPDATED", updated.getTextDescription());
+    assertSame(location, updated.getReportLocation());
+    assertThat(updated.getReportLocation().getLatitude()).isEqualTo(35.0844);
+    assertThat(updated.getReportLocation().getLongitude()).isEqualTo(-106.6504);
+    assertThat(updated.getReportLocation().getStreetCoordinate()).isEqualTo("Central Ave & 4th St");
+    assertThat(updated.getReportLocation().getLocationDescription()).isEqualTo("Same corner");
+    assertSame(updated, updated.getReportLocation().getIssueReport());
   }
 }

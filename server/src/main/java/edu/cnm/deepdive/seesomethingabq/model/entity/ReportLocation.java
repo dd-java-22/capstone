@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.seesomethingabq.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.validation.constraints.AssertTrue;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -75,5 +76,13 @@ public class ReportLocation {
 
   public void setIssueReport(IssueReport issueReport) {
     this.issueReport = issueReport;
+  }
+
+  @AssertTrue(message = "Report location must include latitude+longitude, a street coordinate, or a location description.")
+  public boolean isValidLocation() {
+    boolean hasStreet = streetCoordinate != null && !streetCoordinate.trim().isBlank();
+    boolean hasDescription = locationDescription != null && !locationDescription.trim().isBlank();
+    boolean hasCoordinatePair = latitude != null && longitude != null;
+    return hasCoordinatePair || hasStreet || hasDescription;
   }
 }
