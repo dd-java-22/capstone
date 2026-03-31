@@ -116,6 +116,36 @@ public class GlobalExceptionHandler {
   }
 
   /**
+   * Handles malformed/invalid request bodies (e.g., JSON parse errors) as a client error, not a 500.
+   */
+  @ExceptionHandler(HttpMessageNotReadableException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
+    return new ErrorResponse("Malformed request body.", Instant.now());
+  }
+
+  /**
+   * Handles conflict exceptions (duplicate types, states, deleting in-use resources, etc.).
+   */
+  @ExceptionHandler({
+      ConflictException.class,
+      IllegalStateException.class
+  })
+  @ResponseStatus(HttpStatus.CONFLICT)
+  public ErrorResponse handleConflict(Exception ex) {
+    return new ErrorResponse(ex.getMessage(), Instant.now());
+  }
+
+  /**
+   * Handles all other unhandled exceptions.
+   */
+  @ExceptionHandler(Exception.class)
+  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+  public ErrorResponse handleInternalError(Exception ex) {
+    return new ErrorResponse("An unexpected error occurred: " + ex.getMessage(), Instant.now());
+  }
+
+  /**
    * Attempts to find the parameter name associated with a conversion failure by uniquely matching the
    * failed value against query parameters and path variables. If matching is ambiguous or impossible,
    * returns empty rather than guessing.
@@ -151,35 +181,5 @@ public class GlobalExceptionHandler {
     }
 
     return (matches.size() == 1) ? Optional.of(matches.getFirst()) : Optional.empty();
-  }
-
-  /**
-   * Handles malformed/invalid request bodies (e.g., JSON parse errors) as a client error, not a 500.
-   */
-  @ExceptionHandler(HttpMessageNotReadableException.class)
-  @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
-    return new ErrorResponse("Malformed request body.", Instant.now());
-  }
-
-  /**
-   * Handles conflict exceptions (duplicate types, states, deleting in-use resources, etc.).
-   */
-  @ExceptionHandler({
-      ConflictException.class,
-      IllegalStateException.class
-  })
-  @ResponseStatus(HttpStatus.CONFLICT)
-  public ErrorResponse handleConflict(Exception ex) {
-    return new ErrorResponse(ex.getMessage(), Instant.now());
-  }
-
-  /**
-   * Handles all other unhandled exceptions.
-   */
-  @ExceptionHandler(Exception.class)
-  @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-  public ErrorResponse handleInternalError(Exception ex) {
-    return new ErrorResponse("An unexpected error occurred: " + ex.getMessage(), Instant.now());
   }
 }
