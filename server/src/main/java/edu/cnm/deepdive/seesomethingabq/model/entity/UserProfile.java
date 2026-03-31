@@ -51,6 +51,7 @@ public class UserProfile {
   @Id
   @Column(name = "user_profile_id", updatable = false)
   @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @JsonIgnore
   private Long id;
 
   @Column(name = "user_profile_external_id", updatable = false)
