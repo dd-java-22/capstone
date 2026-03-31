@@ -96,6 +96,25 @@ class ManagerIssueReportControllerTest {
 
   @Test
   @WithMockUser(roles = "MANAGER")
+  void getAllWithInvalidPageNumberReturns400() throws Exception {
+    mockMvc.perform(get("/manager/issue-reports").param("pageNumber", "not-an-int"))
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser(roles = "MANAGER")
+  void putStatusWithInvalidExternalIdReturns400() throws Exception {
+    mockMvc.perform(
+            put("/manager/issue-reports/{externalId}/status", "not-a-uuid")
+                .with(csrf())
+                .contentType("application/json")
+                .content("{\"statusTag\":\"ACCEPTED\"}")
+        )
+        .andExpect(status().isBadRequest());
+  }
+
+  @Test
+  @WithMockUser(roles = "MANAGER")
   void putStatusAllowedForManagerRole() throws Exception {
     UUID externalId = UUID.fromString("11111111-1111-1111-1111-111111111111");
     when(issueReportService.setAcceptedState(externalId, "ACCEPTED")).thenReturn(new IssueReport());

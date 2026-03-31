@@ -20,14 +20,12 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerIssueReportResponse;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
-import java.util.NoSuchElementException;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +35,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 /**
  * REST controller for manager-only issue report administration operations.
@@ -79,11 +76,7 @@ public class ManagerIssueReportController {
       @PathVariable UUID externalId,
       @RequestBody IssueReportStatusUpdateRequest request
   ) {
-    try {
-      return service.setAcceptedState(externalId, request.getStatusTag());
-    } catch (NoSuchElementException ex) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, null, ex);
-    }
+    return service.setAcceptedState(externalId, request.getStatusTag());
   }
 
   @PutMapping(
@@ -95,13 +88,7 @@ public class ManagerIssueReportController {
       @PathVariable UUID externalId,
       @RequestBody IssueReportTypesUpdateRequest request
   ) {
-    try {
-      return service.replaceIssueTypes(externalId, request.getIssueTypeTags());
-    } catch (NoSuchElementException ex) {
-      throw new ResponseStatusException(HttpStatus.NOT_FOUND, null, ex);
-    } catch (IllegalArgumentException ex) {
-      throw new ResponseStatusException(HttpStatus.BAD_REQUEST, null, ex);
-    }
+    return service.replaceIssueTypes(externalId, request.getIssueTypeTags());
   }
 
 }
