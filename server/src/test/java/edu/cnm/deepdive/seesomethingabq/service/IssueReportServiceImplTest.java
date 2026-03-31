@@ -447,4 +447,106 @@ class IssueReportServiceImplTest {
     assertThat(updated.getReportLocation().getLocationDescription()).isEqualTo("Same corner");
     assertSame(updated, updated.getReportLocation().getIssueReport());
   }
+
+  @Test
+  void updateReport_updatesNonLocationFieldsWithNoLocationFields_succeeds() {
+    UUID externalId = UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+    IssueReport existing = new IssueReport();
+    ReportLocation location = new ReportLocation();
+    location.setIssueReport(existing);
+    location.setLatitude(35.0);
+    location.setLongitude(-106.0);
+    location.setStreetCoordinate("OLD STREET");
+    location.setLocationDescription("OLD DESC");
+    existing.setReportLocation(location);
+    existing.setTextDescription("OLD TEXT");
+
+    when(issueReportRepository.findByExternalId(externalId)).thenReturn(Optional.of(existing));
+    when(issueReportRepository.save(existing)).thenReturn(existing);
+
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("NEW TEXT");
+    request.setIssueTypes(null);
+
+    IssueReport updated = service.updateReport(externalId, request);
+
+    assertSame(existing, updated);
+    assertEquals("NEW TEXT", updated.getTextDescription());
+    assertSame(location, updated.getReportLocation());
+    assertThat(updated.getReportLocation().getLatitude()).isEqualTo(35.0);
+    assertThat(updated.getReportLocation().getLongitude()).isEqualTo(-106.0);
+    assertThat(updated.getReportLocation().getStreetCoordinate()).isEqualTo("OLD STREET");
+    assertThat(updated.getReportLocation().getLocationDescription()).isEqualTo("OLD DESC");
+  }
+
+  @Test
+  void updateReport_withOnlyLatitude_fails() {
+    UUID externalId = UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
+    IssueReport existing = new IssueReport();
+    ReportLocation location = new ReportLocation();
+    location.setIssueReport(existing);
+    location.setLatitude(null);
+    location.setLongitude(null);
+    location.setStreetCoordinate(null);
+    location.setLocationDescription(null);
+    existing.setReportLocation(location);
+
+    when(issueReportRepository.findByExternalId(externalId)).thenReturn(Optional.of(existing));
+
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("TEXT");
+    request.setLatitude(35.1);
+    request.setIssueTypes(null);
+
+    assertThrows(ConstraintViolationException.class, () -> service.updateReport(externalId, request));
+  }
+
+  @Test
+  void updateReport_withOnlyLongitude_fails() {
+    UUID externalId = UUID.fromString("cccccccc-cccc-cccc-cccc-cccccccccccc");
+    IssueReport existing = new IssueReport();
+    ReportLocation location = new ReportLocation();
+    location.setIssueReport(existing);
+    location.setLatitude(null);
+    location.setLongitude(null);
+    location.setStreetCoordinate(null);
+    location.setLocationDescription(null);
+    existing.setReportLocation(location);
+
+    when(issueReportRepository.findByExternalId(externalId)).thenReturn(Optional.of(existing));
+
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("TEXT");
+    request.setLongitude(-106.6);
+    request.setIssueTypes(null);
+
+    assertThrows(ConstraintViolationException.class, () -> service.updateReport(externalId, request));
+  }
+
+  @Test
+  void updateReport_withLocationDescriptionOnly_succeeds() {
+    UUID externalId = UUID.fromString("dddddddd-dddd-dddd-dddd-dddddddddddd");
+    IssueReport existing = new IssueReport();
+    ReportLocation location = new ReportLocation();
+    location.setIssueReport(existing);
+    location.setLatitude(null);
+    location.setLongitude(null);
+    location.setStreetCoordinate(null);
+    location.setLocationDescription(null);
+    existing.setReportLocation(location);
+
+    when(issueReportRepository.findByExternalId(externalId)).thenReturn(Optional.of(existing));
+    when(issueReportRepository.save(existing)).thenReturn(existing);
+
+    IssueReportRequest request = new IssueReportRequest();
+    request.setTextDescription("TEXT");
+    request.setLocationDescription("Behind the store");
+    request.setIssueTypes(null);
+
+    IssueReport updated = service.updateReport(externalId, request);
+
+    assertSame(existing, updated);
+    assertSame(location, updated.getReportLocation());
+    assertThat(updated.getReportLocation().getLocationDescription()).isEqualTo("Behind the store");
+  }
 }

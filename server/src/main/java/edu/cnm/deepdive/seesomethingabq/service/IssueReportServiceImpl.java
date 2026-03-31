@@ -114,15 +114,18 @@ public class IssueReportServiceImpl implements IssueReportService {
 
     existing.setTextDescription(request.getTextDescription());
 
-    ReportLocation location = existing.getReportLocation();
-    if (location == null) {
-      location = new ReportLocation();
+    if (hasAnyLocationField(request)) {
+      // Any location field present => treat as a location update; validate the resulting location.
+      ReportLocation location = existing.getReportLocation();
+      if (location == null) {
+        location = new ReportLocation();
+      }
+      // Ensure both sides of the association are set consistently.
+      location.setIssueReport(existing);
+      existing.setReportLocation(location);
+      applyLocation(location, request);
+      validate(location);
     }
-    // Ensure both sides of the association are set consistently.
-    location.setIssueReport(existing);
-    existing.setReportLocation(location);
-    applyLocation(location, request);
-    validate(location);
 
     if (request.getIssueTypes() != null) {
       // If a list is provided, fully replace issueTypes (do not keep stale associations).
@@ -269,6 +272,13 @@ public class IssueReportServiceImpl implements IssueReportService {
     if (!violations.isEmpty()) {
       throw new ConstraintViolationException(violations);
     }
+  }
+
+  private boolean hasAnyLocationField(IssueReportRequest request) {
+    return request.getLatitude() != null
+        || request.getLongitude() != null
+        || request.getStreetCoordinate() != null
+        || request.getLocationDescription() != null;
   }
 
   private List<IssueType> resolveIssueTypes(Iterable<String> submittedTags) {
