@@ -4,9 +4,15 @@ import edu.cnm.deepdive.seesomethingabq.exception.AccessDeniedException;
 import edu.cnm.deepdive.seesomethingabq.exception.BadRequestException;
 import edu.cnm.deepdive.seesomethingabq.exception.ConflictException;
 import edu.cnm.deepdive.seesomethingabq.exception.ResourceNotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.persistence.EntityNotFoundException;
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Objects;
+import java.util.Optional;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -14,6 +20,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.web.servlet.HandlerMapping;
 
 /**
  * Global exception handler for REST controllers. Maps exceptions to appropriate HTTP status codes.
@@ -77,12 +84,58 @@ public class GlobalExceptionHandler {
    */
   @ExceptionHandler(ConversionFailedException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
-  public ErrorResponse handleConversionFailed(ConversionFailedException ex) {
+  public ErrorResponse handleConversionFailed(ConversionFailedException ex, HttpServletRequest request) {
     Object value = ex.getValue();
-    String message = (value != null)
-        ? String.format("Invalid value '%s'.", value)
-        : "Invalid value.";
+    Optional<String> name = findParameterName(request, value);
+    String message;
+    if (name.isPresent()) {
+      message = (value != null)
+          ? String.format("Invalid value '%s' for parameter '%s'.", value, name.get())
+          : String.format("Invalid value for parameter '%s'.", name.get());
+    } else {
+      message = (value != null)
+          ? String.format("Invalid value '%s'.", value)
+          : "Invalid value.";
+    }
     return new ErrorResponse(message, Instant.now());
+  }
+
+  /**
+   * Attempts to find the parameter name associated with a conversion failure by uniquely matching the
+   * failed value against query parameters and path variables. If matching is ambiguous or impossible,
+   * returns empty rather than guessing.
+   */
+  private Optional<String> findParameterName(HttpServletRequest request, Object value) {
+    if (request == null || value == null) {
+      return Optional.empty();
+    }
+    String raw = Objects.toString(value, null);
+    if (raw == null) {
+      return Optional.empty();
+    }
+    List<String> matches = new ArrayList<>();
+
+    request.getParameterMap().forEach((name, values) -> {
+      if (values != null) {
+        for (String v : values) {
+          if (raw.equals(v)) {
+            matches.add(name);
+            return;
+          }
+        }
+      }
+    });
+
+    Object attr = request.getAttribute(HandlerMapping.URI_TEMPLATE_VARIABLES_ATTRIBUTE);
+    if (attr instanceof Map<?, ?> vars) {
+      vars.forEach((k, v) -> {
+        if (k != null && v != null && raw.equals(v.toString())) {
+          matches.add(k.toString());
+        }
+      });
+    }
+
+    return (matches.size() == 1) ? Optional.of(matches.getFirst()) : Optional.empty();
   }
 
   /**
