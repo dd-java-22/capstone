@@ -16,22 +16,26 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserDashboardBinding;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
 
 @AndroidEntryPoint
 public class UserDashboardFragment extends Fragment {
 
   private FragmentUserDashboardBinding binding;
+  private UserViewModel viewModel;
 
   @Nullable
   @Override
@@ -43,6 +47,22 @@ public class UserDashboardFragment extends Fragment {
       navController.navigate(R.id.navigate_to_create_issue_report_fragment);
     });
     return binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    viewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+
+    viewModel.getUser()
+        .observe(getViewLifecycleOwner(), user -> {
+
+          if (user != null) {
+            binding.displayName.setText(user.getDisplayName());
+            binding.oauthKey.setText(user.getOauthKey());
+            binding.externalKey.setText(user.getExternalId().toString());
+          }
+        });
   }
 
   @Override

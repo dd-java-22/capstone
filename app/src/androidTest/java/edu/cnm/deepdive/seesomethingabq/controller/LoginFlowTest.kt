@@ -8,7 +8,9 @@ import androidx.test.espresso.matcher.ViewMatchers.*
 import dagger.hilt.android.testing.HiltAndroidRule
 import dagger.hilt.android.testing.HiltAndroidTest
 import edu.cnm.deepdive.seesomethingabq.R
+import edu.cnm.deepdive.seesomethingabq.service.proxy.SeeSomethingWebService
 import edu.cnm.deepdive.seesomethingabq.service.repository.FakeGoogleAuthRepository
+import edu.cnm.deepdive.seesomethingabq.service.repository.FakeSeeSomethingWebService
 import edu.cnm.deepdive.seesomethingabq.service.repository.GoogleAuthRepository
 import org.hamcrest.Matchers.allOf
 import org.hamcrest.Matchers.`is`
@@ -26,6 +28,9 @@ class LoginFlowTest {
     @Inject
     lateinit var repository: GoogleAuthRepository
 
+    @Inject
+    lateinit var webService: SeeSomethingWebService
+
     @Before
     fun init() {
         hiltRule.inject()
@@ -37,15 +42,18 @@ class LoginFlowTest {
         val fakeRepository = repository as FakeGoogleAuthRepository
         fakeRepository.failSignIn = false
 
+        val fakeWebService = webService as FakeSeeSomethingWebService
+        fakeWebService.failGetMe = false
+
         // When: Launching the activity
         ActivityScenario.launch(UserWorkflowActivity::class.java)
 
         // Then: User Dashboard should be displayed (either via auto-login or clicking if needed)
-        // We check for the TextView inside the LinearLayout of the dashboard
+        // We check for the TextView inside the ConstraintLayout of the dashboard
         onView(
             allOf(
                 withText("User Dashboard"),
-                withParent(withClassName(`is`("android.widget.LinearLayout")))
+                withParent(withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")))
             )
         ).check(matches(isDisplayed()))
     }

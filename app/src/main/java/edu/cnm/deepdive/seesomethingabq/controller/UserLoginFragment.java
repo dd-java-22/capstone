@@ -27,36 +27,36 @@ import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserLoginBinding;
-import edu.cnm.deepdive.seesomethingabq.viewmodel.LoginViewModel;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
 
 @AndroidEntryPoint
 public class UserLoginFragment extends Fragment {
 
   private FragmentUserLoginBinding binding;
-  private LoginViewModel loginViewModel;
+  private UserViewModel viewModel;
 
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
     binding = FragmentUserLoginBinding.inflate(inflater, container, false);
-    binding.loginButton.setOnClickListener((v) -> loginViewModel.signIn(requireActivity()));
+    binding.loginButton.setOnClickListener((v) -> viewModel.signIn(requireActivity()));
     return binding.getRoot();
   }
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    loginViewModel = new ViewModelProvider(requireActivity()).get(LoginViewModel.class);
-    loginViewModel
-        .getCredential()
-        .observe(getViewLifecycleOwner(), (credential) -> {
-          if (credential != null) {
+    viewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+    viewModel
+        .getUser()
+        .observe(getViewLifecycleOwner(), (user) -> {
+          if (user != null) {
             Navigation.findNavController(binding.getRoot())
                 .navigate(R.id.navigate_to_user_dashboard_fragment);
           }
         });
-    loginViewModel
+    viewModel
         .getThrowable()
         .observe(getViewLifecycleOwner(), (throwable) -> {
           if (throwable != null) {
@@ -65,7 +65,7 @@ public class UserLoginFragment extends Fragment {
             // TODO: show a snackbar.
           }
         });
-    loginViewModel.signInQuickly(requireActivity());
+    viewModel.signIn(requireActivity());
   }
 
   @Override
