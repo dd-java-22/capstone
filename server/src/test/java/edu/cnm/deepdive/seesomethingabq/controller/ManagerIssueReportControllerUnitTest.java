@@ -36,8 +36,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.server.ResponseStatusException;
 
 @ExtendWith(MockitoExtension.class)
 class ManagerIssueReportControllerUnitTest {
@@ -86,11 +84,10 @@ class ManagerIssueReportControllerUnitTest {
     when(issueReportService.setAcceptedState(externalId, "ACCEPTED"))
         .thenThrow(new NoSuchElementException());
 
-    ResponseStatusException ex = assertThrows(
-        ResponseStatusException.class,
+    assertThrows(
+        NoSuchElementException.class,
         () -> controller.updateStatus(externalId, request)
     );
-    assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
   }
 
   @Test
@@ -101,11 +98,10 @@ class ManagerIssueReportControllerUnitTest {
     when(issueReportService.setAcceptedState(externalId, "MISSING"))
         .thenThrow(new NoSuchElementException());
 
-    ResponseStatusException ex = assertThrows(
-        ResponseStatusException.class,
+    assertThrows(
+        NoSuchElementException.class,
         () -> controller.updateStatus(externalId, request)
     );
-    assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
   }
 
   @Test
@@ -131,11 +127,10 @@ class ManagerIssueReportControllerUnitTest {
     when(issueReportService.replaceIssueTypes(externalId, List.of("POTHOLE")))
         .thenThrow(new NoSuchElementException());
 
-    ResponseStatusException ex = assertThrows(
-        ResponseStatusException.class,
+    assertThrows(
+        NoSuchElementException.class,
         () -> controller.updateIssueTypes(externalId, request)
     );
-    assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
   }
 
   @Test
@@ -146,11 +141,10 @@ class ManagerIssueReportControllerUnitTest {
     when(issueReportService.replaceIssueTypes(externalId, List.of("INVALID")))
         .thenThrow(new IllegalArgumentException());
 
-    ResponseStatusException ex = assertThrows(
-        ResponseStatusException.class,
+    assertThrows(
+        IllegalArgumentException.class,
         () -> controller.updateIssueTypes(externalId, request)
     );
-    assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
   }
 
 }
