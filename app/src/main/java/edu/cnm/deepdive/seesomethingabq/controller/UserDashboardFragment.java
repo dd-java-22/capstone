@@ -52,20 +52,15 @@ public class UserDashboardFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    Log.d(">>>", "this");
     viewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
 
     viewModel.getUser()
         .observe(getViewLifecycleOwner(), user -> {
-          Log.d(">>>", "here");
 
           if (user != null) {
-            Log.d(">>>", "onViewCreated: " + user);
             binding.displayName.setText(user.getDisplayName());
             binding.oauthKey.setText(user.getOauthKey());
             binding.externalKey.setText(user.getExternalId().toString());
-          } else {
-            Log.d(">>>", "fail");
           }
         });
   }
