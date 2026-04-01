@@ -14,11 +14,11 @@ order: 20
 
 ## UML class diagram
 
-[![UML class diagram](img/UML.svg)](pdf/UML.pdf)
+[![UML class diagram](img/uml.svg)](pdf/uml.pdf)
 
 ## Entity-relationship diagram
 
-[![Entity-relationship diagram](img/ERD.svg)](pdf/ERD.pdf)
+[![Entity-relationship diagram](img/erd.svg)](pdf/erd.pdf)
 
 ## DDL
 
