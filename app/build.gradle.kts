@@ -25,6 +25,7 @@ plugins {
     alias(libs.plugins.schema.parser)
     alias(libs.plugins.junit)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.ksp)
     id("org.jetbrains.kotlin.kapt")
     checkstyle
 }
@@ -47,7 +48,9 @@ android {
             "de.mannodermaus.junit5.AndroidJUnit5Builder"
 
         resValue("string", "app_name", project.property("appName") as String)
-        resValue("string", "client_id", getLocalProperty("clientId") as String)
+        resValue("string", "client_id", getLocalProperty("clientId"))
+        resValue("string", "base_url", getLocalProperty("baseUrl"))
+        resValue("string", "log_level", getLocalProperty("logLevel"))
 
 
         javaCompileOptions {
@@ -135,7 +138,7 @@ dependencies {
 
     // Room annotation processor and runtime library
     implementation(libs.room.runtime)
-    kapt(libs.room.compiler)
+    ksp(libs.room.compiler)
 
     // Gson (Google JSON parser) library
     implementation(libs.gson)
@@ -151,7 +154,7 @@ dependencies {
 
     // Hilt dependency-injection library & annotation processor
     implementation(libs.hilt.android.core)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     // OkHttp logging dependency
     implementation(libs.logging.interceptor)
@@ -167,7 +170,8 @@ dependencies {
     androidTestRuntimeOnly(libs.junit.android.runner)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.hilt.android.testing)
-    kaptAndroidTest(libs.hilt.android.compiler)
+    kspAndroidTest(libs.hilt.compiler)
+    kspAndroidTest(libs.hilt.android.compiler)
 
     constraints {
         implementation(libs.kotlin.jdk7) {
