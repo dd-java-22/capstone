@@ -74,33 +74,8 @@
       android:layout_height="wrap_content"
       android:layout_marginBottom="16dp"
       app:selectionRequired="false"
-      app:singleSelection="false">
+      app:singleSelection="false"/>
 
-      <com.google.android.material.chip.Chip
-        android:id="@+id/chip_trash"
-        style="@style/Widget.Material3.Chip.Filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/issue_type_trash"
-        android:checkable="true"/>
-
-      <com.google.android.material.chip.Chip
-        android:id="@+id/chip_maintenance"
-        style="@style/Widget.Material3.Chip.Filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/issue_type_maintenance"
-        android:checkable="true"/>
-
-      <com.google.android.material.chip.Chip
-        android:id="@+id/chip_pothole"
-        style="@style/Widget.Material3.Chip.Filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/issue_type_pothole"
-        android:checkable="true"/>
-
-    </com.google.android.material.chip.ChipGroup>
 
     <!-- Location -->
 

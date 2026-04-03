@@ -25,16 +25,22 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import com.google.android.material.chip.Chip;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentCreateIssueReportBinding;
+import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @AndroidEntryPoint
 public class CreateIssueReportFragment extends Fragment {
 
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
+  private final Set<Long> selectedIssueTypeIds = new HashSet<>();
 
   @Nullable
   @Override
@@ -54,6 +60,13 @@ public class CreateIssueReportFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     issueTypeViewModel = new ViewModelProvider(requireActivity()).get(IssueTypeViewModel.class);
+    issueTypeViewModel.getIssueTypes()
+        .observe(getViewLifecycleOwner(), this::populateIssueTypeChips);
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
     issueTypeViewModel.refresh(requireActivity());
   }
 
@@ -61,5 +74,26 @@ public class CreateIssueReportFragment extends Fragment {
   public void onDestroyView() {
     binding = null;
     super.onDestroyView();
+  }
+
+  private void populateIssueTypeChips(List<IssueType> issueTypes) {
+    binding.issueTypeChipGroup.removeAllViews();
+    for (IssueType issueType : issueTypes) {
+      Chip chip = new Chip(requireContext(), null,
+          com.google.android.material.R.attr.chipGroupChoiceStyle);
+      chip.setText(issueType.getIssueTypeTag());
+      chip.setCheckable(true);
+      chip.setTag(issueType.getId());
+      chip.setChecked(selectedIssueTypeIds.contains(issueType.getId()));
+      chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        long id = (long) buttonView.getTag();
+        if (isChecked) {
+          selectedIssueTypeIds.add(id);
+        } else {
+          selectedIssueTypeIds.remove(id);
+        }
+      });
+      binding.issueTypeChipGroup.addView(chip);
+    }
   }
 }
