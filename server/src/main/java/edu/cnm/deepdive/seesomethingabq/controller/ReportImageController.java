@@ -26,16 +26,36 @@ public class ReportImageController {
 
   private final ReportImageService service;
 
+  /**
+   * Constructs an instance of {@code ReportImageController} with the specified service.
+   *
+   * @param service Report image service for business logic operations.
+   */
   @Autowired
   public ReportImageController(ReportImageService service) {
     this.service = service;
   }
 
+  /**
+   * Retrieves a specific image from an issue report. Access is restricted to the report owner and
+   * managers.
+   *
+   * @param externalKey The external ID (UUID) of the issue report.
+   * @param imageId The external ID (UUID) of the image.
+   * @return The requested report image.
+   */
   @GetMapping(value = "/{imageId}", produces = MediaType.APPLICATION_JSON_VALUE)
   public ReportImage getImage(@PathVariable UUID externalKey, @PathVariable UUID imageId) {
     return service.getImage(externalKey, imageId);
   }
 
+  /**
+   * Adds a new image to an issue report. Only the report owner can add images.
+   *
+   * @param externalKey The external ID (UUID) of the issue report.
+   * @param request The image data to add.
+   * @return The newly created report image.
+   */
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
@@ -44,6 +64,11 @@ public class ReportImageController {
     return service.addImage(externalKey, request);
   }
 
+  /**
+   * Deletes an Image from an existing issue report. Only the report owner can delete images.
+   *
+   * @param externalKey The external ID (UUID) of the issue report.
+   */
   @DeleteMapping("/{imageId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteImage(@PathVariable UUID externalKey, @PathVariable UUID imageId) {

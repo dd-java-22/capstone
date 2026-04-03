@@ -6,7 +6,7 @@ Authorization: Bearer {{bearerToken}}
 Content-Type: application/json
 
 ###
-PUT http://localhost:8080/see-something/manager/issue-reports/334435666/issue-types
+PUT http://localhost:8080/see-something/manager/issue-reports/{{externalId}}/issue-types
 Authorization: Bearer {{bearerToken}}
 Content-Type: application/json
 
@@ -15,8 +15,8 @@ Content-Type: application/json
 }
 
 ###
-PUT http://localhost:8080/see-something/manager/issue-reports/11111111-1111-1111-1111-111111111006/status
-Authorization: Bearer eyJhbGciOiJSUzI1NiIsImtpZCI6ImExMGU1OGRmNTVlNzI4NTY2ZWM1NmJkYTZlYjNiZDQ1NDM5ZjM1ZDciLCJ0eXAiOiJKV1QifQ.eyJpc3MiOiJodHRwczovL2FjY291bnRzLmdvb2dsZS5jb20iLCJhenAiOiIzOTc5NzcyMTM5MTQtZDhnNjRoMjh0cXFpbmI0bzgxZnNjYXZrMnNoMjgzNmouYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJhdWQiOiIzOTc5NzcyMTM5MTQtMnNvNm1rcmMybzJrNW42a24xdWV0bTNyN25xcjJ0OGwuYXBwcy5nb29nbGV1c2VyY29udGVudC5jb20iLCJzdWIiOiIxMTc0NTY1NTI5NjQ5OTE3MTQ0NzkiLCJlbWFpbCI6Im1hcmt2ZWdhMDNAZ21haWwuY29tIiwiZW1haWxfdmVyaWZpZWQiOnRydWUsIm5hbWUiOiJtYXJrIHZlZ2EiLCJwaWN0dXJlIjoiaHR0cHM6Ly9saDMuZ29vZ2xldXNlcmNvbnRlbnQuY29tL2EvQUNnOG9jSkhQN0c2U1p1WDRZdXo5NHI5LW5lWGxvZFhSQnA0bmwzLTZZQ1c2U2c2ZjN0LU83ZzhtZz1zOTYtYyIsImdpdmVuX25hbWUiOiJtYXJrIiwiZmFtaWx5X25hbWUiOiJ2ZWdhIiwiaWF0IjoxNzc1MDYzMTA4LCJleHAiOjE3NzUwNjY3MDh9.XkQc0JZ5TLW9eCJgzMq8z2lJlVnFsJ-hU2Hnq0ZG1oUDWMC3T3E9sdbHvowNAXdUxMMi-G06zv9FLowjL9GpmOYmUmEaWzgkc8aiWIs4PSVPoYmlVVjpu1-WnWHoYdth28jmlKvgFp6MwYHzX2FPYsiZPYH8jAcH0FBV6RDrUBxHZQrr1oTXeMHPD2Zfr8ln3JISumpmWHDBUZrHsVfjqTvYTfNPzAmZaKh_AzbrHvvj79dLllVBt3dJWFQOjekdFn73X6H82ucIYPaqMTSG-4W-dRMh1BZ-EDLg4ta-rcaex42ac-NsjJtAlT0ZPuncEql7OuiI4sWaqp4ama_6TQ
+PUT http://localhost:8080/see-something/manager/issue-reports/{{externalId}}/status
+Authorization: Bearer {{bearerToken}}
 Content-Type: application/json
 
 {
