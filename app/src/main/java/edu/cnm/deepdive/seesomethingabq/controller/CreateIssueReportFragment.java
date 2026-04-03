@@ -41,7 +41,7 @@ public class CreateIssueReportFragment extends Fragment {
 
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
-  private final Set<Long> selectedIssueTypeIds = new HashSet<>();
+  private final Set<String> selectedIssueTypeTags = new HashSet<>();
 
   @Nullable
   @Override
@@ -83,16 +83,15 @@ public class CreateIssueReportFragment extends Fragment {
       Chip chip = new Chip(requireContext());
       chip.setChipDrawable(ChipDrawable.createFromAttributes(requireContext(), null, 0,
           com.google.android.material.R.style.Widget_Material3_Chip_Filter));
-      chip.setText(issueType.getIssueTypeTag());
+      String tag = issueType.getIssueTypeTag();
+      chip.setText(tag);
       chip.setCheckable(true);
-      chip.setTag(issueType.getId());
-      chip.setChecked(selectedIssueTypeIds.contains(issueType.getId()));
+      chip.setChecked(selectedIssueTypeTags.contains(tag));
       chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
-        long id = (long) buttonView.getTag();
         if (isChecked) {
-          selectedIssueTypeIds.add(id);
+          selectedIssueTypeTags.add(tag);
         } else {
-          selectedIssueTypeIds.remove(id);
+          selectedIssueTypeTags.remove(tag);
         }
       });
       binding.issueTypeChipGroup.addView(chip);
