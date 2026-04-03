@@ -14,25 +14,164 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 -->
-<LinearLayout
+<androidx.core.widget.NestedScrollView
   xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  android:orientation="vertical"
-  android:gravity="center"
-  android:padding="16dp">
+  android:fillViewport="true">
 
-  <TextView
-    android:layout_width="wrap_content"
+  <LinearLayout
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="Create Issue Report"
-    android:textSize="24sp"
-    android:layout_marginBottom="24dp"/>
+    android:orientation="vertical"
+    android:padding="16dp">
 
-  <Button
-    android:id="@+id/back_to_dashboard_button"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Back to Dashboard"/>
+    <!-- Header -->
 
-</LinearLayout>
+    <TextView
+      android:id="@+id/form_title"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/create_issue_report_title"
+      android:textAppearance="?attr/textAppearanceHeadlineSmall"
+      android:layout_marginBottom="16dp"/>
+
+    <!-- Description -->
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/description_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:hint="@string/description_hint"
+      android:layout_marginBottom="16dp"
+      app:counterEnabled="true"
+      app:counterMaxLength="500">
+
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/description_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textMultiLine"
+        android:minLines="3"
+        android:gravity="top|start"
+        android:maxLength="500"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Issue Type -->
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/issue_type_label"
+      android:textAppearance="?attr/textAppearanceTitleMedium"
+      android:layout_marginBottom="8dp"/>
+
+    <com.google.android.material.chip.ChipGroup
+      android:id="@+id/issue_type_chip_group"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="16dp"
+      app:selectionRequired="false"
+      app:singleSelection="false">
+
+      <com.google.android.material.chip.Chip
+        android:id="@+id/chip_trash"
+        style="@style/Widget.Material3.Chip.Filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/issue_type_trash"
+        android:checkable="true"/>
+
+      <com.google.android.material.chip.Chip
+        android:id="@+id/chip_maintenance"
+        style="@style/Widget.Material3.Chip.Filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/issue_type_maintenance"
+        android:checkable="true"/>
+
+      <com.google.android.material.chip.Chip
+        android:id="@+id/chip_pothole"
+        style="@style/Widget.Material3.Chip.Filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/issue_type_pothole"
+        android:checkable="true"/>
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <!-- Location -->
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/location_label"
+      android:textAppearance="?attr/textAppearanceTitleMedium"
+      android:layout_marginBottom="8dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/location_layout"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:hint="@string/location_hint"
+      android:layout_marginBottom="8dp">
+
+      <com.google.android.material.textfield.TextInputEditText
+        android:id="@+id/location_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:inputType="textPostalAddress"
+        android:maxLines="2"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/use_current_location_button"
+      style="@style/Widget.Material3.Button.TonalButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/use_current_location"
+      app:icon="@android:drawable/ic_menu_mylocation"
+      android:layout_marginBottom="16dp"/>
+
+    <!-- Image Attachment -->
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/image_label"
+      android:textAppearance="?attr/textAppearanceTitleMedium"
+      android:layout_marginBottom="8dp"/>
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/attach_image_button"
+      style="@style/Widget.Material3.Button.OutlinedButton"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="@string/attach_image"
+      app:icon="@android:drawable/ic_menu_camera"
+      android:layout_marginBottom="16dp"/>
+
+    <!-- Submit -->
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/submit_button"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/submit_report"
+      android:layout_marginBottom="8dp"/>
+
+    <!-- Back to Dashboard -->
+
+    <com.google.android.material.button.MaterialButton
+      android:id="@+id/back_to_dashboard_button"
+      style="@style/Widget.Material3.Button.TextButton"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/back_to_dashboard"/>
+
+  </LinearLayout>
+
+</androidx.core.widget.NestedScrollView>

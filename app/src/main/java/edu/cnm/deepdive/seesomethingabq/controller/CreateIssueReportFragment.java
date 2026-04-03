@@ -48,6 +48,8 @@ public class CreateIssueReportFragment extends Fragment {
     return binding.getRoot();
   }
 
+  // TODO: 4/3/2026 implement dialog fragment
+
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
