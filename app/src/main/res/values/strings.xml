@@ -6,4 +6,18 @@
   <string name="manage_users">Manage Users</string>
   <string name="app_user_mode">See Something ABQ - User</string>
   <string name="app_manager_mode">See Something ABQ - Manager</string>
+  <!-- CreateIssueReportFragment -->
+  <string name="create_issue_report_title">Report an Issue</string>
+  <string name="description_hint">Describe the issue</string>
+  <string name="issue_type_label">Issue Type</string>
+  <string name="issue_type_trash">Trash</string>
+  <string name="issue_type_maintenance">Maintenance</string>
+  <string name="issue_type_pothole">Pothole</string>
+  <string name="location_label">Location</string>
+  <string name="location_hint">Street address or cross-streets</string>
+  <string name="use_current_location">Use Current Location</string>
+  <string name="image_label">Photo</string>
+  <string name="attach_image">Attach Photo</string>
+  <string name="submit_report">Submit Report</string>
+  <string name="back_to_dashboard">Back to Dashboard</string>
 </resources>
