@@ -69,10 +69,6 @@ public class LocalFileSystemStorageService implements StorageService {
         : null;
   }
 
-  public LocalFileSystemStorageService(StorageConfiguration storageConfiguration) throws IOException {
-    this(storageConfiguration, new ApplicationHome(LocalFileSystemStorageService.class));
-  }
-
   @Override
   public String store(MultipartFile file) throws IOException, HttpMediaTypeException {
     MediaType requestType = null;
