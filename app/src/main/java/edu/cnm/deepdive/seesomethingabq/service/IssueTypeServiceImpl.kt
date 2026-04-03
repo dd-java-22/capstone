@@ -36,11 +36,7 @@ class IssueTypeServiceImpl @Inject constructor(
   override fun getIssueTypes(): LiveData<List<IssueType>> = issueTypeDao.getAll()
 
   private suspend fun getCredential(activity: Activity): GoogleIdTokenCredential =
-    try {
-      authRepository.signInQuickly(activity).await()
-    } catch (e: GoogleAuthRepository.SignInRequiredException) {
-      authRepository.signIn(activity).await()
-    }
+    authRepository.getValidCredential(activity).await()
 
 }
 
