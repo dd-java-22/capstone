@@ -26,6 +26,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipDrawable;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentCreateIssueReportBinding;
@@ -79,8 +80,9 @@ public class CreateIssueReportFragment extends Fragment {
   private void populateIssueTypeChips(List<IssueType> issueTypes) {
     binding.issueTypeChipGroup.removeAllViews();
     for (IssueType issueType : issueTypes) {
-      Chip chip = new Chip(requireContext(), null,
-          com.google.android.material.R.attr.chipGroupChoiceStyle);
+      Chip chip = new Chip(requireContext());
+      chip.setChipDrawable(ChipDrawable.createFromAttributes(requireContext(), null, 0,
+          com.google.android.material.R.style.Widget_Material3_Chip_Filter));
       chip.setText(issueType.getIssueTypeTag());
       chip.setCheckable(true);
       chip.setTag(issueType.getId());
