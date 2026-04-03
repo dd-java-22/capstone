@@ -1,5 +1,5 @@
 ###
-POST http://localhost:8080/see-something/issue-reports/11111111-1111-1111-1111-111111111006/images
+POST http://localhost:8080/see-something/issue-reports/{{externalKey}}/images
 Content-Type: application/json
 Authorization: bearer {{bearerToken}}
 Accept: application/json
@@ -13,7 +13,13 @@ Accept: application/json
 
 
 ###
-GET http://localhost:8080/see-something/issue-reports/11111111-1111-1111-1111-111111111006/images/443f5865-6a07-403a-9d00-0184c03192da
+GET http://localhost:8080/see-something/issue-reports/{{externalKey}}/images/{{imageId}}
 Content-Type: application/json
 Authorization: bearer {{bearerToken}}
 Accept: application/json
+
+
+
+###
+DELETE http://localhost:8080/see-something/issue-reports/{{externalKey}}/images/{{imageId}}
+Authorization: Bearer {{bearerToken}}

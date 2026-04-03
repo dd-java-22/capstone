@@ -26,4 +26,12 @@ public interface ReportImageService {
    * @return The newly created report image.
    */
   ReportImage addImage(UUID externalKey, AddImageRequest request);
+
+  /**
+   * Deletes a specific image from an issue report.
+   *
+   * @param reportId The external ID (UUID) of the issue report.
+   * @param imageId The external ID (UUID) of the image.
+   */
+  void deleteImage(UUID reportId, UUID imageId);
 }
