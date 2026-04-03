@@ -11,6 +11,7 @@ import edu.cnm.deepdive.seesomethingabq.service.repository.ReportImageRepository
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link ReportImageService} for managing report images.
@@ -65,5 +66,39 @@ public class ReportImageServiceImpl implements ReportImageService {
     image.setAlbumOrder(request.getAlbumOrder());
 
     return reportImageRepository.save(image);
+  }
+
+  @Override
+  @Transactional
+  public void deleteImage(UUID reportId, UUID imageId) {
+
+    // Load the image
+    ReportImage image = reportImageRepository.findByExternalId(imageId)
+        .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
+
+    IssueReport report = image.getIssueReport();
+
+    // Validate that the image belongs to the specified report
+    if (!report.getExternalId().equals(reportId)) {
+      throw new ResourceNotFoundException("Image not found for this report");
+    }
+
+    UserProfile currentUser = userService.getCurrentUser();
+    boolean isOwner = report.getUserProfile().getId().equals(currentUser.getId());
+    boolean isManager = currentUser.isManager();
+
+    // Authorization check
+    if (!isOwner && !isManager) {
+      throw new AccessDeniedException("You do not have permission to delete this image");
+    }
+
+    // Bidirectional unlink
+    report.getReportImages().remove(image);
+    image.setIssueReport(null);
+
+    // Delete metadata
+    reportImageRepository.delete(image);
+
+    // TODO: Delete actual file from storage once implemented
   }
 }

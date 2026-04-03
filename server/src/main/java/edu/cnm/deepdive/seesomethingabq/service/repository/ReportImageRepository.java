@@ -10,4 +10,6 @@ public interface ReportImageRepository extends JpaRepository<ReportImage, Long> 
 
   Optional<ReportImage> findByIssueReportAndExternalId(IssueReport issueReport, UUID externalId);
 
+  Optional<ReportImage> findByExternalId(UUID externalId);
+
 }
