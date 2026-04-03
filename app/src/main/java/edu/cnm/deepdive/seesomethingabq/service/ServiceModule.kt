@@ -14,4 +14,8 @@ interface ServiceModule {
   @Singleton
   fun bindUserService(implementation: UserServiceImpl): UserService
 
+  @Binds
+  @Singleton
+  fun bindIssueTypeService(implementation: IssueTypeServiceImpl): IssueTypeService
+
 }

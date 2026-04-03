@@ -22,16 +22,19 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentCreateIssueReportBinding;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel;
 
 @AndroidEntryPoint
 public class CreateIssueReportFragment extends Fragment {
 
   private FragmentCreateIssueReportBinding binding;
+  private IssueTypeViewModel issueTypeViewModel;
 
   @Nullable
   @Override
@@ -46,6 +49,13 @@ public class CreateIssueReportFragment extends Fragment {
   }
 
   // TODO: 4/3/2026 implement dialog fragment
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    issueTypeViewModel = new ViewModelProvider(requireActivity()).get(IssueTypeViewModel.class);
+    issueTypeViewModel.refresh(requireActivity());
+  }
 
   @Override
   public void onDestroyView() {
