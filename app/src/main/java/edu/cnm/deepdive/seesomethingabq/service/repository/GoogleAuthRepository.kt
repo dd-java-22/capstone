@@ -10,6 +10,8 @@ interface GoogleAuthRepository {
 
     fun signIn(activity: Activity): CompletableFuture<GoogleIdTokenCredential>
 
+    fun getValidCredential(activity: Activity): CompletableFuture<GoogleIdTokenCredential>
+
     fun refreshToken(activity: Activity, credential: GoogleIdTokenCredential): CompletableFuture<GoogleIdTokenCredential>
 
     fun signOut(): CompletableFuture<Void?>

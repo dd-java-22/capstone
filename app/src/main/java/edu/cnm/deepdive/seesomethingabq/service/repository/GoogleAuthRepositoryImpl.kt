@@ -19,6 +19,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.future.future
 import org.json.JSONObject
+import java.util.concurrent.CompletionException
 import java.util.concurrent.CompletableFuture
 
 @Singleton
@@ -31,31 +32,60 @@ class GoogleAuthRepositoryImpl @Inject constructor(
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
     private val TAG = GoogleAuthRepositoryImpl::class.java.simpleName
 
+    @Volatile
+    private var cachedCredential: GoogleIdTokenCredential? = null
+
     override fun signInQuickly(activity: Activity): CompletableFuture<GoogleIdTokenCredential> =
         scope.future {
-            attemptSignIn(activity, true, false)
+            attemptSignIn(activity, true, false).also { cachedCredential = it }
         }
 
     override fun signIn(activity: Activity): CompletableFuture<GoogleIdTokenCredential> =
         scope.future {
-            attemptSignIn(activity, false, false)
+            attemptSignIn(activity, false, false).also { cachedCredential = it }
         }
+
+    override fun getValidCredential(activity: Activity): CompletableFuture<GoogleIdTokenCredential> {
+        val credential = cachedCredential
+        return if (credential != null && !isTokenExpired(credential.idToken)) {
+            CompletableFuture.completedFuture(credential)
+        } else if (credential != null) {
+            refreshToken(activity, credential)
+        } else {
+            signInQuickly(activity)
+                .handle { result, throwable ->
+                    if (throwable == null) {
+                        CompletableFuture.completedFuture(result)
+                    } else {
+                        val cause = (throwable as? CompletionException)?.cause ?: throwable
+                        if (cause is GoogleAuthRepository.SignInRequiredException) {
+                            signIn(activity)
+                        } else {
+                            CompletableFuture<GoogleIdTokenCredential>().also { it.completeExceptionally(cause) }
+                        }
+                    }
+                }
+                .thenCompose { it }
+        }
+    }
 
     override fun refreshToken(
         activity: Activity,
         credential: GoogleIdTokenCredential
     ): CompletableFuture<GoogleIdTokenCredential> =
         if (!isTokenExpired(credential.idToken)) {
+            cachedCredential = credential
             CompletableFuture.completedFuture(credential)
         } else {
             scope.future {
-                attemptSignIn(activity, true, true)
+                attemptSignIn(activity, true, true).also { cachedCredential = it }
             }
         }
 
     override fun signOut(): CompletableFuture<Void?> =
         scope.future {
             credentialManager.clearCredentialState(ClearCredentialStateRequest())
+            cachedCredential = null
             null
         }
 
