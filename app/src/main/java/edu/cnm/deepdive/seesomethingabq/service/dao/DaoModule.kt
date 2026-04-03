@@ -15,4 +15,8 @@ class DaoModule {
   @Singleton
   fun provideUserDao(database: SeeSomethingDatabase) = database.getUserDao()
 
+  @Provides
+  @Singleton
+  fun provideIssueTypeDao(database: SeeSomethingDatabase) = database.getIssueTypeDao()
+
 }

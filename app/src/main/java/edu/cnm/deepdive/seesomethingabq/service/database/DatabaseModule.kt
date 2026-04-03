@@ -17,7 +17,7 @@ class DatabaseModule {
   @Singleton
   fun provideSeeSomethingDatabase(@ApplicationContext context: Context): SeeSomethingDatabase =
     Room.databaseBuilder(context, SeeSomethingDatabase::class.java, SeeSomethingDatabase.NAME)
-      // TODO: attach callbacks, migrations, etc
+      .addMigrations(SeeSomethingDatabase.MIGRATION_1_2)
       .build()
 
 }
