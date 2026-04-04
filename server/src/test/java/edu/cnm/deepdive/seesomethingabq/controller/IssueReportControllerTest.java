@@ -27,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
+import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +55,7 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://example.com/issuer",
     "spring.security.oauth2.resourceserver.jwt.audiences=test-client-id"
 })
-@ContextConfiguration(classes = {IssueReportControllerTest.TestConfig.class})
+@ContextConfiguration(classes = {IssueReportControllerTest.TestConfig.class, TestStorageConfig.class})
 class IssueReportControllerTest {
 
   @Autowired
