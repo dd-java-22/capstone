@@ -40,7 +40,7 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://example.com/issuer",
     "spring.security.oauth2.resourceserver.jwt.audiences=test-client-id"
 })
-@ContextConfiguration(classes = TestStorageConfig.class)
+@ContextConfiguration(classes = {ReportImageControllerTest.TestConfig.class, TestStorageConfig.class})
 class ReportImageControllerTest {
 
   @Autowired
