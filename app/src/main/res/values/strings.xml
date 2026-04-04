@@ -21,4 +21,8 @@
   <string name="location_picker_title">Pick a Location</string>
   <string name="location_search_hint">Search address or place</string>
   <string name="location_search_placeholder">Search results will appear here</string>
+  <string name="location_permission_denied">Location permission is required to use current location</string>
+  <string name="location_current_unavailable">Could not determine current location</string>
+  <string name="location_no_results">No matching locations found</string>
+  <string name="location_search_failed">Location search failed. Please try again.</string>
 </resources>

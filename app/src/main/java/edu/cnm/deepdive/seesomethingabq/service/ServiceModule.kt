@@ -18,4 +18,16 @@ interface ServiceModule {
   @Singleton
   fun bindIssueTypeService(implementation: IssueTypeServiceImpl): IssueTypeService
 
+  @Binds
+  @Singleton
+  fun bindCurrentLocationProvider(
+    implementation: LocationManagerCurrentLocationProvider
+  ): CurrentLocationProvider
+
+  @Binds
+  @Singleton
+  fun bindLocationSearchProvider(
+    implementation: GeocoderLocationSearchProvider
+  ): LocationSearchProvider
+
 }
