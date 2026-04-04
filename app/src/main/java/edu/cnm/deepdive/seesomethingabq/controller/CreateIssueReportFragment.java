@@ -38,6 +38,7 @@ import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 @AndroidEntryPoint
@@ -62,6 +63,7 @@ public class CreateIssueReportFragment extends Fragment {
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_location_picker_dialog);
     });
+    binding.submitButton.setOnClickListener((v) -> onSubmitClicked());
     binding.locationInput.addTextChangedListener(new TextWatcher() {
       @Override
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -80,8 +82,6 @@ public class CreateIssueReportFragment extends Fragment {
     });
     return binding.getRoot();
   }
-
-  // TODO: 4/3/2026 implement dialog fragment
 
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -132,15 +132,44 @@ public class CreateIssueReportFragment extends Fragment {
     }
   }
 
+  private void onSubmitClicked() {
+    if (confirmedLocation == null) {
+      String locationText = Objects.toString(binding.locationInput.getText(), "").trim();
+      if (locationText.isEmpty()) {
+        binding.locationLayout.setError(getString(R.string.location_required));
+      } else {
+        binding.locationLayout.setError(getString(R.string.location_not_confirmed));
+      }
+      return;
+    }
+    binding.locationLayout.setError(null);
+    // TODO: pass buildLocationPayload() to submission service
+    buildLocationPayload();
+  }
+
+  private Bundle buildLocationPayload() {
+    Bundle payload = new Bundle();
+    payload.putString("streetCoordinate", confirmedLocation.getDisplayText());
+    payload.putDouble("latitude", confirmedLocation.getLatitude());
+    payload.putDouble("longitude", confirmedLocation.getLongitude());
+    return payload;
+  }
+
   private void applyConfirmedLocation(PickedLocation location) {
     confirmedLocation = location;
     applyingPickedLocation = true;
     binding.locationInput.setText(location.getDisplayText());
     binding.locationLayout.setError(null);
+    binding.locationLayout.setHelperText(getString(R.string.location_confirmed));
     applyingPickedLocation = false;
   }
 
   private void invalidateConfirmedLocation() {
+    boolean hadConfirmed = confirmedLocation != null;
     confirmedLocation = null;
+    if (binding != null) {
+      binding.locationLayout.setHelperText(
+          hadConfirmed ? getString(R.string.location_unconfirmed_edit) : null);
+    }
   }
 }

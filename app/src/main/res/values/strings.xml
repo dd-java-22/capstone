@@ -17,6 +17,11 @@
   <string name="attach_image">Attach Photo</string>
   <string name="submit_report">Submit Report</string>
   <string name="back_to_dashboard">Back to Dashboard</string>
+  <!-- CreateIssueReportFragment – location field states -->
+  <string name="location_confirmed">Location confirmed</string>
+  <string name="location_unconfirmed_edit">Location edited — use the picker to confirm</string>
+  <string name="location_required">A confirmed location is required</string>
+  <string name="location_not_confirmed">Use the location picker to confirm this address</string>
   <!-- LocationPickerDialogFragment -->
   <string name="location_picker_title">Pick a Location</string>
   <string name="location_search_hint">Search address or place</string>
