@@ -9,6 +9,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
+import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
 import edu.cnm.deepdive.seesomethingabq.model.dto.AddImageRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportImage;
 import edu.cnm.deepdive.seesomethingabq.service.ReportImageService;
@@ -26,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -38,6 +40,7 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://example.com/issuer",
     "spring.security.oauth2.resourceserver.jwt.audiences=test-client-id"
 })
+@ContextConfiguration(classes = {ReportImageControllerTest.TestConfig.class, TestStorageConfig.class})
 class ReportImageControllerTest {
 
   @Autowired

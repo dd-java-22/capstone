@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.Mockito.when;
 
+import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;
 import java.net.URL;
@@ -47,7 +48,7 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.main.allow-bean-definition-overriding=true",
     "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://example.com/issuer"
 })
-@ContextConfiguration(classes = {UserMeEndpointTest.TestConfig.class})
+@ContextConfiguration(classes = {UserMeEndpointTest.TestConfig.class, TestStorageConfig.class})
 class UserMeEndpointTest {
 
   @Autowired

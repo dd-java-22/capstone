@@ -20,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;
 import java.util.UUID;
@@ -28,12 +29,16 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Integration tests for {@link UserProfileRepository}.
  */
 @SpringBootTest
+@ContextConfiguration(classes = TestStorageConfig.class)
+@TestPropertySource(properties = "spring.main.allow-bean-definition-overriding=true")
 @Transactional
 class UserProfileRepositoryTest {
 
