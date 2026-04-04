@@ -16,6 +16,7 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.Manifest;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -122,6 +123,8 @@ public class LocationPickerDialogFragment extends DialogFragment {
         if (query.length() >= MIN_QUERY_LENGTH) {
           pendingSearch = () -> performSearch(query);
           debounceHandler.postDelayed(pendingSearch, SEARCH_DEBOUNCE_MS);
+        } else {
+          showPlaceholder(getString(R.string.location_search_placeholder));
         }
       }
 
@@ -132,20 +135,28 @@ public class LocationPickerDialogFragment extends DialogFragment {
   }
 
   private void checkPermissionAndBootstrap() {
-    if (ContextCompat.checkSelfPermission(requireContext(),
-        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+    if (hasLocationPermission()) {
       bootstrapCurrentLocation();
     } else {
+      // Request fine location. On Android 12+, the user may choose "Approximate", which grants
+      // only ACCESS_COARSE_LOCATION. The callback checks for that fallback.
       permissionLauncher.launch(Manifest.permission.ACCESS_FINE_LOCATION);
     }
   }
 
-  private void onPermissionResult(boolean granted) {
-    if (granted) {
+  private void onPermissionResult(boolean fineGranted) {
+    if (fineGranted || hasLocationPermission()) {
       bootstrapCurrentLocation();
-    } else {
+    } else if (binding != null) {
       showSnackbar(getString(R.string.location_permission_denied));
     }
+  }
+
+  private boolean hasLocationPermission() {
+    return ContextCompat.checkSelfPermission(requireContext(),
+        Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED
+        || ContextCompat.checkSelfPermission(requireContext(),
+        Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED;
   }
 
   private void bootstrapCurrentLocation() {
@@ -153,37 +164,41 @@ public class LocationPickerDialogFragment extends DialogFragment {
     currentLocationProvider.getCurrentLocation()
         .thenCompose(location ->
             searchProvider.reverseGeocode(location.getLatitude(), location.getLongitude()))
-        .whenComplete((results, error) ->
-            requireActivity().runOnUiThread(() -> {
-              if (binding == null) {
-                return;
-              }
-              if (error != null) {
-                showPlaceholder(getString(R.string.location_current_unavailable));
-              } else if (results.isEmpty()) {
-                showPlaceholder(getString(R.string.location_no_results));
-              } else {
-                showCandidates(results);
-              }
-            }));
+        .whenComplete((results, error) -> postToUi(() -> {
+          if (error != null) {
+            showPlaceholder(getString(R.string.location_current_unavailable));
+          } else if (results.isEmpty()) {
+            showPlaceholder(getString(R.string.location_no_results));
+          } else {
+            showCandidates(results);
+          }
+        }));
   }
 
   private void performSearch(String query) {
     showLoading();
     searchProvider.search(query)
-        .whenComplete((results, error) ->
-            requireActivity().runOnUiThread(() -> {
-              if (binding == null) {
-                return;
-              }
-              if (error != null) {
-                showPlaceholder(getString(R.string.location_search_failed));
-              } else if (results.isEmpty()) {
-                showPlaceholder(getString(R.string.location_no_results));
-              } else {
-                showCandidates(results);
-              }
-            }));
+        .whenComplete((results, error) -> postToUi(() -> {
+          if (error != null) {
+            showPlaceholder(getString(R.string.location_search_failed));
+          } else if (results.isEmpty()) {
+            showPlaceholder(getString(R.string.location_no_results));
+          } else {
+            showCandidates(results);
+          }
+        }));
+  }
+
+  private void postToUi(Runnable action) {
+    Activity activity = getActivity();
+    if (activity == null || binding == null) {
+      return;
+    }
+    activity.runOnUiThread(() -> {
+      if (binding != null) {
+        action.run();
+      }
+    });
   }
 
   private void showLoading() {
