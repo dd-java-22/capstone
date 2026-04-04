@@ -23,6 +23,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -57,6 +58,10 @@ public class CreateIssueReportFragment extends Fragment {
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_user_dashboard_fragment);
     });
+    binding.useCurrentLocationButton.setOnClickListener((v) -> {
+      NavController navController = Navigation.findNavController(v);
+      navController.navigate(R.id.navigate_to_location_picker_dialog);
+    });
     binding.locationInput.addTextChangedListener(new TextWatcher() {
       @Override
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -84,6 +89,14 @@ public class CreateIssueReportFragment extends Fragment {
     issueTypeViewModel = new ViewModelProvider(requireActivity()).get(IssueTypeViewModel.class);
     issueTypeViewModel.getIssueTypes()
         .observe(getViewLifecycleOwner(), this::populateIssueTypeChips);
+    getParentFragmentManager().setFragmentResultListener(
+        LocationPickerResult.REQUEST_KEY, getViewLifecycleOwner(), (requestKey, result) -> {
+          PickedLocation location = BundleCompat.getParcelable(
+              result, LocationPickerResult.KEY_PICKED_LOCATION, PickedLocation.class);
+          if (location != null) {
+            applyConfirmedLocation(location);
+          }
+        });
   }
 
   @Override
@@ -123,6 +136,7 @@ public class CreateIssueReportFragment extends Fragment {
     confirmedLocation = location;
     applyingPickedLocation = true;
     binding.locationInput.setText(location.getDisplayText());
+    binding.locationLayout.setError(null);
     applyingPickedLocation = false;
   }
 

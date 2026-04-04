@@ -17,11 +17,14 @@ package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.app.Dialog;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import dagger.hilt.android.AndroidEntryPoint;
+import edu.cnm.deepdive.seesomethingabq.R;
+import edu.cnm.deepdive.seesomethingabq.databinding.FragmentLocationPickerBinding;
 import edu.cnm.deepdive.seesomethingabq.model.domain.PickedLocation;
 
 /**
@@ -34,18 +37,26 @@ public class LocationPickerDialogFragment extends DialogFragment {
   // TODO: Inject LocationSearchProvider for address/place search.
   // TODO: Inject CurrentLocationProvider for device-location bootstrap.
 
+  private FragmentLocationPickerBinding binding;
+
   @NonNull
   @Override
   public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
-    // TODO: Replace this placeholder dialog with a custom layout containing:
-    //   - A search input field for address/place queries.
-    //   - A list/recycler for search results.
-    //   - A "Use Current Location" action.
-    //   - Confirm and cancel actions.
+    binding = FragmentLocationPickerBinding.inflate(LayoutInflater.from(requireContext()));
+    // TODO: Wire search input to LocationSearchProvider when available.
+    // TODO: Populate location_results_list with search results via adapter.
+    // TODO: Add "Use Current Location" action using CurrentLocationProvider.
     return new MaterialAlertDialogBuilder(requireContext())
-        .setTitle("Pick a Location")
+        .setTitle(R.string.location_picker_title)
+        .setView(binding.getRoot())
         .setNegativeButton(android.R.string.cancel, (dialog, which) -> dismiss())
         .create();
+  }
+
+  @Override
+  public void onDestroyView() {
+    binding = null;
+    super.onDestroyView();
   }
 
   private void confirmLocation(PickedLocation location) {
