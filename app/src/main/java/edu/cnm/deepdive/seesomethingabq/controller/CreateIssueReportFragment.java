@@ -27,11 +27,15 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipDrawable;
+import com.google.android.material.snackbar.Snackbar;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentCreateIssueReportBinding;
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,6 +45,7 @@ public class CreateIssueReportFragment extends Fragment {
 
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
+  private IssueReportViewModel issueReportViewModel;
   private final Set<String> selectedIssueTypeTags = new HashSet<>();
 
   @Nullable
@@ -61,8 +66,14 @@ public class CreateIssueReportFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     issueTypeViewModel = new ViewModelProvider(requireActivity()).get(IssueTypeViewModel.class);
+    issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
     issueTypeViewModel.getIssueTypes()
         .observe(getViewLifecycleOwner(), this::populateIssueTypeChips);
+    issueReportViewModel.getSubmitted()
+        .observe(getViewLifecycleOwner(), this::handleSubmitSuccess);
+    issueReportViewModel.getThrowable()
+        .observe(getViewLifecycleOwner(), this::handleSubmitFailure);
+    binding.submitButton.setOnClickListener((v) -> submitReport());
   }
 
   @Override
@@ -95,6 +106,37 @@ public class CreateIssueReportFragment extends Fragment {
         }
       });
       binding.issueTypeChipGroup.addView(chip);
+    }
+  }
+
+  private void submitReport() {
+    CharSequence descriptionInput = binding.descriptionInput.getText();
+    String description = (descriptionInput != null) ? descriptionInput.toString() : "";
+    List<String> issueTypes = new ArrayList<>(selectedIssueTypeTags);
+    IssueReportRequest request = new IssueReportRequest(
+        description,
+        0.0,
+        0.0,
+        null,
+        null,
+        issueTypes
+    );
+    issueReportViewModel.submit(requireActivity(), request);
+  }
+
+  private void handleSubmitSuccess(Boolean submitted) {
+    if (Boolean.TRUE.equals(submitted)) {
+      Snackbar.make(binding.getRoot(), R.string.submit_report_success, Snackbar.LENGTH_SHORT)
+          .show();
+      NavController navController = Navigation.findNavController(binding.getRoot());
+      navController.navigate(R.id.navigate_to_user_dashboard_fragment);
+    }
+  }
+
+  private void handleSubmitFailure(Throwable throwable) {
+    if (throwable != null) {
+      Snackbar.make(binding.getRoot(), R.string.submit_report_failure, Snackbar.LENGTH_SHORT)
+          .show();
     }
   }
 }
