@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.service.repository
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
 import edu.cnm.deepdive.seesomethingabq.service.proxy.SeeSomethingWebService
@@ -40,6 +41,9 @@ class FakeSeeSomethingWebService @Inject constructor() : SeeSomethingWebService 
 
   override suspend fun getIssueTypes(bearerToken: String): List<IssueType> {
     return emptyList()
+  }
+
+  override suspend fun submitIssueReport(bearerToken: String, request: IssueReportRequest) {
   }
 }
 
