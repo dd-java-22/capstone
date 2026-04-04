@@ -16,6 +16,8 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +32,7 @@ import com.google.android.material.chip.ChipDrawable;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentCreateIssueReportBinding;
+import edu.cnm.deepdive.seesomethingabq.model.domain.PickedLocation;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel;
 import java.util.HashSet;
@@ -42,6 +45,8 @@ public class CreateIssueReportFragment extends Fragment {
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
   private final Set<String> selectedIssueTypeTags = new HashSet<>();
+  private PickedLocation confirmedLocation;
+  private boolean applyingPickedLocation;
 
   @Nullable
   @Override
@@ -51,6 +56,22 @@ public class CreateIssueReportFragment extends Fragment {
     binding.backToDashboardButton.setOnClickListener((v) -> {
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_user_dashboard_fragment);
+    });
+    binding.locationInput.addTextChangedListener(new TextWatcher() {
+      @Override
+      public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+      }
+
+      @Override
+      public void onTextChanged(CharSequence s, int start, int before, int count) {
+        if (!applyingPickedLocation && before != count) {
+          invalidateConfirmedLocation();
+        }
+      }
+
+      @Override
+      public void afterTextChanged(Editable s) {
+      }
     });
     return binding.getRoot();
   }
@@ -96,5 +117,16 @@ public class CreateIssueReportFragment extends Fragment {
       });
       binding.issueTypeChipGroup.addView(chip);
     }
+  }
+
+  private void applyConfirmedLocation(PickedLocation location) {
+    confirmedLocation = location;
+    applyingPickedLocation = true;
+    binding.locationInput.setText(location.getDisplayText());
+    applyingPickedLocation = false;
+  }
+
+  private void invalidateConfirmedLocation() {
+    confirmedLocation = null;
   }
 }
