@@ -130,6 +130,9 @@ dependencies {
     implementation(libs.lifecycle.viewmodel)
     implementation(libs.lifecycle.livedata)
 
+    // Paging 3 library
+    implementation(libs.paging.runtime)
+
     // Preferences/settings components
     implementation(libs.preference)
 

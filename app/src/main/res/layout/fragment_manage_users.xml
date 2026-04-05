@@ -28,4 +28,11 @@
     android:text="Manage Users"
     android:textSize="24sp"/>
 
+  <TextView
+    android:id="@+id/test_field"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:text="To be replaced with JSON request data"
+    android:textSize="24sp"/>
+
 </LinearLayout>

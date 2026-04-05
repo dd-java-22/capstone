@@ -4,9 +4,9 @@ import java.time.Instant
 import java.util.UUID
 
 data class IssueReportSummary (
-    private val externalId: UUID,
-    private val description: String = "",
-    private val acceptedState: String = "",
-    private val timeFirstReported: Instant = Instant.EPOCH,
-    private val timeLastModified: Instant = Instant.EPOCH,
+    val externalId: UUID,
+    val description: String = "",
+    val acceptedState: String = "",
+    val timeFirstReported: Instant = Instant.EPOCH,
+    val timeLastModified: Instant = Instant.EPOCH,
 )
