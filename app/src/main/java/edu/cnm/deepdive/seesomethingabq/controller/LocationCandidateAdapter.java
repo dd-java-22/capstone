@@ -21,25 +21,25 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import edu.cnm.deepdive.seesomethingabq.R;
-import edu.cnm.deepdive.seesomethingabq.model.domain.PickedLocation;
+import edu.cnm.deepdive.seesomethingabq.model.domain.PlacePredictionCandidate;
 import java.util.Collections;
 import java.util.List;
 
 /**
- * RecyclerView adapter that displays a list of {@link PickedLocation} candidates for the user to
- * select from in the location picker dialog.
+ * RecyclerView adapter that displays a list of {@link PlacePredictionCandidate} values for the user
+ * to select from in the location picker dialog.
  */
 public class LocationCandidateAdapter
     extends RecyclerView.Adapter<LocationCandidateAdapter.ViewHolder> {
 
-  private List<PickedLocation> candidates = Collections.emptyList();
+  private List<PlacePredictionCandidate> candidates = Collections.emptyList();
   private final OnCandidateSelectedListener listener;
 
   public LocationCandidateAdapter(OnCandidateSelectedListener listener) {
     this.listener = listener;
   }
 
-  public void setCandidates(List<PickedLocation> candidates) {
+  public void setCandidates(List<PlacePredictionCandidate> candidates) {
     this.candidates = candidates;
     notifyDataSetChanged();
   }
@@ -54,7 +54,7 @@ public class LocationCandidateAdapter
 
   @Override
   public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-    PickedLocation candidate = candidates.get(position);
+    PlacePredictionCandidate candidate = candidates.get(position);
     holder.text.setText(candidate.getDisplayText());
     holder.text.setOnClickListener(v -> listener.onSelected(candidate));
   }
@@ -66,7 +66,7 @@ public class LocationCandidateAdapter
 
   public interface OnCandidateSelectedListener {
 
-    void onSelected(PickedLocation location);
+    void onSelected(PlacePredictionCandidate location);
   }
 
   static class ViewHolder extends RecyclerView.ViewHolder {

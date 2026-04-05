@@ -29,7 +29,7 @@ GET http://localhost:8080/see-something/issue-reports/mine?sort=first_reported,d
 Authorization: Bearer {{bearerToken}}
 
 ###
-GET http://localhost:8080/see-something/issue-reports/{{externalKey}}
+GET http://localhost:8080/see-something/issue-reports/{{externalId}}
 Authorization: Bearer {{bearerToken}}
 
 ###
