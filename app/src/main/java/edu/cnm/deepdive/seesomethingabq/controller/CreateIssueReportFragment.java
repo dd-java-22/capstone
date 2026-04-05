@@ -44,6 +44,10 @@ import java.util.Set;
 @AndroidEntryPoint
 public class CreateIssueReportFragment extends Fragment {
 
+  private static final String KEY_STREET_COORDINATE = "streetCoordinate";
+  private static final String KEY_LATITUDE = "latitude";
+  private static final String KEY_LONGITUDE = "longitude";
+
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
   private final Set<String> selectedIssueTypeTags = new HashSet<>();
@@ -149,9 +153,9 @@ public class CreateIssueReportFragment extends Fragment {
 
   private Bundle buildLocationPayload() {
     Bundle payload = new Bundle();
-    payload.putString("streetCoordinate", confirmedLocation.getDisplayText());
-    payload.putDouble("latitude", confirmedLocation.getLatitude());
-    payload.putDouble("longitude", confirmedLocation.getLongitude());
+    payload.putString(KEY_STREET_COORDINATE, confirmedLocation.getDisplayText());
+    payload.putDouble(KEY_LATITUDE, confirmedLocation.getLatitude());
+    payload.putDouble(KEY_LONGITUDE, confirmedLocation.getLongitude());
     return payload;
   }
 
@@ -167,9 +171,9 @@ public class CreateIssueReportFragment extends Fragment {
   private void invalidateConfirmedLocation() {
     boolean hadConfirmed = confirmedLocation != null;
     confirmedLocation = null;
-    if (binding != null) {
-      binding.locationLayout.setHelperText(
-          hadConfirmed ? getString(R.string.location_unconfirmed_edit) : null);
+    if (binding != null && hadConfirmed) {
+      binding.locationLayout.setError(null);
+      binding.locationLayout.setHelperText(getString(R.string.location_unconfirmed_edit));
     }
   }
 }
