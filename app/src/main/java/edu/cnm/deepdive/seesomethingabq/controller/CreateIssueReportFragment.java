@@ -30,12 +30,16 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipDrawable;
+import com.google.android.material.snackbar.Snackbar;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentCreateIssueReportBinding;
 import edu.cnm.deepdive.seesomethingabq.model.domain.PickedLocation;
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -44,12 +48,9 @@ import java.util.Set;
 @AndroidEntryPoint
 public class CreateIssueReportFragment extends Fragment {
 
-  private static final String KEY_STREET_COORDINATE = "streetCoordinate";
-  private static final String KEY_LATITUDE = "latitude";
-  private static final String KEY_LONGITUDE = "longitude";
-
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
+  private IssueReportViewModel issueReportViewModel;
   private final Set<String> selectedIssueTypeTags = new HashSet<>();
   private PickedLocation confirmedLocation;
   private boolean applyingPickedLocation;
@@ -67,7 +68,7 @@ public class CreateIssueReportFragment extends Fragment {
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_location_picker_dialog);
     });
-    binding.submitButton.setOnClickListener((v) -> onSubmitClicked());
+    binding.submitButton.setOnClickListener((v) -> submitReport());
     binding.locationInput.addTextChangedListener(new TextWatcher() {
       @Override
       public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -91,8 +92,14 @@ public class CreateIssueReportFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     issueTypeViewModel = new ViewModelProvider(requireActivity()).get(IssueTypeViewModel.class);
+    issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
     issueTypeViewModel.getIssueTypes()
         .observe(getViewLifecycleOwner(), this::populateIssueTypeChips);
+    issueReportViewModel.getSubmitted()
+        .observe(getViewLifecycleOwner(), this::handleSubmitSuccess);
+    issueReportViewModel.getThrowable()
+        .observe(getViewLifecycleOwner(), this::handleSubmitFailure);
+
     getParentFragmentManager().setFragmentResultListener(
         LocationPickerResult.REQUEST_KEY, getViewLifecycleOwner(), (requestKey, result) -> {
           PickedLocation location = BundleCompat.getParcelable(
@@ -136,7 +143,7 @@ public class CreateIssueReportFragment extends Fragment {
     }
   }
 
-  private void onSubmitClicked() {
+  private void submitReport() {
     if (confirmedLocation == null) {
       String locationText = Objects.toString(binding.locationInput.getText(), "").trim();
       if (locationText.isEmpty()) {
@@ -146,17 +153,22 @@ public class CreateIssueReportFragment extends Fragment {
       }
       return;
     }
-    binding.locationLayout.setError(null);
-    // TODO: pass buildLocationPayload() to submission service
-    buildLocationPayload();
-  }
 
-  private Bundle buildLocationPayload() {
-    Bundle payload = new Bundle();
-    payload.putString(KEY_STREET_COORDINATE, confirmedLocation.getDisplayText());
-    payload.putDouble(KEY_LATITUDE, confirmedLocation.getLatitude());
-    payload.putDouble(KEY_LONGITUDE, confirmedLocation.getLongitude());
-    return payload;
+    binding.locationLayout.setError(null);
+
+    CharSequence descriptionInput = binding.descriptionInput.getText();
+    String description = (descriptionInput != null) ? descriptionInput.toString() : "";
+    List<String> issueTypes = new ArrayList<>(selectedIssueTypeTags);
+
+    IssueReportRequest request = new IssueReportRequest(
+        description,
+        confirmedLocation.getLatitude(),
+        confirmedLocation.getLongitude(),
+        confirmedLocation.getDisplayText(),
+        null,
+        issueTypes
+    );
+    issueReportViewModel.submit(requireActivity(), request);
   }
 
   private void applyConfirmedLocation(PickedLocation location) {
@@ -174,6 +186,22 @@ public class CreateIssueReportFragment extends Fragment {
     if (binding != null && hadConfirmed) {
       binding.locationLayout.setError(null);
       binding.locationLayout.setHelperText(getString(R.string.location_unconfirmed_edit));
+    }
+  }
+
+  private void handleSubmitSuccess(Boolean submitted) {
+    if (Boolean.TRUE.equals(submitted)) {
+      Snackbar.make(binding.getRoot(), R.string.submit_report_success, Snackbar.LENGTH_SHORT)
+          .show();
+      NavController navController = Navigation.findNavController(binding.getRoot());
+      navController.navigate(R.id.navigate_to_user_dashboard_fragment);
+    }
+  }
+
+  private void handleSubmitFailure(Throwable throwable) {
+    if (throwable != null) {
+      Snackbar.make(binding.getRoot(), R.string.submit_report_failure, Snackbar.LENGTH_SHORT)
+          .show();
     }
   }
 }
