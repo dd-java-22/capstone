@@ -1,10 +1,12 @@
 package edu.cnm.deepdive.seesomethingabq.service.proxy
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
+import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Query
 
 interface SeeSomethingWebService {
 
@@ -18,6 +20,10 @@ interface SeeSomethingWebService {
   suspend fun getMyReports(@Header("Authorization") bearerToken: String): List<IssueReportSummary>
 
   @GET("manager/issue-reports")
-  suspend fun getAllReportsPaged(@Header("Authorization") bearerToken: String): List<IssueReportSummary>
+  suspend fun getIssueReportsPage(
+    @Header("Authorization") bearerToken: String,
+    @Query("pageNumber") page: Int = 0,
+    @Query("pageSize") size: Int = 10
+  ): PaginatedResponse<IssueReportSummary>
 
 }
