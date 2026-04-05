@@ -20,6 +20,7 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
@@ -45,7 +46,7 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://example.com/issuer",
     "spring.security.oauth2.resourceserver.jwt.audiences=test-client-id"
 })
-@ContextConfiguration(classes = {ManagerUserControllerTest.TestConfig.class})
+@ContextConfiguration(classes = {ManagerUserControllerTest.TestConfig.class, TestStorageConfig.class})
 class ManagerUserControllerTest {
 
   @Autowired

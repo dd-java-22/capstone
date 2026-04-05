@@ -25,7 +25,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="16dp">
+    android:padding="@dimen/full_dynamic_spacing">
 
     <!-- Header -->
 
@@ -35,7 +35,7 @@
       android:layout_height="wrap_content"
       android:text="@string/create_issue_report_title"
       android:textAppearance="?attr/textAppearanceHeadlineSmall"
-      android:layout_marginBottom="16dp"/>
+      android:layout_marginBottom="@dimen/full_dynamic_spacing"/>
 
     <!-- Description -->
 
@@ -44,7 +44,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:hint="@string/description_hint"
-      android:layout_marginBottom="16dp"
+      android:layout_marginBottom="@dimen/full_dynamic_spacing"
       app:counterEnabled="true"
       app:counterMaxLength="500">
 
@@ -66,41 +66,16 @@
       android:layout_height="wrap_content"
       android:text="@string/issue_type_label"
       android:textAppearance="?attr/textAppearanceTitleMedium"
-      android:layout_marginBottom="8dp"/>
+      android:layout_marginBottom="@dimen/half_dynamic_spacing"/>
 
     <com.google.android.material.chip.ChipGroup
       android:id="@+id/issue_type_chip_group"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:layout_marginBottom="16dp"
+      android:layout_marginBottom="@dimen/full_dynamic_spacing"
       app:selectionRequired="false"
-      app:singleSelection="false">
+      app:singleSelection="false"/>
 
-      <com.google.android.material.chip.Chip
-        android:id="@+id/chip_trash"
-        style="@style/Widget.Material3.Chip.Filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/issue_type_trash"
-        android:checkable="true"/>
-
-      <com.google.android.material.chip.Chip
-        android:id="@+id/chip_maintenance"
-        style="@style/Widget.Material3.Chip.Filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/issue_type_maintenance"
-        android:checkable="true"/>
-
-      <com.google.android.material.chip.Chip
-        android:id="@+id/chip_pothole"
-        style="@style/Widget.Material3.Chip.Filter"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/issue_type_pothole"
-        android:checkable="true"/>
-
-    </com.google.android.material.chip.ChipGroup>
 
     <!-- Location -->
 
@@ -109,14 +84,14 @@
       android:layout_height="wrap_content"
       android:text="@string/location_label"
       android:textAppearance="?attr/textAppearanceTitleMedium"
-      android:layout_marginBottom="8dp"/>
+      android:layout_marginBottom="@dimen/half_dynamic_spacing"/>
 
     <com.google.android.material.textfield.TextInputLayout
       android:id="@+id/location_layout"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:hint="@string/location_hint"
-      android:layout_marginBottom="8dp">
+      android:layout_marginBottom="@dimen/half_dynamic_spacing">
 
       <com.google.android.material.textfield.TextInputEditText
         android:id="@+id/location_input"
@@ -134,7 +109,7 @@
       android:layout_height="wrap_content"
       android:text="@string/use_current_location"
       app:icon="@android:drawable/ic_menu_mylocation"
-      android:layout_marginBottom="16dp"/>
+      android:layout_marginBottom="@dimen/full_dynamic_spacing"/>
 
     <!-- Image Attachment -->
 
@@ -143,7 +118,7 @@
       android:layout_height="wrap_content"
       android:text="@string/image_label"
       android:textAppearance="?attr/textAppearanceTitleMedium"
-      android:layout_marginBottom="8dp"/>
+      android:layout_marginBottom="@dimen/half_dynamic_spacing"/>
 
     <com.google.android.material.button.MaterialButton
       android:id="@+id/attach_image_button"
@@ -152,7 +127,7 @@
       android:layout_height="wrap_content"
       android:text="@string/attach_image"
       app:icon="@android:drawable/ic_menu_camera"
-      android:layout_marginBottom="16dp"/>
+      android:layout_marginBottom="@dimen/full_dynamic_spacing"/>
 
     <!-- Submit -->
 
@@ -161,7 +136,7 @@
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:text="@string/submit_report"
-      android:layout_marginBottom="8dp"/>
+      android:layout_marginBottom="@dimen/half_dynamic_spacing"/>
 
     <!-- Back to Dashboard -->
 

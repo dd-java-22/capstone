@@ -22,17 +22,18 @@ GET http://localhost:8080/see-something/issue-reports/mine?sort=last_modified,as
     sort={{$random.alphanumeric(8)}}
 Authorization: Bearer {{bearerToken}}
 
+
 ###
 GET http://localhost:8080/see-something/issue-reports/mine?sort=first_reported,desc
     sort={{$random.alphanumeric(8)}}
 Authorization: Bearer {{bearerToken}}
 
 ###
-GET http://localhost:8080/see-something/issue-reports/11111111-1111-1111-1111-111111111005
+GET http://localhost:8080/see-something/issue-reports/{{externalKey}}
 Authorization: Bearer {{bearerToken}}
 
 ###
-PUT http://localhost:8080/see-something/issue-reports/ccb97633-3ed5-46b5-881c-783d41a96a52
+PUT http://localhost:8080/see-something/issue-reports/{{externalKey}}
 Content-Type: application/json
 Authorization: Bearer {{bearerToken}}
 
@@ -47,5 +48,5 @@ Authorization: Bearer {{bearerToken}}
 }
 
 ###
-DELETE http://localhost:8080/see-something/issue-reports/18b6be3c-c995-4c21-9c5d-dd8af1c0a726
+DELETE http://localhost:8080/see-something/issue-reports/{{externalKey}}
 Authorization: Bearer {{bearerToken}}

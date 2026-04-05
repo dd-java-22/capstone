@@ -25,16 +25,23 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import com.google.android.material.chip.Chip;
+import com.google.android.material.chip.ChipDrawable;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentCreateIssueReportBinding;
+import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @AndroidEntryPoint
 public class CreateIssueReportFragment extends Fragment {
 
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
+  private final Set<String> selectedIssueTypeTags = new HashSet<>();
 
   @Nullable
   @Override
@@ -54,6 +61,13 @@ public class CreateIssueReportFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     issueTypeViewModel = new ViewModelProvider(requireActivity()).get(IssueTypeViewModel.class);
+    issueTypeViewModel.getIssueTypes()
+        .observe(getViewLifecycleOwner(), this::populateIssueTypeChips);
+  }
+
+  @Override
+  public void onResume() {
+    super.onResume();
     issueTypeViewModel.refresh(requireActivity());
   }
 
@@ -61,5 +75,26 @@ public class CreateIssueReportFragment extends Fragment {
   public void onDestroyView() {
     binding = null;
     super.onDestroyView();
+  }
+
+  private void populateIssueTypeChips(List<IssueType> issueTypes) {
+    binding.issueTypeChipGroup.removeAllViews();
+    for (IssueType issueType : issueTypes) {
+      Chip chip = new Chip(requireContext());
+      chip.setChipDrawable(ChipDrawable.createFromAttributes(requireContext(), null, 0,
+          com.google.android.material.R.style.Widget_Material3_Chip_Filter));
+      String tag = issueType.getIssueTypeTag();
+      chip.setText(tag);
+      chip.setCheckable(true);
+      chip.setChecked(selectedIssueTypeTags.contains(tag));
+      chip.setOnCheckedChangeListener((buttonView, isChecked) -> {
+        if (isChecked) {
+          selectedIssueTypeTags.add(tag);
+        } else {
+          selectedIssueTypeTags.remove(tag);
+        }
+      });
+      binding.issueTypeChipGroup.addView(chip);
+    }
   }
 }

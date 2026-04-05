@@ -18,3 +18,19 @@ spring:
   sql:
     init:
       mode: always
+
+storage:
+  applicationHome: true
+  directory: uploads
+  whiteList:
+    - image/jpeg
+    - image/png
+    - image/gif
+    - image/webp
+  filename:
+    unknown: unknown
+    format: "%1$s.%2$s"
+    randomizerLimit: 0
+    timestamp:
+      format: "yyyyMMdd-HHmmss"
+      timeZone: "UTC"
