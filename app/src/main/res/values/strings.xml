@@ -16,5 +16,7 @@
   <string name="image_label">Photo</string>
   <string name="attach_image">Attach Photo</string>
   <string name="submit_report">Submit Report</string>
+  <string name="submit_report_success">Report submitted.</string>
+  <string name="submit_report_failure">Report submission failed.</string>
   <string name="back_to_dashboard">Back to Dashboard</string>
 </resources>
