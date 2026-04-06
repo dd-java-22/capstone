@@ -66,6 +66,8 @@ public class CreateIssueReportFragment extends Fragment {
   private ActivityResultLauncher<Uri> takePhotoLauncher;
   private Uri pendingCaptureUri;
   private File pendingCaptureFile;
+  private boolean reportSubmitted;
+  private boolean cleanedUpOnExit;
 
   @Nullable
   @Override
@@ -169,6 +171,14 @@ public class CreateIssueReportFragment extends Fragment {
     super.onDestroyView();
   }
 
+  @Override
+  public void onDestroy() {
+    if (!reportSubmitted && !cleanedUpOnExit && shouldCleanupOnExit()) {
+      clearPendingAttachments();
+    }
+    super.onDestroy();
+  }
+
   private void populateIssueTypeChips(List<IssueType> issueTypes) {
     binding.issueTypeChipGroup.removeAllViews();
     for (IssueType issueType : issueTypes) {
@@ -240,6 +250,7 @@ public class CreateIssueReportFragment extends Fragment {
     if (Boolean.TRUE.equals(submitted)) {
       Snackbar.make(binding.getRoot(), R.string.submit_report_success, Snackbar.LENGTH_SHORT)
           .show();
+      reportSubmitted = true;
       clearPendingAttachments();
       NavController navController = Navigation.findNavController(binding.getRoot());
       navController.navigate(R.id.navigate_to_user_dashboard_fragment);
@@ -282,6 +293,7 @@ public class CreateIssueReportFragment extends Fragment {
   }
 
   private void clearPendingAttachments() {
+    cleanedUpOnExit = true;
     if (issueReportViewModel == null) {
       return;
     }
@@ -299,5 +311,12 @@ public class CreateIssueReportFragment extends Fragment {
       }
     }
     issueReportViewModel.clearAttachedImages();
+  }
+
+  private boolean shouldCleanupOnExit() {
+    if (getActivity() != null && getActivity().isChangingConfigurations()) {
+      return false;
+    }
+    return isRemoving() || (getActivity() != null && getActivity().isFinishing());
   }
 }
