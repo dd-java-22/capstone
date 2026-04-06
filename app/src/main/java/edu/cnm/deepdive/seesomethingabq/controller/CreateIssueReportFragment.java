@@ -15,7 +15,6 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
@@ -60,7 +59,7 @@ public class CreateIssueReportFragment extends Fragment {
   private PickedLocation confirmedLocation;
   private boolean applyingPickedLocation;
   private ActivityResultLauncher<PickVisualMediaRequest> pickGalleryImageLauncher;
-  private Uri selectedGalleryImageUri;
+  private final List<Uri> selectedGalleryImageUri = new ArrayList<>();
 
   @Nullable
   @Override
@@ -68,10 +67,11 @@ public class CreateIssueReportFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
 
     pickGalleryImageLauncher = registerForActivityResult(
-        new ActivityResultContracts.PickVisualMedia(),
-        uri -> {
-          if (uri != null) {
-            selectedGalleryImageUri = uri;
+        new ActivityResultContracts.PickMultipleVisualMedia(5),
+        uris -> {
+          selectedGalleryImageUri.clear();
+          if (uris != null && !uris.isEmpty()) {
+            selectedGalleryImageUri.addAll(uris);
           }
         });
 
