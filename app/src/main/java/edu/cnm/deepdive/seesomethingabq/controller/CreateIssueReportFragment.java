@@ -24,6 +24,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -68,12 +69,31 @@ public class CreateIssueReportFragment extends Fragment {
   private File pendingCaptureFile;
   private boolean reportSubmitted;
   private boolean cleanedUpOnExit;
+  private ActivityResultLauncher<PickVisualMediaRequest> pickGalleryImageLauncher;
+  private final List<Uri> selectedGalleryImageUri = new ArrayList<>();
 
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+
+    pickGalleryImageLauncher = registerForActivityResult(
+        new ActivityResultContracts.PickMultipleVisualMedia(5),
+        uris -> {
+          if (uris != null && !uris.isEmpty()) {
+            // Use the bulk-add helper in the view model
+            issueReportViewModel.addAttachedImages(uris.toArray(new Uri[0]));
+          }
+        });
+
     binding = FragmentCreateIssueReportBinding.inflate(inflater, container, false);
+
+    binding.attachGalleryImageButton.setOnClickListener(v ->
+        pickGalleryImageLauncher.launch(
+            new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build()));
+
     binding.backToDashboardButton.setOnClickListener((v) -> {
       clearPendingAttachments();
       NavController navController = Navigation.findNavController(v);
