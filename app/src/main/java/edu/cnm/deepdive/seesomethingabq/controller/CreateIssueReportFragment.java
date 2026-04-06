@@ -24,8 +24,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -82,9 +80,9 @@ public class CreateIssueReportFragment extends Fragment {
     pickGalleryImageLauncher = registerForActivityResult(
         new ActivityResultContracts.PickMultipleVisualMedia(5),
         uris -> {
-          selectedGalleryImageUri.clear();
           if (uris != null && !uris.isEmpty()) {
-            selectedGalleryImageUri.addAll(uris);
+            // Use the bulk-add helper in the view model
+            issueReportViewModel.addAttachedImages(uris.toArray(new Uri[0]));
           }
         });
 
