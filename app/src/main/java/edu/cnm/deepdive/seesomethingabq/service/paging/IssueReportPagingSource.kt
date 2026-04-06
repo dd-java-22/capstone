@@ -23,7 +23,7 @@ class IssueReportPagingSource(
 
       LoadResult.Page(
         data = response.content,
-        prevKey = if (page == 0) null else page - 1,
+        prevKey = if (response.first) null else page - 1,
         nextKey = if (response.last) null else page + 1
       )
     } catch (e: Exception) {
