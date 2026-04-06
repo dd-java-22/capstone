@@ -12,7 +12,6 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import jakarta.inject.Inject;
-import kotlinx.coroutines.CoroutineScope;
 
 @HiltViewModel
 public class IssueReportViewModel extends ViewModel {
@@ -40,9 +39,9 @@ public class IssueReportViewModel extends ViewModel {
     return throwable;
   }
 
-  public LiveData<PagingData<IssueReportSummary>> getIssueReports(Activity activity, CoroutineScope scope) {
+  public LiveData<PagingData<IssueReportSummary>> getIssueReports(Activity activity) {
     if (issueReports == null) {
-      issueReports = PagingLiveData.getLiveData(issueReportService.getPagingSource(activity), scope);
+      issueReports = PagingLiveData.getLiveData(issueReportService.getIssueReportsPager(activity));
     }
     return issueReports;
   }

@@ -35,8 +35,8 @@ class IssueReportAdapter :
     fun bind(issueReport: IssueReportSummary) {
       binding.description.text = issueReport.description
       binding.acceptedState.text = issueReport.acceptedState
-      binding.timeFirstReported.text = issueReport.timeFirstReported.format(dateTimeFormatter)
-      binding.timeLastModified.text = issueReport.timeLastModified.format(dateTimeFormatter)
+      binding.timeFirstReported.text = dateTimeFormatter.format(issueReport.timeFirstReported)
+      binding.timeLastModified.text = dateTimeFormatter.format(issueReport.timeLastModified)
     }
   }
 

@@ -1,12 +1,11 @@
 package edu.cnm.deepdive.seesomethingabq.service
 
 import android.app.Activity
-import androidx.paging.PagingData
+import androidx.paging.Pager
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
 import java.util.concurrent.CompletableFuture
-import kotlinx.coroutines.flow.Flow
 
 interface IssueReportService {
 
@@ -18,6 +17,6 @@ interface IssueReportService {
     size: Int = 10
   ): CompletableFuture<PaginatedResponse<IssueReportSummary>>
 
-  fun getPagingSource(activity: Activity): Flow<PagingData<IssueReportSummary>>
+  fun getIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
 
 }

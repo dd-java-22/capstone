@@ -131,7 +131,8 @@ dependencies {
     implementation(libs.lifecycle.livedata)
 
     // Paging 3 library
-    implementation(libs.paging.runtime)
+//    implementation(libs.view.pager)
+    implementation("androidx.paging:paging-runtime:3.4.2")
 
     // Preferences/settings components
     implementation(libs.preference)

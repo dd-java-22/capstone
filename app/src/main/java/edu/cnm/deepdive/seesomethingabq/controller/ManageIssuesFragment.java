@@ -23,12 +23,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.lifecycle.lifecycleScope;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.controller.adapter.IssueReportAdapter;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManageIssuesBinding;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
-import kotlinx.coroutines.CoroutineScope;
 
 @AndroidEntryPoint
 public class ManageIssuesFragment extends Fragment {
@@ -51,8 +49,7 @@ public class ManageIssuesFragment extends Fragment {
     viewModel = new ViewModelProvider(this).get(IssueReportViewModel.class);
     adapter = new IssueReportAdapter();
     binding.issueReportsRecycler.setAdapter(adapter);
-    CoroutineScope scope = getViewLifecycleOwner().getLifecycle().getCoroutineScope();
-    viewModel.getIssueReports(requireActivity(), scope).observe(getViewLifecycleOwner(), pagingData -> {
+    viewModel.getIssueReports(requireActivity()).observe(getViewLifecycleOwner(), pagingData -> {
       adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData);
     });
   }
