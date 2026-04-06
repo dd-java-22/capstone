@@ -15,12 +15,17 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.PickVisualMediaRequest;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.os.BundleCompat;
@@ -48,18 +53,36 @@ import java.util.Set;
 @AndroidEntryPoint
 public class CreateIssueReportFragment extends Fragment {
 
+  private final Set<String> selectedIssueTypeTags = new HashSet<>();
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
   private IssueReportViewModel issueReportViewModel;
-  private final Set<String> selectedIssueTypeTags = new HashSet<>();
   private PickedLocation confirmedLocation;
   private boolean applyingPickedLocation;
+  private ActivityResultLauncher<PickVisualMediaRequest> pickGalleryImageLauncher;
+  private Uri selectedGalleryImageUri;
 
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+
+    pickGalleryImageLauncher = registerForActivityResult(
+        new ActivityResultContracts.PickVisualMedia(),
+        uri -> {
+          if (uri != null) {
+            selectedGalleryImageUri = uri;
+          }
+        });
+
     binding = FragmentCreateIssueReportBinding.inflate(inflater, container, false);
+
+    binding.attachGalleryImageButton.setOnClickListener(v ->
+        pickGalleryImageLauncher.launch(
+            new PickVisualMediaRequest.Builder()
+                .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly.INSTANCE)
+                .build()));
+
     binding.backToDashboardButton.setOnClickListener((v) -> {
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_user_dashboard_fragment);
@@ -85,6 +108,7 @@ public class CreateIssueReportFragment extends Fragment {
       public void afterTextChanged(Editable s) {
       }
     });
+
     return binding.getRoot();
   }
 
