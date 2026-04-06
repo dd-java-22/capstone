@@ -15,14 +15,20 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.activity.OnBackPressedCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.FileProvider;
 import androidx.core.os.BundleCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -39,6 +45,8 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -48,12 +56,17 @@ import java.util.Set;
 @AndroidEntryPoint
 public class CreateIssueReportFragment extends Fragment {
 
+  private static final String TAG = CreateIssueReportFragment.class.getSimpleName();
+
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
   private IssueReportViewModel issueReportViewModel;
   private final Set<String> selectedIssueTypeTags = new HashSet<>();
   private PickedLocation confirmedLocation;
   private boolean applyingPickedLocation;
+  private ActivityResultLauncher<Uri> takePhotoLauncher;
+  private Uri pendingCaptureUri;
+  private File pendingCaptureFile;
 
   @Nullable
   @Override
@@ -61,6 +74,9 @@ public class CreateIssueReportFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     binding = FragmentCreateIssueReportBinding.inflate(inflater, container, false);
     binding.backToDashboardButton.setOnClickListener((v) -> {
+      if (issueReportViewModel != null) {
+        issueReportViewModel.clearAttachedImages();
+      }
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_user_dashboard_fragment);
     });
@@ -68,6 +84,7 @@ public class CreateIssueReportFragment extends Fragment {
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_location_picker_dialog);
     });
+    binding.takePhotoButton.setOnClickListener((v) -> launchCamera());
     binding.submitButton.setOnClickListener((v) -> submitReport());
     binding.locationInput.addTextChangedListener(new TextWatcher() {
       @Override
@@ -93,6 +110,33 @@ public class CreateIssueReportFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     issueTypeViewModel = new ViewModelProvider(requireActivity()).get(IssueTypeViewModel.class);
     issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
+
+    takePhotoLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(),
+        (success) -> {
+          if (Boolean.TRUE.equals(success)) {
+            if (pendingCaptureUri != null) {
+              issueReportViewModel.addAttachedImage(pendingCaptureUri);
+            }
+          } else {
+            if (pendingCaptureFile != null) {
+              //noinspection ResultOfMethodCallIgnored
+              pendingCaptureFile.delete();
+            }
+          }
+          pendingCaptureUri = null;
+          pendingCaptureFile = null;
+        });
+
+    requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
+        new OnBackPressedCallback(true) {
+          @Override
+          public void handleOnBackPressed() {
+            issueReportViewModel.clearAttachedImages();
+            NavController navController = Navigation.findNavController(binding.getRoot());
+            navController.navigate(R.id.navigate_to_user_dashboard_fragment);
+          }
+        });
+
     getParentFragmentManager().setFragmentResultListener(
         LocationPickerResult.REQUEST_KEY, getViewLifecycleOwner(), (requestKey, result) -> {
           PickedLocation location = BundleCompat.getParcelable(
@@ -119,6 +163,8 @@ public class CreateIssueReportFragment extends Fragment {
         .observe(getViewLifecycleOwner(), this::handleSubmitSuccess);
     issueReportViewModel.getThrowable()
         .observe(getViewLifecycleOwner(), this::handleSubmitFailure);
+    issueReportViewModel.getAttachedImages()
+        .observe(getViewLifecycleOwner(), (uris) -> Log.d(TAG, "attachedImages=" + uris));
   }
 
   @Override
@@ -126,6 +172,7 @@ public class CreateIssueReportFragment extends Fragment {
     issueTypeViewModel.getIssueTypes().removeObservers(getViewLifecycleOwner());
     issueReportViewModel.getSubmitted().removeObservers(getViewLifecycleOwner());
     issueReportViewModel.getThrowable().removeObservers(getViewLifecycleOwner());
+    issueReportViewModel.getAttachedImages().removeObservers(getViewLifecycleOwner());
     super.onStop();
   }
 
@@ -206,6 +253,7 @@ public class CreateIssueReportFragment extends Fragment {
     if (Boolean.TRUE.equals(submitted)) {
       Snackbar.make(binding.getRoot(), R.string.submit_report_success, Snackbar.LENGTH_SHORT)
           .show();
+      issueReportViewModel.clearAttachedImages();
       NavController navController = Navigation.findNavController(binding.getRoot());
       navController.navigate(R.id.navigate_to_user_dashboard_fragment);
     }
@@ -216,5 +264,33 @@ public class CreateIssueReportFragment extends Fragment {
       Snackbar.make(binding.getRoot(), R.string.submit_report_failure, Snackbar.LENGTH_SHORT)
           .show();
     }
+  }
+
+  private void launchCamera() {
+    if (takePhotoLauncher == null) {
+      return;
+    }
+    try {
+      pendingCaptureFile = createTempCameraFile();
+      pendingCaptureUri = FileProvider.getUriForFile(
+          requireContext(),
+          requireContext().getPackageName() + ".fileprovider",
+          pendingCaptureFile
+      );
+      takePhotoLauncher.launch(pendingCaptureUri);
+    } catch (IOException e) {
+      Log.e(TAG, "Unable to create temp camera file", e);
+      pendingCaptureUri = null;
+      pendingCaptureFile = null;
+      Snackbar.make(binding.getRoot(), R.string.take_photo_failure, Snackbar.LENGTH_SHORT).show();
+    }
+  }
+
+  private File createTempCameraFile() throws IOException {
+    File cacheDir = requireContext().getCacheDir();
+    File cameraDir = new File(cacheDir, "camera");
+    //noinspection ResultOfMethodCallIgnored
+    cameraDir.mkdirs();
+    return File.createTempFile("issue_report_", ".jpg", cameraDir);
   }
 }
