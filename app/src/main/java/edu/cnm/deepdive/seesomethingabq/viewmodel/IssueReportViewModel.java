@@ -35,6 +35,11 @@ public class IssueReportViewModel extends ViewModel {
     return throwable;
   }
 
+  public void resetState() {
+    submitted.setValue(null);
+    throwable.setValue(null);
+  }
+
   public void submit(Activity activity, IssueReportRequest request) {
     throwable.setValue(null);
     submitted.setValue(null);
