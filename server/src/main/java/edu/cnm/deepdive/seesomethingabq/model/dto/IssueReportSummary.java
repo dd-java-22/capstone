@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.model.dto;
 
+import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import java.time.Instant;
 import java.util.UUID;
 
@@ -10,6 +11,17 @@ public class IssueReportSummary {
   private String acceptedState;
   private Instant timeFirstReported;
   private Instant timeLastModified;
+
+
+  public static IssueReportSummary fromIssueReport(IssueReport issueReport) {
+    IssueReportSummary summary = new IssueReportSummary();
+    summary.setExternalId(issueReport.getExternalId());
+    summary.setDescription(issueReport.getTextDescription());
+    summary.setAcceptedState(issueReport.getAcceptedState().getStatusTag());
+    summary.setTimeFirstReported(issueReport.getTimeFirstReported());
+    summary.setTimeLastModified(issueReport.getTimeLastModified());
+    return summary;
+  }
 
   public UUID getExternalId() {
     return externalId;

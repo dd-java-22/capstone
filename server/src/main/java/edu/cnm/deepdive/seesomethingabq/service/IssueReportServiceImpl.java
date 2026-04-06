@@ -64,7 +64,7 @@ public class IssueReportServiceImpl implements IssueReportService {
     List<IssueReport> reports =
         issueReportRepository.findByUserProfile(currentUser, sort);
     return reports.stream()
-        .map(this::toSummary)
+        .map(IssueReportSummary::fromIssueReport) // FIXME moving this function inside of IssueReportSummary, make sure it worked.
         .toList();
   }
 
@@ -248,16 +248,6 @@ public class IssueReportServiceImpl implements IssueReportService {
       sort = Sort.by(Sort.Order.desc("timeLastModified"));
     }
     return sort;
-  }
-
-  private IssueReportSummary toSummary(IssueReport report) {
-    IssueReportSummary dto = new IssueReportSummary();
-    dto.setExternalId(report.getExternalId());
-    dto.setDescription(report.getTextDescription());
-    dto.setAcceptedState(report.getAcceptedState().getStatusTag());
-    dto.setTimeFirstReported(report.getTimeFirstReported());
-    dto.setTimeLastModified(report.getTimeLastModified());
-    return dto;
   }
 
   private void applyLocation(ReportLocation location, IssueReportRequest request) {
