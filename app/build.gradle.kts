@@ -52,6 +52,12 @@ android {
         resValue("string", "base_url", getLocalProperty("baseUrl"))
         resValue("string", "log_level", getLocalProperty("logLevel"))
 
+        buildConfigField(
+            "String",
+            "PLACES_API_KEY",
+            "\"${getLocalProperty("placesApiKey")}\""
+        )
+
 
         javaCompileOptions {
             annotationProcessorOptions {
@@ -172,6 +178,9 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
     kspAndroidTest(libs.hilt.android.compiler)
+
+    // Google Places
+    implementation("com.google.android.libraries.places:places:5.1.1")
 
     constraints {
         implementation(libs.kotlin.jdk7) {

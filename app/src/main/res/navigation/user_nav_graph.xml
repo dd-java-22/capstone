@@ -59,6 +59,16 @@
       app:popUpTo="@id/user_dashboard_fragment"
       app:popUpToInclusive="true"/>
 
+    <action
+      android:id="@+id/navigate_to_location_picker_dialog"
+      app:destination="@id/location_picker_dialog"/>
+
   </fragment>
+
+  <dialog
+    android:id="@+id/location_picker_dialog"
+    android:name="edu.cnm.deepdive.seesomethingabq.controller.LocationPickerDialogFragment"
+    android:label="Pick a Location"
+    tools:layout="@layout/fragment_location_picker"/>
 
 </navigation>
