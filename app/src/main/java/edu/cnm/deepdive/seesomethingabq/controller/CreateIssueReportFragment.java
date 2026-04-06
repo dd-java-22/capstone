@@ -23,7 +23,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import androidx.activity.OnBackPressedCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
@@ -74,9 +73,7 @@ public class CreateIssueReportFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     binding = FragmentCreateIssueReportBinding.inflate(inflater, container, false);
     binding.backToDashboardButton.setOnClickListener((v) -> {
-      if (issueReportViewModel != null) {
-        issueReportViewModel.clearAttachedImages();
-      }
+      clearPendingAttachments();
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_user_dashboard_fragment);
     });
@@ -125,16 +122,6 @@ public class CreateIssueReportFragment extends Fragment {
           }
           pendingCaptureUri = null;
           pendingCaptureFile = null;
-        });
-
-    requireActivity().getOnBackPressedDispatcher().addCallback(getViewLifecycleOwner(),
-        new OnBackPressedCallback(true) {
-          @Override
-          public void handleOnBackPressed() {
-            issueReportViewModel.clearAttachedImages();
-            NavController navController = Navigation.findNavController(binding.getRoot());
-            navController.navigate(R.id.navigate_to_user_dashboard_fragment);
-          }
         });
 
     getParentFragmentManager().setFragmentResultListener(
@@ -253,7 +240,7 @@ public class CreateIssueReportFragment extends Fragment {
     if (Boolean.TRUE.equals(submitted)) {
       Snackbar.make(binding.getRoot(), R.string.submit_report_success, Snackbar.LENGTH_SHORT)
           .show();
-      issueReportViewModel.clearAttachedImages();
+      clearPendingAttachments();
       NavController navController = Navigation.findNavController(binding.getRoot());
       navController.navigate(R.id.navigate_to_user_dashboard_fragment);
     }
@@ -292,5 +279,25 @@ public class CreateIssueReportFragment extends Fragment {
     //noinspection ResultOfMethodCallIgnored
     cameraDir.mkdirs();
     return File.createTempFile("issue_report_", ".jpg", cameraDir);
+  }
+
+  private void clearPendingAttachments() {
+    if (issueReportViewModel == null) {
+      return;
+    }
+    List<Uri> uris = issueReportViewModel.getAttachedImages().getValue();
+    String authority = requireContext().getPackageName() + ".fileprovider";
+    if (uris != null) {
+      for (Uri uri : uris) {
+        if (uri != null && authority.equals(uri.getAuthority())) {
+          try {
+            requireContext().getContentResolver().delete(uri, null, null);
+          } catch (RuntimeException e) {
+            Log.w(TAG, "Unable to delete temp attachment " + uri, e);
+          }
+        }
+      }
+    }
+    issueReportViewModel.clearAttachedImages();
   }
 }
