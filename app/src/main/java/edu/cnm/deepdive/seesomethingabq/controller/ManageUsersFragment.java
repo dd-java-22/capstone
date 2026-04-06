@@ -41,12 +41,6 @@ public class ManageUsersFragment extends Fragment {
   }
 
   @Override
-  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-    super.onViewCreated(view, savedInstanceState);
-    binding.testField.setText("");
-  }
-
-  @Override
   public void onDestroyView() {
     binding = null;
     super.onDestroyView();
