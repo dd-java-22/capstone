@@ -93,12 +93,6 @@ public class CreateIssueReportFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
     issueTypeViewModel = new ViewModelProvider(requireActivity()).get(IssueTypeViewModel.class);
     issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
-    issueTypeViewModel.getIssueTypes()
-        .observe(getViewLifecycleOwner(), this::populateIssueTypeChips);
-    issueReportViewModel.getSubmitted()
-        .observe(getViewLifecycleOwner(), this::handleSubmitSuccess);
-    issueReportViewModel.getThrowable()
-        .observe(getViewLifecycleOwner(), this::handleSubmitFailure);
     getParentFragmentManager().setFragmentResultListener(
         LocationPickerResult.REQUEST_KEY, getViewLifecycleOwner(), (requestKey, result) -> {
           PickedLocation location = BundleCompat.getParcelable(
@@ -113,6 +107,26 @@ public class CreateIssueReportFragment extends Fragment {
   public void onResume() {
     super.onResume();
     issueTypeViewModel.refresh(requireActivity());
+  }
+
+  @Override
+  public void onStart() {
+    super.onStart();
+    issueReportViewModel.resetState();
+    issueTypeViewModel.getIssueTypes()
+        .observe(getViewLifecycleOwner(), this::populateIssueTypeChips);
+    issueReportViewModel.getSubmitted()
+        .observe(getViewLifecycleOwner(), this::handleSubmitSuccess);
+    issueReportViewModel.getThrowable()
+        .observe(getViewLifecycleOwner(), this::handleSubmitFailure);
+  }
+
+  @Override
+  public void onStop() {
+    issueTypeViewModel.getIssueTypes().removeObservers(getViewLifecycleOwner());
+    issueReportViewModel.getSubmitted().removeObservers(getViewLifecycleOwner());
+    issueReportViewModel.getThrowable().removeObservers(getViewLifecycleOwner());
+    super.onStop();
   }
 
   @Override
