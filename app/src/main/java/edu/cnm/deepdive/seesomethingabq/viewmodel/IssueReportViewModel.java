@@ -73,6 +73,20 @@ public class IssueReportViewModel extends ViewModel {
     attachedImages.setValue(Collections.unmodifiableList(updated));
   }
 
+  public void removeAttachedImage(Uri uri) {
+    if (uri == null) {
+      return;
+    }
+    List<Uri> current = attachedImages.getValue();
+    if (current == null || current.isEmpty()) {
+      return;
+    }
+    List<Uri> updated = new ArrayList<>(current);
+    if (updated.remove(uri)) {
+      attachedImages.setValue(Collections.unmodifiableList(updated));
+    }
+  }
+
   public void clearAttachedImages() {
     attachedImages.setValue(Collections.emptyList());
   }
