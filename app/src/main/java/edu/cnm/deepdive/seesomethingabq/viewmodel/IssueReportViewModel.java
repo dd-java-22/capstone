@@ -10,6 +10,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import jakarta.inject.Inject;
@@ -70,6 +71,18 @@ public class IssueReportViewModel extends ViewModel {
     List<Uri> current = attachedImages.getValue();
     List<Uri> updated = (current != null) ? new ArrayList<>(current) : new ArrayList<>();
     updated.add(uri);
+    attachedImages.setValue(Collections.unmodifiableList(updated));
+  }
+
+  public void addAttachedImages(Uri[] uris) {
+    if (uris == null || uris.length == 0) {
+      return;
+    }
+    List<Uri> current = attachedImages.getValue();
+    List<Uri> updated = (current != null) ? new ArrayList<>(current) : new ArrayList<>();
+    Arrays.stream(uris)
+        .filter((uri) -> uri != null)
+        .forEach(updated::add);
     attachedImages.setValue(Collections.unmodifiableList(updated));
   }
 
