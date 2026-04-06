@@ -15,6 +15,8 @@
   <string name="use_current_location">Use Current Location</string>
   <string name="image_label">Photo</string>
   <string name="attach_image">Attach Photo</string>
+  <string name="take_photo">Take Photo</string>
+  <string name="take_photo_failure">Unable to launch camera.</string>
   <string name="submit_report">Submit Report</string>
   <string name="submit_report_success">Report submitted.</string>
   <string name="submit_report_failure">Report submission failed.</string>
