@@ -114,14 +114,14 @@ class IssueReportControllerTest {
   @Test
   @WithMockUser(roles = "USER")
   void putBindsIssueTypesArrayAndDelegates() throws Exception {
-    UUID externalKey = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    UUID externalId = UUID.fromString("22222222-2222-2222-2222-222222222222");
     when(issueReportService.updateReport(
-        org.mockito.ArgumentMatchers.eq(externalKey),
+        org.mockito.ArgumentMatchers.eq(externalId),
         org.mockito.ArgumentMatchers.any(IssueReportRequest.class)
     )).thenReturn(new IssueReport());
 
     mockMvc.perform(
-            put("/issue-reports/{externalKey}", externalKey)
+            put("/issue-reports/{externalId}", externalId)
                 .with(csrf())
                 .contentType("application/json")
                 .content("""
@@ -134,7 +134,7 @@ class IssueReportControllerTest {
         .andExpect(status().isOk());
 
     ArgumentCaptor<IssueReportRequest> captor = ArgumentCaptor.forClass(IssueReportRequest.class);
-    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalKey), captor.capture());
+    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalId), captor.capture());
     assertEquals("Updated", captor.getValue().getTextDescription());
     assertEquals(List.of("Trash"), captor.getValue().getIssueTypes());
   }
@@ -142,14 +142,14 @@ class IssueReportControllerTest {
   @Test
   @WithMockUser(roles = "USER")
   void putWithEmptyIssueTypesArrayBindsAndDelegates() throws Exception {
-    UUID externalKey = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    UUID externalId = UUID.fromString("33333333-3333-3333-3333-333333333333");
     when(issueReportService.updateReport(
-        org.mockito.ArgumentMatchers.eq(externalKey),
+        org.mockito.ArgumentMatchers.eq(externalId),
         org.mockito.ArgumentMatchers.any(IssueReportRequest.class)
     )).thenReturn(new IssueReport());
 
     mockMvc.perform(
-            put("/issue-reports/{externalKey}", externalKey)
+            put("/issue-reports/{externalId}", externalId)
                 .with(csrf())
                 .contentType("application/json")
                 .content("""
@@ -162,21 +162,21 @@ class IssueReportControllerTest {
         .andExpect(status().isOk());
 
     ArgumentCaptor<IssueReportRequest> captor = ArgumentCaptor.forClass(IssueReportRequest.class);
-    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalKey), captor.capture());
+    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalId), captor.capture());
     assertEquals(List.of(), captor.getValue().getIssueTypes());
   }
 
   @Test
   @WithMockUser(roles = "USER")
   void putWithoutLocationFieldsIsAcceptedAndDelegates() throws Exception {
-    UUID externalKey = UUID.fromString("44444444-4444-4444-4444-444444444444");
+    UUID externalId = UUID.fromString("44444444-4444-4444-4444-444444444444");
     when(issueReportService.updateReport(
-        org.mockito.ArgumentMatchers.eq(externalKey),
+        org.mockito.ArgumentMatchers.eq(externalId),
         org.mockito.ArgumentMatchers.any(IssueReportRequest.class)
     )).thenReturn(new IssueReport());
 
     mockMvc.perform(
-            put("/issue-reports/{externalKey}", externalKey)
+            put("/issue-reports/{externalId}", externalId)
                 .with(csrf())
                 .contentType("application/json")
                 .content("""
@@ -189,7 +189,7 @@ class IssueReportControllerTest {
         .andExpect(status().isOk());
 
     ArgumentCaptor<IssueReportRequest> captor = ArgumentCaptor.forClass(IssueReportRequest.class);
-    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalKey), captor.capture());
+    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalId), captor.capture());
     IssueReportRequest bound = captor.getValue();
     assertEquals("Only updating description", bound.getTextDescription());
     assertEquals(null, bound.getLatitude());

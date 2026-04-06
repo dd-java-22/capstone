@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  * to issue reports. Access control is enforced at the service layer.
  */
 @RestController
-@RequestMapping("/issue-reports/{externalKey}/images")
+@RequestMapping("/issue-reports/{externalId}/images")
 public class ReportImageController {
 
   private final ReportImageService service;
@@ -40,38 +40,38 @@ public class ReportImageController {
    * Retrieves a specific image from an issue report. Access is restricted to the report owner and
    * managers.
    *
-   * @param externalKey The external ID (UUID) of the issue report.
+   * @param externalId The external ID (UUID) of the issue report.
    * @param imageId The external ID (UUID) of the image.
    * @return The requested report image.
    */
   @GetMapping(value = "/{imageId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ReportImage getImage(@PathVariable UUID externalKey, @PathVariable UUID imageId) {
-    return service.getImage(externalKey, imageId);
+  public ReportImage getImage(@PathVariable UUID externalId, @PathVariable UUID imageId) {
+    return service.getImage(externalId, imageId);
   }
 
   /**
    * Adds a new image to an issue report. Only the report owner can add images.
    *
-   * @param externalKey The external ID (UUID) of the issue report.
+   * @param externalId The external ID (UUID) of the issue report.
    * @param request The image data to add.
    * @return The newly created report image.
    */
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
   @ResponseStatus(HttpStatus.CREATED)
-  public ReportImage addImage(@PathVariable UUID externalKey,
+  public ReportImage addImage(@PathVariable UUID externalId,
       @RequestBody AddImageRequest request) {
-    return service.addImage(externalKey, request);
+    return service.addImage(externalId, request);
   }
 
   /**
    * Deletes an Image from an existing issue report. Only the report owner can delete images.
    *
-   * @param externalKey The external ID (UUID) of the issue report.
+   * @param externalId The external ID (UUID) of the issue report.
    */
   @DeleteMapping("/{imageId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
-  public void deleteImage(@PathVariable UUID externalKey, @PathVariable UUID imageId) {
-    service.deleteImage(externalKey, imageId);
+  public void deleteImage(@PathVariable UUID externalId, @PathVariable UUID imageId) {
+    service.deleteImage(externalId, imageId);
   }
 }
