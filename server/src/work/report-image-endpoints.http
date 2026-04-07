@@ -1,5 +1,5 @@
 ###
-POST http://localhost:8080/see-something/issue-reports/{{externalId}}/images
+POST http://localhost:8080/see-something/issue-reports/{{externalKey}}/images
 Content-Type: application/json
 Authorization: bearer {{bearerToken}}
 Accept: application/json
@@ -13,13 +13,24 @@ Accept: application/json
 
 
 ###
-GET http://localhost:8080/see-something/issue-reports/{{externalId}}/images/{{imageId}}
+GET http://localhost:8080/see-something/issue-reports/{{externalKey}}/images/{{imageId}}
 Content-Type: application/json
 Authorization: bearer {{bearerToken}}
 Accept: application/json
 
 
+###
+POST http://localhost:8080/see-something/issue-reports/{{externalKey}}/images/upload
+Authorization: bearer {{bearerToken}}
+Content-Type: multipart/form-data; boundary=----BOUNDARY
+
+------BOUNDARY
+Content-Disposition: form-data; name="file"; filename="{{imageName.jpeg}}"
+Content-Type: image/jpeg
+
+< ./{{imageName.jpeg}}
+------BOUNDARY--
 
 ###
-DELETE http://localhost:8080/see-something/issue-reports/{{externalId}}/images/{{imageId}}
-Authorization: Bearer {{bearerToken}}
+DELETE http://localhost:8080/see-something/issue-reports/{{externalKey}}/images/{{imageId}}
+Authorization: bearer {{bearerToken}}

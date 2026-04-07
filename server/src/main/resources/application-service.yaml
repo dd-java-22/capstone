@@ -16,8 +16,14 @@ spring:
         jwt:
           issuer-uri: "https://accounts.google.com"
 
+  servlet:
+    multipart:
+      max-request-size: 20MB
+      max-file-size: 10MB
+
 server:
   port: 8080
   forward-headers-strategy: framework
   servlet:
     context-path: "/see-something"
+
