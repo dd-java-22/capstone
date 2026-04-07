@@ -16,12 +16,14 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
@@ -98,7 +100,9 @@ class IssueReportControllerTest {
                     }
                     """)
         )
-        .andExpect(status().isCreated());
+        .andExpect(status().isCreated())
+        .andExpect(header().string("Location",
+            endsWith("/issue-reports/" + externalId)));
 
     ArgumentCaptor<IssueReportRequest> captor = ArgumentCaptor.forClass(IssueReportRequest.class);
     verify(issueReportService).createReport(captor.capture());
