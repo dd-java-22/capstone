@@ -27,6 +27,15 @@ public class AcceptedStateServiceImpl implements AcceptedStateService {
   }
 
   @Override
+  public AcceptedState getByStatusTag(String statusTag) {
+    AcceptedState state = repository.findByStatusTag(statusTag);
+    if (state == null) {
+      throw new AcceptedStateNotFoundException("Accepted state status tag not found: " + statusTag);
+    }
+    return state;
+  }
+
+  @Override
   public AcceptedState createNewAcceptedState(AcceptedState newAcceptedState) {
     if (repository.existsByStatusTag(newAcceptedState.getStatusTag())) {
       throw new DuplicateAcceptedStateException("Accepted state status tag already exists: "

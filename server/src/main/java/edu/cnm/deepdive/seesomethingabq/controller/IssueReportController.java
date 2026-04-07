@@ -21,6 +21,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
+
 @RestController
 @RequestMapping("/issue-reports")
 public class IssueReportController {
@@ -46,7 +49,9 @@ public class IssueReportController {
   )
   public ResponseEntity<IssueReport> createReport(@RequestBody IssueReportRequest request) {
     IssueReport created = issueReportService.createReport(request);
-    URI location = URI.create("/issue-reports/" + created.getExternalId());
+    URI location = linkTo(methodOn(IssueReportController.class)
+        .getReport(created.getExternalId()))
+        .toUri();
     return ResponseEntity.created(location).body(created);
   }
 

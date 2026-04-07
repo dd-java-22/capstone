@@ -29,6 +29,15 @@ public class IssueTypeServiceImpl implements IssueTypeService {
   }
 
   @Override
+  public IssueType getByIssueTypeTag(String issueTypeTag) {
+    IssueType issueType = tagRepository.findByIssueTypeTag(issueTypeTag);
+    if (issueType == null) {
+      throw new IssueTypeNotFoundException("Issue type tag not found: " + issueTypeTag);
+    }
+    return issueType;
+  }
+
+  @Override
   public IssueType createNewIssueType(IssueType newIssueType) {
     if (tagRepository.existsByIssueTypeTag(newIssueType.getIssueTypeTag())) {
       throw new DuplicateIssueTypeException("Issue type tag already exists: " + newIssueType.getIssueTypeTag());

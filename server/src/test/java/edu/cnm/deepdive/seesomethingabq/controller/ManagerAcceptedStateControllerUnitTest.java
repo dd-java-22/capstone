@@ -34,6 +34,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class ManagerAcceptedStateControllerUnitTest {
@@ -65,9 +66,9 @@ class ManagerAcceptedStateControllerUnitTest {
     AcceptedState created = new AcceptedState();
     when(acceptedStateService.createNewAcceptedState(input)).thenReturn(created);
 
-    AcceptedState result = controller.createAcceptedState(input);
+    ResponseEntity<AcceptedState> result = controller.createAcceptedState(input);
 
-    assertSame(created, result);
+    assertSame(created, result.getBody());
     verify(acceptedStateService).createNewAcceptedState(input);
   }
 
