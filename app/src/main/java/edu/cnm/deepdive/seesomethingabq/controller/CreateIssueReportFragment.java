@@ -87,6 +87,7 @@ import java.util.stream.Collectors;
 @AndroidEntryPoint
 public class CreateIssueReportFragment extends Fragment {
 
+  //region Fields
   private static final String TAG = CreateIssueReportFragment.class.getSimpleName();
   private static final int SEARCH_DEBOUNCE_MS = 500;
   private static final int MIN_QUERY_LENGTH = 3;
@@ -114,6 +115,7 @@ public class CreateIssueReportFragment extends Fragment {
   private AutocompleteSessionToken sessionToken;
   private FusedLocationProviderClient fusedLocationClient;
   private ActivityResultLauncher<String> locationPermissionLauncher;
+  //endregion
 
   @Nullable
   @Override
