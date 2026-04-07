@@ -102,6 +102,32 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <ProgressBar
+      android:id="@+id/location_loading_indicator"
+      style="?android:attr/progressBarStyleSmall"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/half_dynamic_spacing"
+      android:visibility="gone"/>
+
+    <TextView
+      android:id="@+id/location_results_placeholder"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/half_dynamic_spacing"
+      android:text="@string/location_search_placeholder"
+      android:textAppearance="?attr/textAppearanceBodyMedium"
+      android:visibility="gone"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+      android:id="@+id/location_results_list"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/half_dynamic_spacing"
+      android:nestedScrollingEnabled="false"
+      android:overScrollMode="never"
+      android:visibility="gone"/>
+
     <com.google.android.material.button.MaterialButton
       android:id="@+id/use_current_location_button"
       style="@style/Widget.Material3.Button.TonalButton"

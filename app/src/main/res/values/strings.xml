@@ -35,4 +35,6 @@
   <string name="location_no_results">No matching locations found</string>
   <string name="location_search_failed">Location search failed. Please try again.</string>
   <string name="attach_from_gallery">Attach From Gallery</string>
+  <string name="location_fetching_current">Fetching current location</string>
+  <string name="location_unavailable">Location unavailable</string>
 </resources>
