@@ -16,14 +16,14 @@ public interface IssueReportService {
   //POST /issue-reports
   IssueReport createReport(IssueReportRequest request);
 
-  //GET /issue-reports/{externalKey}
-  IssueReport getReportByExternalKey(UUID externalKey);
+  //GET /issue-reports/{externalId}
+  IssueReport getReportByExternalId(UUID externalId);
 
-  //PUT /issue-reports/{externalKey}
-  IssueReport updateReport(UUID externalKey, IssueReportRequest request);
+  //PUT /issue-reports/{externalId}
+  IssueReport updateReport(UUID externalId, IssueReportRequest request);
 
-  //DELETE /issue-reports/{externalKey}
-  void deleteReport(UUID externalKey);
+  //DELETE /issue-reports/{externalId}
+  void deleteReport(UUID externalId);
 
   // GET /managers/issue-reports/
   Page<IssueReport> getAll(Pageable pageable);

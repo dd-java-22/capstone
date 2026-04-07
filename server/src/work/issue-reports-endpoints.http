@@ -33,7 +33,7 @@ GET http://localhost:8080/see-something/issue-reports/{{externalId}}
 Authorization: Bearer {{bearerToken}}
 
 ###
-PUT http://localhost:8080/see-something/issue-reports/{{externalKey}}
+PUT http://localhost:8080/see-something/issue-reports/{{externalId}}
 Content-Type: application/json
 Authorization: Bearer {{bearerToken}}
 
@@ -48,5 +48,5 @@ Authorization: Bearer {{bearerToken}}
 }
 
 ###
-DELETE http://localhost:8080/see-something/issue-reports/{{externalKey}}
+DELETE http://localhost:8080/see-something/issue-reports/{{externalId}}
 Authorization: Bearer {{bearerToken}}

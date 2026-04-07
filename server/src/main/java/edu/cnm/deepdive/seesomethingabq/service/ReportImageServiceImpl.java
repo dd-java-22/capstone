@@ -32,9 +32,9 @@ public class ReportImageServiceImpl implements ReportImageService {
   }
 
   @Override
-  public ReportImage getImage(UUID externalKey, UUID imageId) {
+  public ReportImage getImage(UUID externalId, UUID imageId) {
     UserProfile currentUser = userService.getCurrentUser();
-    IssueReport report = issueReportRepository.findByExternalId(externalKey)
+    IssueReport report = issueReportRepository.findByExternalId(externalId)
         .orElseThrow(() -> new ResourceNotFoundException("Issue report not found"));
 
     // Check access: user must own the report or be a manager
@@ -47,9 +47,9 @@ public class ReportImageServiceImpl implements ReportImageService {
   }
 
   @Override
-  public ReportImage addImage(UUID externalKey, AddImageRequest request) {
+  public ReportImage addImage(UUID externalId, AddImageRequest request) {
     UserProfile currentUser = userService.getCurrentUser();
-    IssueReport report = issueReportRepository.findByExternalId(externalKey)
+    IssueReport report = issueReportRepository.findByExternalId(externalId)
         .orElseThrow(() -> new ResourceNotFoundException("Issue report not found"));
 
     // Check access: user must own the report
@@ -70,7 +70,7 @@ public class ReportImageServiceImpl implements ReportImageService {
 
   @Override
   @Transactional
-  public void deleteImage(UUID reportId, UUID imageId) {
+  public void deleteImage(UUID externalId, UUID imageId) {
 
     // Load the image
     ReportImage image = reportImageRepository.findByExternalId(imageId)
@@ -79,7 +79,7 @@ public class ReportImageServiceImpl implements ReportImageService {
     IssueReport report = image.getIssueReport();
 
     // Validate that the image belongs to the specified report
-    if (!report.getExternalId().equals(reportId)) {
+    if (!report.getExternalId().equals(externalId)) {
       throw new ResourceNotFoundException("Image not found for this report");
     }
 

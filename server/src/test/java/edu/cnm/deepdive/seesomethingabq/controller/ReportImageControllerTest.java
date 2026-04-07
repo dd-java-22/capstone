@@ -2,6 +2,7 @@ package edu.cnm.deepdive.seesomethingabq.controller;
 
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.endsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
@@ -29,6 +30,7 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
@@ -83,9 +85,11 @@ class ReportImageControllerTest {
   @WithMockUser(roles = "USER")
   void addImage_createsImage() throws Exception {
     UUID reportId = UUID.randomUUID();
+    UUID imageId = UUID.randomUUID();
 
     ReportImage created = new ReportImage();
     created.setFilename("new.jpg");
+    ReflectionTestUtils.setField(created, "externalId", imageId);
 
     when(reportImageService.addImage(
         org.mockito.ArgumentMatchers.eq(reportId),
@@ -106,6 +110,8 @@ class ReportImageControllerTest {
                     """)
         )
         .andExpect(status().isCreated())
+        .andExpect(header().string("Location",
+            endsWith("/issue-reports/" + reportId + "/images/" + imageId)))
         .andExpect(jsonPath("$.filename").value("new.jpg"));
 
     ArgumentCaptor<AddImageRequest> captor = ArgumentCaptor.forClass(AddImageRequest.class);

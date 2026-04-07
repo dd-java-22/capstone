@@ -7,6 +7,8 @@ public interface AcceptedStateService {
 
   List<AcceptedState> getAll();
 
+  AcceptedState getByStatusTag(String statusTag);
+
   AcceptedState createNewAcceptedState(AcceptedState newAcceptedState);
 
   AcceptedState updateAcceptedStateDescription(String statusTag, String newDescription);

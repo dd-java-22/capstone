@@ -15,20 +15,18 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
-import static org.mockito.Mockito.when;
 import static org.hamcrest.Matchers.endsWith;
+import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
-import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
-import edu.cnm.deepdive.seesomethingabq.service.AcceptedStateService;
-import java.util.Collections;
+import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
+import edu.cnm.deepdive.seesomethingabq.service.IssueTypeService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +51,8 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://example.com/issuer",
     "spring.security.oauth2.resourceserver.jwt.audiences=test-client-id"
 })
-@ContextConfiguration(classes = {ManagerAcceptedStateControllerTest.TestConfig.class, TestStorageConfig.class})
-class ManagerAcceptedStateControllerTest {
+@ContextConfiguration(classes = {ManagerIssueTypeControllerTest.TestConfig.class, TestStorageConfig.class})
+class ManagerIssueTypeControllerTest {
 
   @Autowired
   private WebApplicationContext context;
@@ -62,10 +60,7 @@ class ManagerAcceptedStateControllerTest {
   private MockMvc mockMvc;
 
   @Autowired
-  private AcceptedStateService acceptedStateService;
-
-  @Autowired
-  private JwtDecoder jwtDecoder;
+  private IssueTypeService issueTypeService;
 
   @BeforeEach
   void setUp() {
@@ -76,50 +71,29 @@ class ManagerAcceptedStateControllerTest {
   }
 
   @Test
-  void getAllForbiddenForNonManager() throws Exception {
-    mockMvc.perform(get("/manager/accepted-states"))
-        .andExpect(status().isUnauthorized());
-  }
-
-  @Test
-  @WithMockUser(roles = "USER")
-  void getAllForbiddenForUserRole() throws Exception {
-    mockMvc.perform(get("/manager/accepted-states"))
-        .andExpect(status().isForbidden());
-  }
-
-  @Test
   @WithMockUser(roles = "MANAGER")
-  void getAllAllowedForManagerRole() throws Exception {
-    when(acceptedStateService.getAll()).thenReturn(Collections.emptyList());
-    mockMvc.perform(get("/manager/accepted-states"))
-        .andExpect(status().isOk());
-  }
-
-  @Test
-  @WithMockUser(roles = "MANAGER")
-  void createAcceptedStateReturnsLocation() throws Exception {
-    AcceptedState created = new AcceptedState();
-    created.setStatusTag("OPEN");
-    created.setStatusTagDescription("Open");
-    when(acceptedStateService.createNewAcceptedState(org.mockito.ArgumentMatchers.any(AcceptedState.class)))
+  void createIssueTypeReturnsLocation() throws Exception {
+    IssueType created = new IssueType();
+    created.setIssueTypeTag("POTHOLE");
+    created.setIssueTypeDescription("Pothole");
+    when(issueTypeService.createNewIssueType(org.mockito.ArgumentMatchers.any(IssueType.class)))
         .thenReturn(created);
 
     mockMvc.perform(
-            post("/manager/accepted-states")
+            post("/manager/issue-types")
                 .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("""
                     {
-                      "statusTag": "OPEN",
-                      "statusTagDescription": "Open"
+                      "issueTypeTag": "POTHOLE",
+                      "issueTypeDescription": "Pothole"
                     }
                     """)
         )
         .andExpect(status().isCreated())
         .andExpect(header().string("Location",
-            endsWith("/manager/accepted-states/OPEN")))
-        .andExpect(jsonPath("$.statusTag").value("OPEN"));
+            endsWith("/manager/issue-types/POTHOLE")))
+        .andExpect(jsonPath("$.issueTypeTag").value("POTHOLE"));
   }
 
   @TestConfiguration
@@ -127,16 +101,13 @@ class ManagerAcceptedStateControllerTest {
 
     @Bean
     @Primary
-    public AcceptedStateService acceptedStateService() {
-      return org.mockito.Mockito.mock(AcceptedStateService.class);
+    public IssueTypeService issueTypeService() {
+      return org.mockito.Mockito.mock(IssueTypeService.class);
     }
 
     @Bean(name = "provideDecoder")
     public JwtDecoder provideDecoder() {
       return org.mockito.Mockito.mock(JwtDecoder.class);
     }
-
   }
-
 }
-
