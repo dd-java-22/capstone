@@ -16,6 +16,7 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -30,6 +31,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -153,6 +155,8 @@ public class CreateIssueReportFragment extends Fragment {
     issueTypeViewModel = new ViewModelProvider(requireActivity()).get(IssueTypeViewModel.class);
     issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
 
+    setupLocationVisibilityAssist();
+
     takePhotoLauncher = registerForActivityResult(new ActivityResultContracts.TakePicture(),
         (success) -> {
           if (Boolean.TRUE.equals(success)) {
@@ -171,6 +175,13 @@ public class CreateIssueReportFragment extends Fragment {
     initializeLocationServices();
     setupLocationResultsList();
     setupInlineLocationSearch();
+    binding.locationLayout.setEndIconOnClickListener(v -> {
+      binding.locationInput.setText(null);
+      confirmedLocation = null;
+      binding.locationLayout.setError(null);
+      binding.locationLayout.setHelperText(null);
+      hideLocationResults();
+    });
     showLocationPlaceholder(getString(R.string.location_search_placeholder));
   }
 
@@ -243,6 +254,25 @@ public class CreateIssueReportFragment extends Fragment {
         Snackbar.make(binding.getRoot(), R.string.location_permission_denied,
             Snackbar.LENGTH_SHORT).show();
       }
+    });
+  }
+
+  private void setupLocationVisibilityAssist() {
+    binding.locationInput.setOnFocusChangeListener((v, hasFocus) -> {
+      if (hasFocus) {
+        scrollLocationSectionIntoView();
+      }
+    });
+  }
+
+  private void scrollLocationSectionIntoView() {
+    if (binding == null) {
+      return;
+    }
+    binding.getRoot().post(() -> {
+      int extraTopSpace = getResources().getDimensionPixelSize(R.dimen.full_dynamic_spacing);
+      int targetY = Math.max(0, binding.locationLayout.getTop() - extraTopSpace);
+      binding.getRoot().smoothScrollTo(0, targetY);
     });
   }
 
@@ -578,6 +608,8 @@ public class CreateIssueReportFragment extends Fragment {
     binding.locationLayout.setError(null);
     binding.locationLayout.setHelperText(getString(R.string.location_confirmed));
     applyingPickedLocation = false;
+    binding.locationInput.clearFocus();
+    hideKeyboard();
     hideLocationResults();
   }
 
@@ -675,6 +707,7 @@ public class CreateIssueReportFragment extends Fragment {
     binding.locationResultsPlaceholder.setVisibility(View.GONE);
     binding.locationResultsList.setVisibility(View.VISIBLE);
     locationCandidateAdapter.setCandidates(candidates);
+    scrollLocationSectionIntoView();
   }
 
   private void showLocationPlaceholder(String message) {
@@ -690,6 +723,18 @@ public class CreateIssueReportFragment extends Fragment {
     binding.locationResultsPlaceholder.setVisibility(View.GONE);
     if (locationCandidateAdapter != null) {
       locationCandidateAdapter.setCandidates(Collections.emptyList());
+    }
+  }
+
+  private void hideKeyboard() {
+    if (binding == null) {
+      return;
+    }
+    View focusedView = binding.locationInput;
+    InputMethodManager imm = (InputMethodManager) requireContext()
+        .getSystemService(Context.INPUT_METHOD_SERVICE);
+    if (imm != null) {
+      imm.hideSoftInputFromWindow(focusedView.getWindowToken(), 0);
     }
   }
 }

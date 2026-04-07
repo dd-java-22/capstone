@@ -67,7 +67,7 @@ public class UserWorkflowActivity extends AppCompatActivity {
           initialRight + systemBars.right,
           initialBottom + systemBars.bottom
       );
-      return WindowInsetsCompat.CONSUMED;
+      return insets;
     });
   }
 
