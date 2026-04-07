@@ -125,8 +125,18 @@ public class LocalFileSystemStorageService implements StorageService {
   @Override
   public boolean delete(String key)
       throws IOException, UnsupportedOperationException, SecurityException {
-    return false;
+
+    String subdirectory = getSubdirectory(key);
+    Path path = uploadDirectory.resolve(subdirectory).resolve(key);
+
+    if (Files.exists(path)) {
+      Files.delete(path);
+      return true;
+    } else {
+      return false;
+    }
   }
+
 
   @NonNull
   private String getExtension(@NonNull String filename) {
