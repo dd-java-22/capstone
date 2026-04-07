@@ -63,7 +63,11 @@ class ManagerAcceptedStateControllerUnitTest {
   @Test
   void createAcceptedStateReturnsCreatedEntity() {
     AcceptedState input = new AcceptedState();
+    input.setStatusTag("Trash");
+
     AcceptedState created = new AcceptedState();
+    created.setStatusTag("Trash");
+
     when(acceptedStateService.createNewAcceptedState(input)).thenReturn(created);
 
     ResponseEntity<AcceptedState> result = controller.createAcceptedState(input);
