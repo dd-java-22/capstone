@@ -25,10 +25,10 @@ Authorization: bearer {{bearerToken}}
 Content-Type: multipart/form-data; boundary=----BOUNDARY
 
 ------BOUNDARY
-Content-Disposition: form-data; name="file"; filename="{{example.jpeg}}"
+Content-Disposition: form-data; name="file"; filename="{{imageName.jpeg}}"
 Content-Type: image/jpeg
 
-C:\Users\{{user}}\deep-dive\java\projects\capstone\docs\work\{{example.jpeg}}
+< ./{{imageName.jpeg}}
 ------BOUNDARY--
 
 ###
