@@ -17,3 +17,16 @@ GET http://localhost:8080/see-something/issue-reports/11111111-1111-1111-1111-11
 Content-Type: application/json
 Authorization: bearer {{bearerToken}}
 Accept: application/json
+
+
+###
+POST http://localhost:8080/see-something/issue-reports/{{externalKey}}/images/upload
+Authorization: bearer {{bearerToken}}
+Content-Type: multipart/form-data; boundary=----BOUNDARY
+
+------BOUNDARY
+Content-Disposition: form-data; name="file"; filename="{{example.jpeg}}"
+Content-Type: image/jpeg
+
+C:\Users\{{user}}\deep-dive\java\projects\capstone\docs\work\{{example.jpeg}}
+------BOUNDARY--
