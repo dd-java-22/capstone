@@ -22,13 +22,18 @@ import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import dagger.hilt.android.AndroidEntryPoint;
+import edu.cnm.deepdive.seesomethingabq.controller.adapter.IssueReportAdapter;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManageIssuesBinding;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
 
 @AndroidEntryPoint
 public class ManageIssuesFragment extends Fragment {
 
   private FragmentManageIssuesBinding binding;
+  private IssueReportViewModel viewModel;
+  private IssueReportAdapter adapter;
 
   @Nullable
   @Override
@@ -36,6 +41,17 @@ public class ManageIssuesFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     binding = FragmentManageIssuesBinding.inflate(inflater, container, false);
     return binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    viewModel = new ViewModelProvider(this).get(IssueReportViewModel.class);
+    adapter = new IssueReportAdapter();
+    binding.issueReportsRecycler.setAdapter(adapter);
+    viewModel.getIssueReports(requireActivity()).observe(getViewLifecycleOwner(), pagingData -> {
+      adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData);
+    });
   }
 
   @Override
