@@ -64,7 +64,7 @@ public class IssueReportServiceImpl implements IssueReportService {
     List<IssueReport> reports =
         issueReportRepository.findByUserProfile(currentUser, sort);
     return reports.stream()
-        .map(IssueReportSummary::fromIssueReport) // FIXME moving this function inside of IssueReportSummary, make sure it worked.
+        .map(IssueReportSummary::fromIssueReport)
         .toList();
   }
 
