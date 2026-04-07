@@ -16,10 +16,17 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import static org.mockito.Mockito.when;
+import static org.hamcrest.Matchers.endsWith;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
+import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.service.AcceptedStateService;
 import java.util.Collections;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +36,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
+import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -45,7 +53,7 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://example.com/issuer",
     "spring.security.oauth2.resourceserver.jwt.audiences=test-client-id"
 })
-@ContextConfiguration(classes = {ManagerAcceptedStateControllerTest.TestConfig.class})
+@ContextConfiguration(classes = {ManagerAcceptedStateControllerTest.TestConfig.class, TestStorageConfig.class})
 class ManagerAcceptedStateControllerTest {
 
   @Autowired
@@ -86,6 +94,32 @@ class ManagerAcceptedStateControllerTest {
     when(acceptedStateService.getAll()).thenReturn(Collections.emptyList());
     mockMvc.perform(get("/manager/accepted-states"))
         .andExpect(status().isOk());
+  }
+
+  @Test
+  @WithMockUser(roles = "MANAGER")
+  void createAcceptedStateReturnsLocation() throws Exception {
+    AcceptedState created = new AcceptedState();
+    created.setStatusTag("OPEN");
+    created.setStatusTagDescription("Open");
+    when(acceptedStateService.createNewAcceptedState(org.mockito.ArgumentMatchers.any(AcceptedState.class)))
+        .thenReturn(created);
+
+    mockMvc.perform(
+            post("/manager/accepted-states")
+                .with(csrf())
+                .contentType(MediaType.APPLICATION_JSON)
+                .content("""
+                    {
+                      "statusTag": "OPEN",
+                      "statusTagDescription": "Open"
+                    }
+                    """)
+        )
+        .andExpect(status().isCreated())
+        .andExpect(header().string("Location",
+            endsWith("/manager/accepted-states/OPEN")))
+        .andExpect(jsonPath("$.statusTag").value("OPEN"));
   }
 
   @TestConfiguration

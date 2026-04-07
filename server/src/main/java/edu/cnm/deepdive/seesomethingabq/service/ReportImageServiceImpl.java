@@ -17,6 +17,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Implementation of {@link ReportImageService} for managing report images. This service handles
@@ -50,9 +51,9 @@ public class ReportImageServiceImpl implements ReportImageService {
   }
 
   @Override
-  public ReportImage getImage(UUID externalKey, UUID imageId) {
+  public ReportImage getImage(UUID externalId, UUID imageId) {
     UserProfile currentUser = userService.getCurrentUser();
-    IssueReport report = issueReportRepository.findByExternalId(externalKey)
+    IssueReport report = issueReportRepository.findByExternalId(externalId)
         .orElseThrow(() -> new ResourceNotFoundException("Issue report not found"));
 
     // Check access: user must own the report or be a manager
@@ -65,9 +66,9 @@ public class ReportImageServiceImpl implements ReportImageService {
   }
 
   @Override
-  public ReportImage addImage(UUID externalKey, AddImageRequest request) {
+  public ReportImage addImage(UUID externalId, AddImageRequest request) {
     UserProfile currentUser = userService.getCurrentUser();
-    IssueReport report = issueReportRepository.findByExternalId(externalKey)
+    IssueReport report = issueReportRepository.findByExternalId(externalId)
         .orElseThrow(() -> new ResourceNotFoundException("Issue report not found"));
 
     // Check access: user must own the report
@@ -162,6 +163,7 @@ public class ReportImageServiceImpl implements ReportImageService {
    * @throws IOException If an error occurs while deleting the stored file.
    */
   @Override
+  @Transactional
   public void deleteImage(UUID externalKey, UUID imageId) throws IOException {
     UserProfile currentUser = userService.getCurrentUser();
     IssueReport report = getReportOrThrow(externalKey);

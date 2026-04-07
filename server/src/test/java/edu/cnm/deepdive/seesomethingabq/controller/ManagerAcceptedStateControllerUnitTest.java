@@ -15,7 +15,6 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.doThrow;
@@ -34,6 +33,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
 class ManagerAcceptedStateControllerUnitTest {
@@ -62,12 +62,16 @@ class ManagerAcceptedStateControllerUnitTest {
   @Test
   void createAcceptedStateReturnsCreatedEntity() {
     AcceptedState input = new AcceptedState();
+    input.setStatusTag("Trash");
+
     AcceptedState created = new AcceptedState();
+    created.setStatusTag("Trash");
+
     when(acceptedStateService.createNewAcceptedState(input)).thenReturn(created);
 
-    AcceptedState result = controller.createAcceptedState(input);
+    ResponseEntity<AcceptedState> result = controller.createAcceptedState(input);
 
-    assertSame(created, result);
+    assertSame(created, result.getBody());
     verify(acceptedStateService).createNewAcceptedState(input);
   }
 

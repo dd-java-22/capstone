@@ -16,17 +16,20 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.hamcrest.Matchers.endsWith;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
+import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
 import java.util.List;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -54,7 +57,7 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://example.com/issuer",
     "spring.security.oauth2.resourceserver.jwt.audiences=test-client-id"
 })
-@ContextConfiguration(classes = {IssueReportControllerTest.TestConfig.class})
+@ContextConfiguration(classes = {IssueReportControllerTest.TestConfig.class, TestStorageConfig.class})
 class IssueReportControllerTest {
 
   @Autowired
@@ -97,7 +100,9 @@ class IssueReportControllerTest {
                     }
                     """)
         )
-        .andExpect(status().isCreated());
+        .andExpect(status().isCreated())
+        .andExpect(header().string("Location",
+            endsWith("/issue-reports/" + externalId)));
 
     ArgumentCaptor<IssueReportRequest> captor = ArgumentCaptor.forClass(IssueReportRequest.class);
     verify(issueReportService).createReport(captor.capture());
@@ -113,14 +118,14 @@ class IssueReportControllerTest {
   @Test
   @WithMockUser(roles = "USER")
   void putBindsIssueTypesArrayAndDelegates() throws Exception {
-    UUID externalKey = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    UUID externalId = UUID.fromString("22222222-2222-2222-2222-222222222222");
     when(issueReportService.updateReport(
-        org.mockito.ArgumentMatchers.eq(externalKey),
+        org.mockito.ArgumentMatchers.eq(externalId),
         org.mockito.ArgumentMatchers.any(IssueReportRequest.class)
     )).thenReturn(new IssueReport());
 
     mockMvc.perform(
-            put("/issue-reports/{externalKey}", externalKey)
+            put("/issue-reports/{externalId}", externalId)
                 .with(csrf())
                 .contentType("application/json")
                 .content("""
@@ -133,7 +138,7 @@ class IssueReportControllerTest {
         .andExpect(status().isOk());
 
     ArgumentCaptor<IssueReportRequest> captor = ArgumentCaptor.forClass(IssueReportRequest.class);
-    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalKey), captor.capture());
+    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalId), captor.capture());
     assertEquals("Updated", captor.getValue().getTextDescription());
     assertEquals(List.of("Trash"), captor.getValue().getIssueTypes());
   }
@@ -141,14 +146,14 @@ class IssueReportControllerTest {
   @Test
   @WithMockUser(roles = "USER")
   void putWithEmptyIssueTypesArrayBindsAndDelegates() throws Exception {
-    UUID externalKey = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    UUID externalId = UUID.fromString("33333333-3333-3333-3333-333333333333");
     when(issueReportService.updateReport(
-        org.mockito.ArgumentMatchers.eq(externalKey),
+        org.mockito.ArgumentMatchers.eq(externalId),
         org.mockito.ArgumentMatchers.any(IssueReportRequest.class)
     )).thenReturn(new IssueReport());
 
     mockMvc.perform(
-            put("/issue-reports/{externalKey}", externalKey)
+            put("/issue-reports/{externalId}", externalId)
                 .with(csrf())
                 .contentType("application/json")
                 .content("""
@@ -161,21 +166,21 @@ class IssueReportControllerTest {
         .andExpect(status().isOk());
 
     ArgumentCaptor<IssueReportRequest> captor = ArgumentCaptor.forClass(IssueReportRequest.class);
-    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalKey), captor.capture());
+    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalId), captor.capture());
     assertEquals(List.of(), captor.getValue().getIssueTypes());
   }
 
   @Test
   @WithMockUser(roles = "USER")
   void putWithoutLocationFieldsIsAcceptedAndDelegates() throws Exception {
-    UUID externalKey = UUID.fromString("44444444-4444-4444-4444-444444444444");
+    UUID externalId = UUID.fromString("44444444-4444-4444-4444-444444444444");
     when(issueReportService.updateReport(
-        org.mockito.ArgumentMatchers.eq(externalKey),
+        org.mockito.ArgumentMatchers.eq(externalId),
         org.mockito.ArgumentMatchers.any(IssueReportRequest.class)
     )).thenReturn(new IssueReport());
 
     mockMvc.perform(
-            put("/issue-reports/{externalKey}", externalKey)
+            put("/issue-reports/{externalId}", externalId)
                 .with(csrf())
                 .contentType("application/json")
                 .content("""
@@ -188,7 +193,7 @@ class IssueReportControllerTest {
         .andExpect(status().isOk());
 
     ArgumentCaptor<IssueReportRequest> captor = ArgumentCaptor.forClass(IssueReportRequest.class);
-    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalKey), captor.capture());
+    verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalId), captor.capture());
     IssueReportRequest bound = captor.getValue();
     assertEquals("Only updating description", bound.getTextDescription());
     assertEquals(null, bound.getLatitude());

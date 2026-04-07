@@ -22,6 +22,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.mockito.Mockito.when;
 
+import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
@@ -52,7 +53,7 @@ import org.springframework.web.context.WebApplicationContext;
     "spring.security.oauth2.resourceserver.jwt.issuer-uri=https://example.com/issuer",
     "spring.security.oauth2.resourceserver.jwt.client-id=test-client-id"
 })
-@ContextConfiguration(classes = {UserEnabledAuthorizationTest.TestConfig.class})
+@ContextConfiguration(classes = {UserEnabledAuthorizationTest.TestConfig.class, TestStorageConfig.class})
 class UserEnabledAuthorizationTest {
 
   @Autowired
