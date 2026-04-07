@@ -30,3 +30,7 @@ Content-Type: image/jpeg
 
 C:\Users\{{user}}\deep-dive\java\projects\capstone\docs\work\{{example.jpeg}}
 ------BOUNDARY--
+
+###
+DELETE http://localhost:8080/see-something/issue-reports/{{externalKey}}/images/{{imageKey}}
+Authorization: bearer {{bearerToken}}
