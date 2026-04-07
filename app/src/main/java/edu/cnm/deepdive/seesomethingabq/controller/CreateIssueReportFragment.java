@@ -444,15 +444,21 @@ public class CreateIssueReportFragment extends Fragment {
           new Geocoder.GeocodeListener() {
             @Override
             public void onGeocode(@NonNull List<Address> addresses) {
-              handleReverseGeocodeResult(location, addresses);
+              requireActivity().runOnUiThread(() -> {
+                if (binding != null) {
+                  handleReverseGeocodeResult(location, addresses);
+                }
+              });
             }
 
             @Override
             public void onError(@Nullable String errorMessage) {
               Log.e(TAG, "Reverse geocoding failed: " + errorMessage);
-              if (binding != null) {
-                showLocationPlaceholder(getString(R.string.location_unavailable));
-              }
+              requireActivity().runOnUiThread(() -> {
+                if (binding != null) {
+                  showLocationPlaceholder(getString(R.string.location_unavailable));
+                }
+              });
             }
           });
     } else {
