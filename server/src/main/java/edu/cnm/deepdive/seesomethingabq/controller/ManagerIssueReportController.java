@@ -16,6 +16,7 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportStatusUpdateRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerIssueReportResponse;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
@@ -55,7 +56,7 @@ public class ManagerIssueReportController {
 
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   @Transactional(readOnly = true)
-  public Page<ManagerIssueReportResponse> getAll(
+  public Page<IssueReportSummary> getAll(
       @RequestParam(defaultValue = "" + DEFAULT_PAGE_SIZE) int pageSize,
       @RequestParam(defaultValue = "" + DEFAULT_PAGE_NUMBER) int pageNumber
   ) {
@@ -64,7 +65,7 @@ public class ManagerIssueReportController {
         pageSize,
         Sort.by(Direction.DESC, "timeLastModified")
     );
-    return service.getAll(pageable).map(ManagerIssueReportResponse::fromEntity);
+    return service.getAll(pageable).map(IssueReportSummary::fromIssueReport);
   }
 
   @PutMapping(

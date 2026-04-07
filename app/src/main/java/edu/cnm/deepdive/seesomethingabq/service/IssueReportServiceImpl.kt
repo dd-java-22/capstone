@@ -1,8 +1,13 @@
 package edu.cnm.deepdive.seesomethingabq.service
 
 import android.app.Activity
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
+import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
+import edu.cnm.deepdive.seesomethingabq.service.paging.IssueReportPagingSource
 import edu.cnm.deepdive.seesomethingabq.service.proxy.SeeSomethingWebService
 import edu.cnm.deepdive.seesomethingabq.service.repository.GoogleAuthRepository
 import jakarta.inject.Inject
@@ -22,12 +27,32 @@ class IssueReportServiceImpl @Inject constructor(
 
   private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-  override fun submit(activity: Activity, request: IssueReportRequest): CompletableFuture<Void?> =
+  override fun getIssueReportsPage(
+    activity: Activity,
+    page: Int,
+    size: Int
+  ): CompletableFuture<PaginatedResponse<IssueReportSummary>> =
     scope.future {
       val credential = getCredential(activity)
-      webService.submitIssueReport("Bearer ${credential.idToken}", request)
-      null
+      webService.getIssueReportsPage("Bearer ${credential.idToken}", page, size)
     }
+
+  override fun submit(activity: Activity, request: IssueReportRequest): CompletableFuture<Void?> =
+      scope.future {
+          val credential = getCredential(activity)
+          webService.submitIssueReport("Bearer ${credential.idToken}", request)
+          null
+      }
+
+  override fun getIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary> {
+    return Pager(
+      config = PagingConfig(
+        pageSize = 10,
+        enablePlaceholders = false
+      ),
+      pagingSourceFactory = { IssueReportPagingSource(activity, this) }
+    )
+  }
 
   private suspend fun getCredential(activity: Activity): GoogleIdTokenCredential =
     authRepository.getValidCredential(activity).await()
