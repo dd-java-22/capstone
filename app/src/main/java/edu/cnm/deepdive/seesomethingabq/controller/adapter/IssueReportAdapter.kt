@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import edu.cnm.deepdive.seesomethingabq.databinding.ItemIssueReportBinding
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
+import java.time.Instant
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
@@ -31,6 +33,7 @@ class IssueReportAdapter :
     RecyclerView.ViewHolder(binding.root) {
 
     private val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
+      .withZone(ZoneId.systemDefault())
 
     fun bind(issueReport: IssueReportSummary) {
       binding.description.text = issueReport.description
