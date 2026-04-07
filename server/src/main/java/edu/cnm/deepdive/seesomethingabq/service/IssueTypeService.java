@@ -7,6 +7,8 @@ public interface IssueTypeService {
 
   List<IssueType> getAll();
 
+  IssueType getByIssueTypeTag(String issueTypeTag);
+
   IssueType updateIssueTypeDescription(String issueTypeTag, String newIssueTypeDescription);
 
   void deleteUnusedIssueType(String issueTypeTag);

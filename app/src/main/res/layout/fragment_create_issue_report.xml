@@ -120,14 +120,31 @@
       android:textAppearance="?attr/textAppearanceTitleMedium"
       android:layout_marginBottom="@dimen/half_dynamic_spacing"/>
 
-    <com.google.android.material.button.MaterialButton
-      android:id="@+id/attach_image_button"
-      style="@style/Widget.Material3.Button.OutlinedButton"
-      android:layout_width="wrap_content"
+    <LinearLayout
+      android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:text="@string/attach_image"
-      app:icon="@android:drawable/ic_menu_camera"
-      android:layout_marginBottom="@dimen/full_dynamic_spacing"/>
+      android:orientation="horizontal"
+      android:gravity="start"
+      android:layout_marginBottom="@dimen/full_dynamic_spacing">
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/take_photo_button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/take_photo"
+        app:icon="@android:drawable/ic_menu_camera"
+        android:layout_marginBottom="@dimen/full_dynamic_spacing"/>
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/attach_gallery_image_button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/attach_from_gallery"
+        app:icon="@drawable/add_photo_alternate_24px"/>
+
+    </LinearLayout>
 
     <!-- Submit -->
 

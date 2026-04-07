@@ -15,8 +15,24 @@
   <string name="use_current_location">Use Current Location</string>
   <string name="image_label">Photo</string>
   <string name="attach_image">Attach Photo</string>
+  <string name="take_photo">Take Photo</string>
+  <string name="take_photo_failure">Unable to launch camera.</string>
   <string name="submit_report">Submit Report</string>
   <string name="submit_report_success">Report submitted.</string>
   <string name="submit_report_failure">Report submission failed.</string>
   <string name="back_to_dashboard">Back to Dashboard</string>
+  <!-- CreateIssueReportFragment – location field states -->
+  <string name="location_confirmed">Location confirmed</string>
+  <string name="location_unconfirmed_edit">Location edited — use the picker to confirm</string>
+  <string name="location_required">A confirmed location is required</string>
+  <string name="location_not_confirmed">Use the location picker to confirm this address</string>
+  <!-- LocationPickerDialogFragment -->
+  <string name="location_picker_title">Pick a Location</string>
+  <string name="location_search_hint">Search address or place</string>
+  <string name="location_search_placeholder">Search results will appear here</string>
+  <string name="location_permission_denied">Location permission is required to use current location</string>
+  <string name="location_current_unavailable">Could not determine current location</string>
+  <string name="location_no_results">No matching locations found</string>
+  <string name="location_search_failed">Location search failed. Please try again.</string>
+  <string name="attach_from_gallery">Attach From Gallery</string>
 </resources>

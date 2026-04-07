@@ -101,13 +101,13 @@ public class IssueReportServiceImpl implements IssueReportService {
   }
 
   @Override
-  public IssueReport getReportByExternalKey(UUID externalKey) {
-    return requireReport(externalKey);
+  public IssueReport getReportByExternalId(UUID externalId) {
+    return requireReport(externalId);
   }
 
   @Override
-  public IssueReport updateReport(UUID externalKey, IssueReportRequest request) {
-    IssueReport existing = requireReport(externalKey);
+  public IssueReport updateReport(UUID externalId, IssueReportRequest request) {
+    IssueReport existing = requireReport(externalId);
 
     // Server-controlled fields stay on 'existing':
     // - id, externalId, userProfile, acceptedState, timestamps
@@ -138,8 +138,8 @@ public class IssueReportServiceImpl implements IssueReportService {
   }
 
   @Override
-  public void deleteReport(UUID externalKey) {
-    issueReportRepository.delete(requireReport(externalKey));
+  public void deleteReport(UUID externalId) {
+    issueReportRepository.delete(requireReport(externalId));
   }
 
   @Override
@@ -191,9 +191,9 @@ public class IssueReportServiceImpl implements IssueReportService {
     return issueReportRepository.save(report);
   }
 
-  private IssueReport requireReport(UUID externalKey) {
-    return issueReportRepository.findByExternalId(externalKey)
-        .orElseThrow(() -> new IssueReportNotFoundException("Issue report not found: " + externalKey));
+  private IssueReport requireReport(UUID externalId) {
+    return issueReportRepository.findByExternalId(externalId)
+        .orElseThrow(() -> new IssueReportNotFoundException("Issue report not found: " + externalId));
   }
 
 

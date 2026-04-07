@@ -3,10 +3,12 @@ package edu.cnm.deepdive.seesomethingabq.controller;
 import edu.cnm.deepdive.seesomethingabq.model.dto.AcceptedStateDescriptionUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.service.AcceptedStateService;
+import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -16,6 +18,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController
 @RequestMapping("/manager/accepted-states")
@@ -33,9 +38,18 @@ public class ManagerAcceptedStateController {
     return service.getAll();
   }
 
+  @GetMapping(path = "/{statusTag}", produces = MediaType.APPLICATION_JSON_VALUE)
+  public AcceptedState getAcceptedState(@PathVariable String statusTag) {
+    return service.getByStatusTag(statusTag);
+  }
+
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
-  public AcceptedState createAcceptedState(@RequestBody AcceptedState newAcceptedState) {
-    return service.createNewAcceptedState(newAcceptedState);
+  public ResponseEntity<AcceptedState> createAcceptedState(@RequestBody AcceptedState newAcceptedState) {
+    AcceptedState created = service.createNewAcceptedState(newAcceptedState);
+    URI location = linkTo(methodOn(ManagerAcceptedStateController.class)
+        .getAcceptedState(created.getStatusTag()))
+        .toUri();
+    return ResponseEntity.created(location).body(created);
   }
 
   @PatchMapping(path = "/{statusTag}", consumes = MediaType.APPLICATION_JSON_VALUE,
