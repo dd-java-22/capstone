@@ -108,7 +108,6 @@ public class CreateIssueReportFragment extends Fragment {
   private boolean reportSubmitted;
   private boolean cleanedUpOnExit;
   private ActivityResultLauncher<PickVisualMediaRequest> pickGalleryImageLauncher;
-  private final List<Uri> selectedGalleryImageUri = new ArrayList<>();
 
   private LocationCandidateAdapter locationCandidateAdapter;
   private final Handler debounceHandler = new Handler(Looper.getMainLooper());
@@ -455,9 +454,10 @@ public class CreateIssueReportFragment extends Fragment {
         .setMaxUpdateAgeMillis(10000)
         .build();
 
-    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    currentLocationCancellationTokenSource = new CancellationTokenSource();
 
-    fusedLocationClient.getCurrentLocation(request, cancellationTokenSource.getToken())
+    fusedLocationClient.getCurrentLocation(request,
+            currentLocationCancellationTokenSource.getToken())
         .addOnSuccessListener(location -> {
           if (binding == null) {
             return;
@@ -783,6 +783,9 @@ public class CreateIssueReportFragment extends Fragment {
   }
 
   private void hideLocationResults() {
+    if (binding == null) {
+      return;
+    }
     binding.locationLoadingIndicator.setVisibility(View.GONE);
     binding.locationResultsList.setVisibility(View.GONE);
     binding.locationResultsPlaceholder.setVisibility(View.GONE);
