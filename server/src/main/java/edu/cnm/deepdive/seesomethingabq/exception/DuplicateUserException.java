@@ -5,6 +5,11 @@ package edu.cnm.deepdive.seesomethingabq.exception;
  */
 public class DuplicateUserException extends ConflictException {
 
+  /**
+   * Creates an instance with a detail message.
+   *
+   * @param message detail message.
+   */
   public DuplicateUserException(String message) {
     super(message);
   }

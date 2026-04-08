@@ -8,10 +8,20 @@ public class AcceptedStateDescriptionUpdateRequest {
 
   private String statusTagDescription;
 
+  /**
+   * Returns the accepted-state description.
+   *
+   * @return description value.
+   */
   public String getStatusTagDescription() {
     return statusTagDescription;
   }
 
+  /**
+   * Sets the accepted-state description.
+   *
+   * @param statusTagDescription description value.
+   */
   public void setStatusTagDescription(String statusTagDescription) {
     this.statusTagDescription = statusTagDescription;
   }

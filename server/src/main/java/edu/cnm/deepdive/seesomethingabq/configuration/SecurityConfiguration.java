@@ -24,6 +24,12 @@ import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.security.oauth2.server.resource.web.authentication.BearerTokenAuthenticationFilter;
 import org.springframework.security.web.SecurityFilterChain;
 
+/**
+ * Spring Security configuration for the {@code service} profile.
+ *
+ * <p>Configures JWT-based authentication/authorization, including an audience/issuer validator and a
+ * filter enforcing {@code userEnabled} for authenticated users.</p>
+ */
 @Configuration
 @EnableWebSecurity
 @Profile("service")
@@ -47,6 +53,13 @@ public class SecurityConfiguration {
     this.userProfileRepository = userProfileRepository;
   }
 
+  /**
+   * Configures the {@link SecurityFilterChain} used by the server.
+   *
+   * @param httpsecurity HTTP security builder.
+   * @return configured filter chain.
+   * @throws Exception if Spring Security fails to build the chain.
+   */
   @Bean
   public SecurityFilterChain provideSecurityFilterChain(HttpSecurity httpsecurity) {
     return httpsecurity
@@ -61,6 +74,11 @@ public class SecurityConfiguration {
         .build();
   }
 
+  /**
+   * Provides a {@link JwtDecoder} configured with audience and issuer validation.
+   *
+   * @return configured decoder.
+   */
   @Bean
   public JwtDecoder provideDecoder() {
     NimbusJwtDecoder decoder = JwtDecoders.fromOidcIssuerLocation(issuerUri);

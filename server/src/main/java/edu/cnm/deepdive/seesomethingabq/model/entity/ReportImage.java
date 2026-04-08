@@ -17,6 +17,9 @@ import edu.cnm.deepdive.seesomethingabq.model.converter.UriAttributeConverter;
 import java.net.URI;
 import java.util.UUID;
 
+/**
+ * JPA entity representing an image associated with an {@link IssueReport}.
+ */
 @Entity
 @Table(
   name = "report_image",
@@ -54,50 +57,110 @@ public class ReportImage {
   @Column(nullable = false, updatable = false)
   private int albumOrder;
 
+  /**
+   * Returns the database identifier for this image.
+   *
+   * @return primary key value.
+   */
   public Long getId() {
     return id;
   }
 
+  /**
+   * Returns the parent report.
+   *
+   * @return issue report.
+   */
   public IssueReport getIssueReport() {
     return issueReport;
   }
 
+  /**
+   * Sets the parent report.
+   *
+   * @param issueReport issue report.
+   */
   public void setIssueReport(IssueReport issueReport) {
     this.issueReport = issueReport;
   }
 
+  /**
+   * Returns the stored content locator for this image.
+   *
+   * @return image locator URI.
+   */
   public URI getImageLocator() {
     return imageLocator;
   }
 
+  /**
+   * Sets the stored content locator for this image.
+   *
+   * @param imageLocator image locator URI.
+   */
   public void setImageLocator(URI imageLocator) {
     this.imageLocator = imageLocator;
   }
 
+  /**
+   * Returns the original filename.
+   *
+   * @return filename.
+   */
   public String getFilename() {
     return filename;
   }
 
+  /**
+   * Sets the original filename.
+   *
+   * @param filename filename.
+   */
   public void setFilename(String filename) {
     this.filename = filename;
   }
 
+  /**
+   * Returns the MIME type of the image.
+   *
+   * @return MIME type.
+   */
   public String getMimeType() {
     return mimeType;
   }
 
+  /**
+   * Sets the MIME type of the image.
+   *
+   * @param mimeType MIME type.
+   */
   public void setMimeType(String mimeType) {
     this.mimeType = mimeType;
   }
 
+  /**
+   * Returns the album order index used for sorting images within a report.
+   *
+   * @return album order.
+   */
   public int getAlbumOrder() {
     return albumOrder;
   }
 
+  /**
+   * Sets the album order index used for sorting images within a report.
+   *
+   * @param albumOrder album order.
+   */
   public void setAlbumOrder(int albumOrder) {
     this.albumOrder = albumOrder;
   }
 
+  /**
+   * Returns the external identifier for this image.
+   *
+   * @return external ID.
+   */
   public UUID getExternalId() {
     return externalId;
   }

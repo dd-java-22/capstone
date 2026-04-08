@@ -26,6 +26,9 @@ import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
+/**
+ * JPA entity representing a user-submitted issue report, including location, status, and images.
+ */
 @Entity
 @Table(
   name = "issue_report",
@@ -94,58 +97,128 @@ public class IssueReport {
   @OrderBy("albumOrder DESC")
   private final List<ReportImage> reportImages = new LinkedList<>();
 
+  /**
+   * Returns the database identifier for this report.
+   *
+   * @return primary key value.
+   */
   public Long getId() {
     return id;
   }
 
+  /**
+   * Returns the external identifier for this report.
+   *
+   * @return external ID.
+   */
   public UUID getExternalId() {
     return externalId;
   }
 
+  /**
+   * Returns the user profile that created this report.
+   *
+   * @return user profile.
+   */
   public UserProfile getUserProfile() {
     return userProfile;
   }
 
+  /**
+   * Sets the user profile that created this report.
+   *
+   * @param userProfile user profile.
+   */
   public void setUserProfile(UserProfile userProfile) {
     this.userProfile = userProfile;
   }
 
+  /**
+   * Returns the report location.
+   *
+   * @return report location.
+   */
   public ReportLocation getReportLocation() {
     return reportLocation;
   }
 
+  /**
+   * Sets the report location.
+   *
+   * @param reportLocation report location.
+   */
   public void setReportLocation(ReportLocation reportLocation) {
     this.reportLocation = reportLocation;
   }
 
+  /**
+   * Returns the accepted-state/status of this report.
+   *
+   * @return accepted state.
+   */
   public AcceptedState getAcceptedState() {
     return acceptedState;
   }
 
+  /**
+   * Sets the accepted-state/status of this report.
+   *
+   * @param acceptedState accepted state.
+   */
   public void setAcceptedState(AcceptedState acceptedState) {
     this.acceptedState = acceptedState;
   }
 
+  /**
+   * Returns the issue types associated with this report.
+   *
+   * @return associated issue types.
+   */
   public List<IssueType> getIssueTypes() {
     return issueTypes;
   }
 
+  /**
+   * Returns the time the report was first persisted.
+   *
+   * @return first-reported timestamp.
+   */
   public Instant getTimeFirstReported() {
     return timeFirstReported;
   }
 
+  /**
+   * Returns the time the report was last modified.
+   *
+   * @return last-modified timestamp.
+   */
   public Instant getTimeLastModified() {
     return timeLastModified;
   }
 
+  /**
+   * Returns the user-supplied issue description.
+   *
+   * @return description text.
+   */
   public String getTextDescription() {
     return textDescription;
   }
 
+  /**
+   * Sets the user-supplied issue description.
+   *
+   * @param textDescription description text.
+   */
   public void setTextDescription(String textDescription) {
     this.textDescription = textDescription;
   }
 
+  /**
+   * Returns the images associated with this report.
+   *
+   * @return associated images.
+   */
   public List<ReportImage> getReportImages() {
     return reportImages;
   }
