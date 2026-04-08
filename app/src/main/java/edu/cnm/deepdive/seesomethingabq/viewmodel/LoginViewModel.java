@@ -12,6 +12,9 @@ import edu.cnm.deepdive.seesomethingabq.service.repository.GoogleAuthRepository;
 import java.util.function.BiConsumer;
 import javax.inject.Inject;
 
+/**
+ * ViewModel coordinating Google sign-in flows and exposing credential and error state.
+ */
 @HiltViewModel
 public class LoginViewModel extends ViewModel {
 
@@ -22,6 +25,11 @@ public class LoginViewModel extends ViewModel {
   private final MutableLiveData<Throwable> throwable;
   private final BiConsumer<GoogleIdTokenCredential, Throwable> signInHandler;
 
+  /**
+   * Creates a ViewModel using the provided authentication repository.
+   *
+   * @param repository auth repository.
+   */
   @Inject
   public LoginViewModel(GoogleAuthRepository repository) {
     this.repository = repository;
@@ -42,32 +50,61 @@ public class LoginViewModel extends ViewModel {
     };
   }
 
+  /**
+   * Returns the most recent sign-in credential, if any.
+   *
+   * @return live data stream of credentials.
+   */
   public LiveData<GoogleIdTokenCredential> getCredential() {
     return credential;
   }
 
+  /**
+   * Returns the most recent error, if any.
+   *
+   * @return live data stream of errors.
+   */
   public LiveData<Throwable> getThrowable() {
     return throwable;
   }
 
+  /**
+   * Attempts a non-interactive sign-in where possible.
+   *
+   * @param activity activity used to launch sign-in flows.
+   */
   public void signInQuickly(Activity activity) {
     throwable.setValue(null);
     repository.signInQuickly(activity)
         .whenComplete(signInHandler);
   }
 
+  /**
+   * Performs an interactive sign-in.
+   *
+   * @param activity activity used to launch sign-in flows.
+   */
   public void signIn(Activity activity) {
     throwable.setValue(null);
     repository.signIn(activity)
         .whenComplete(signInHandler);
   }
 
+  /**
+   * Refreshes the provided credential.
+   *
+   * @param activity activity used to launch refresh flows.
+   * @param credential credential to refresh.
+   */
   public void refreshToken(Activity activity, GoogleIdTokenCredential credential) {
     throwable.setValue(null);
     repository.refreshToken(activity, credential)
         .whenComplete(signInHandler);
   }
 
+  /**
+   * Signs out of the current session.
+   */
   public void signOut() {
     throwable.setValue(null);
     repository.signOut()

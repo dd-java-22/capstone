@@ -13,6 +13,13 @@ import com.google.gson.annotations.SerializedName
     Index(value = ["issue_type_tag"], unique = true)
   ]
 )
+/**
+ * Room entity representing an issue type tag and description.
+ *
+ * @property id local database identifier.
+ * @property issueTypeTag issue type tag value.
+ * @property issueTypeDescription issue type description.
+ */
 data class IssueType(
   @PrimaryKey(autoGenerate = true)
   @ColumnInfo(name = "issue_type_id")

@@ -19,8 +19,17 @@ import java.time.Instant
 
 @Module
 @InstallIn(SingletonComponent::class)
+/**
+ * Hilt module providing networking dependencies (Gson, OkHttp, Retrofit).
+ */
 class ProxyModule {
 
+  /**
+   * Provides a configured [Gson] instance.
+   *
+   * @param adapter type adapter for [Instant] values.
+   * @return Gson instance.
+   */
   @Provides
   @Singleton
   fun provideGson(adapter: TypeAdapter<Instant>): Gson = GsonBuilder()
@@ -28,6 +37,12 @@ class ProxyModule {
     .registerTypeAdapter(Instant::class.java, adapter)
     .create()
 
+  /**
+   * Provides an [OkHttpClient] with request/response logging.
+   *
+   * @param context application context used to read configuration resources.
+   * @return configured HTTP client.
+   */
   @Provides
   @Singleton
   fun provideOkHttpClient(@ApplicationContext context: Context): OkHttpClient {
@@ -38,6 +53,14 @@ class ProxyModule {
     return OkHttpClient.Builder().addInterceptor(interceptor).build()
   }
 
+  /**
+   * Provides the Retrofit API client for the server.
+   *
+   * @param context application context used to read configuration resources.
+   * @param client HTTP client.
+   * @param gson Gson instance.
+   * @return web service interface implementation.
+   */
   @Provides
   @Singleton
   fun provideSpeedometerWebService(

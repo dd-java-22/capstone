@@ -20,6 +20,9 @@ import kotlinx.coroutines.future.future
 import java.util.concurrent.CompletableFuture
 
 @Singleton
+/**
+ * Default [IssueReportService] implementation backed by [SeeSomethingWebService].
+ */
 class IssueReportServiceImpl @Inject constructor(
   private val authRepository: GoogleAuthRepository,
   private val webService: SeeSomethingWebService,

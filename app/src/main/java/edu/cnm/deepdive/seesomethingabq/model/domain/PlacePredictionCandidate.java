@@ -27,16 +27,32 @@ public class PlacePredictionCandidate {
   private final String placeId;
   private final String displayText;
 
+  /**
+   * Creates a prediction candidate.
+   *
+   * @param placeId Google Places place ID.
+   * @param displayText user-visible display text.
+   */
   public PlacePredictionCandidate(@NonNull String placeId, @NonNull String displayText) {
     this.placeId = placeId;
     this.displayText = displayText;
   }
 
+  /**
+   * Returns the Google Places place ID for this prediction.
+   *
+   * @return place ID.
+   */
   @NonNull
   public String getPlaceId() {
     return placeId;
   }
 
+  /**
+   * Returns the user-visible display text for this prediction.
+   *
+   * @return display text.
+   */
   @NonNull
   public String getDisplayText() {
     return displayText;

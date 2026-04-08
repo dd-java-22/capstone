@@ -30,18 +30,33 @@ public class PickedLocation implements Parcelable {
   private final double latitude;
   private final double longitude;
 
+  /**
+   * Creates a picked location with display text and coordinates.
+   *
+   * @param displayText user-visible display text.
+   * @param latitude latitude coordinate.
+   * @param longitude longitude coordinate.
+   */
   public PickedLocation(@NonNull String displayText, double latitude, double longitude) {
     this.displayText = displayText;
     this.latitude = latitude;
     this.longitude = longitude;
   }
 
+  /**
+   * Creates an instance from a {@link Parcel}.
+   *
+   * @param in parcel containing the serialized state.
+   */
   protected PickedLocation(Parcel in) {
     displayText = in.readString();
     latitude = in.readDouble();
     longitude = in.readDouble();
   }
 
+  /**
+   * {@link Parcelable.Creator} implementation.
+   */
   public static final Creator<PickedLocation> CREATOR = new Creator<>() {
     @Override
     public PickedLocation createFromParcel(Parcel in) {
@@ -54,15 +69,30 @@ public class PickedLocation implements Parcelable {
     }
   };
 
+  /**
+   * Returns the user-visible display text.
+   *
+   * @return display text.
+   */
   @NonNull
   public String getDisplayText() {
     return displayText;
   }
 
+  /**
+   * Returns the latitude coordinate.
+   *
+   * @return latitude.
+   */
   public double getLatitude() {
     return latitude;
   }
 
+  /**
+   * Returns the longitude coordinate.
+   *
+   * @return longitude.
+   */
   public double getLongitude() {
     return longitude;
   }
