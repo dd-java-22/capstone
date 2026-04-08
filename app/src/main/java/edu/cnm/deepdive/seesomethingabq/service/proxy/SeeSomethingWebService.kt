@@ -97,4 +97,11 @@ interface SeeSomethingWebService {
     @Path("reportId") reportId: String,
     @Path("imageId") imageId: String
   ): ResponseBody
+
+  @GET("issue-reports/{reportId}")
+  suspend fun getIssueReport(
+    @Header("Authorization") bearerToken: String,
+    @Path("reportId") reportId: String
+  ): IssueReport
+
 }

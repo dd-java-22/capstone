@@ -72,6 +72,27 @@ public class IssueReportViewModel extends ViewModel {
     throwable.setValue(null);
   }
 
+  public CompletableFuture<IssueReport> getReport(Activity activity, String reportId) {
+    return issueReportService.getReport(activity, reportId);
+  }
+
+  public CompletableFuture<byte[]> downloadImage(
+      Activity activity,
+      String reportId,
+      String imageId
+  ) {
+    return issueReportService.downloadImageFile(activity, reportId, imageId)
+        .thenApply(responseBody -> {
+          try (responseBody) {
+            return responseBody.bytes();
+          } catch (Exception e) {
+            throw new RuntimeException(e);
+          }
+        });
+  }
+
+
+
   /**
    * Submits a new issue report and uploads any attached images.
    *

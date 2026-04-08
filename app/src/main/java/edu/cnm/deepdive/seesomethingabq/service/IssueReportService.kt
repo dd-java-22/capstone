@@ -51,4 +51,12 @@ interface IssueReportService {
   ): CompletableFuture<PaginatedResponse<IssueReportSummary>>
 
   fun getIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
+
+
+  fun getReport(
+    activity: Activity,
+    reportId: String
+  ): CompletableFuture<IssueReport>
+
+
 }

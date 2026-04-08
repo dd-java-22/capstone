@@ -111,6 +111,19 @@ class IssueReportServiceImpl @Inject constructor(
       pagingSourceFactory = { IssueReportPagingSource(activity, this) }
     )
 
+  override fun getReport(
+    activity: Activity,
+    reportId: String
+  ): CompletableFuture<IssueReport> =
+    scope.future {
+      val credential = getCredential(activity)
+      webService.getIssueReport(
+        "Bearer ${credential.idToken}",
+        reportId
+      )
+    }
+
+
   private suspend fun getCredential(activity: Activity): GoogleIdTokenCredential =
     authRepository.getValidCredential(activity).await()
 }
