@@ -10,4 +10,8 @@ See Something, Say Something, Albuquerque! is an issue/incident reporting system
 &copy; 2026 by Kevin Dilts, Skylar Scott, Michael Sylvester, and Mark Vega.
 
 
-[//]: # (TODO Add license info)
+## License
+
+This project is licensed under the Apache License 2.0. See the LICENSE file for details.
+
+This project uses third-party libraries and services. See the documentation site for full license details.
