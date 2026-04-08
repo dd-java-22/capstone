@@ -24,6 +24,8 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -109,6 +111,11 @@ public class UserServiceImpl implements UserService {
   @Override
   public List<UserProfile> getAll() {
     return repository.findAll();
+  }
+
+  @Override
+  public Page<UserProfile> getAll(Pageable pageable) {
+    return repository.findAll(pageable);
   }
 
   @Override
