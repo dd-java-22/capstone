@@ -7,10 +7,20 @@ public class IssueReportStatusUpdateRequest {
 
   private String statusTag;
 
+  /**
+   * Returns the new accepted-state status tag.
+   *
+   * @return status tag.
+   */
   public String getStatusTag() {
     return statusTag;
   }
 
+  /**
+   * Sets the new accepted-state status tag.
+   *
+   * @param statusTag status tag.
+   */
   public void setStatusTag(String statusTag) {
     this.statusTag = statusTag;
   }
