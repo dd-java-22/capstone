@@ -74,6 +74,9 @@ public class LocationCandidateAdapter
     return candidates.size();
   }
 
+  /**
+   * Listener notified when the user selects a location prediction candidate.
+   */
   public interface OnCandidateSelectedListener {
 
     /**
