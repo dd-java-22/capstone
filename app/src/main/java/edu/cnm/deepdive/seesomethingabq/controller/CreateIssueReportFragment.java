@@ -113,6 +113,7 @@ public class CreateIssueReportFragment extends Fragment {
   private LocationCandidateAdapter locationCandidateAdapter;
   private final Handler debounceHandler = new Handler(Looper.getMainLooper());
   private Runnable pendingSearch;
+  private CancellationTokenSource currentLocationCancellationTokenSource;
 
   private PlacesClient placesClient;
   private AutocompleteSessionToken sessionToken;
@@ -224,6 +225,10 @@ public class CreateIssueReportFragment extends Fragment {
     if (pendingSearch != null) {
       debounceHandler.removeCallbacks(pendingSearch);
       pendingSearch = null;
+    }
+    if (currentLocationCancellationTokenSource != null) {
+      currentLocationCancellationTokenSource.cancel();
+      currentLocationCancellationTokenSource = null;
     }
     binding = null;
     super.onDestroyView();
@@ -454,7 +459,10 @@ public class CreateIssueReportFragment extends Fragment {
 
     fusedLocationClient.getCurrentLocation(request, cancellationTokenSource.getToken())
         .addOnSuccessListener(location -> {
-          if (location == null || binding == null) {
+          if (binding == null) {
+            return;
+          }
+          if (location == null) {
             showLocationPlaceholder(getString(R.string.location_unavailable));
             return;
           }
@@ -745,12 +753,18 @@ public class CreateIssueReportFragment extends Fragment {
   }
 
   private void showLocationLoading() {
+    if (binding == null) {
+      return;
+    }
     binding.locationLoadingIndicator.setVisibility(View.VISIBLE);
     binding.locationResultsList.setVisibility(View.GONE);
     binding.locationResultsPlaceholder.setVisibility(View.GONE);
   }
 
   private void showLocationCandidates(List<PlacePredictionCandidate> candidates) {
+    if (binding == null) {
+      return;
+    }
     binding.locationLoadingIndicator.setVisibility(View.GONE);
     binding.locationResultsPlaceholder.setVisibility(View.GONE);
     binding.locationResultsList.setVisibility(View.VISIBLE);
@@ -759,6 +773,9 @@ public class CreateIssueReportFragment extends Fragment {
   }
 
   private void showLocationPlaceholder(String message) {
+    if (binding == null) {
+      return;
+    }
     binding.locationLoadingIndicator.setVisibility(View.GONE);
     binding.locationResultsList.setVisibility(View.GONE);
     binding.locationResultsPlaceholder.setVisibility(View.VISIBLE);
