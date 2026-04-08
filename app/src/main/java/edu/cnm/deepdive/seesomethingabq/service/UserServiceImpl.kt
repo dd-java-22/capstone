@@ -15,6 +15,9 @@ import kotlinx.coroutines.future.future
 import java.util.concurrent.CompletableFuture
 
 @Singleton
+/**
+ * Default [UserService] implementation combining Google auth and server profile retrieval.
+ */
 class UserServiceImpl @Inject constructor(
   private val authRepository: GoogleAuthRepository,
   private val webService: SeeSomethingWebService,

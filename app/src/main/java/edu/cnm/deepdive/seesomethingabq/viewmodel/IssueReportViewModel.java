@@ -18,6 +18,9 @@ import java.util.Collections;
 import java.util.List;
 import jakarta.inject.Inject;
 
+/**
+ * ViewModel providing issue report submission and paging data to the UI.
+ */
 @HiltViewModel
 public class IssueReportViewModel extends ViewModel {
 
@@ -30,6 +33,11 @@ public class IssueReportViewModel extends ViewModel {
   private LiveData<PagingData<IssueReportSummary>> issueReports;
   private final MutableLiveData<List<Uri>> attachedImages;
 
+  /**
+   * Creates a ViewModel using the provided issue report service.
+   *
+   * @param issueReportService service used to submit and load reports.
+   */
   @Inject
   IssueReportViewModel(IssueReportService issueReportService) {
     this.issueReportService = issueReportService;
@@ -38,14 +46,30 @@ public class IssueReportViewModel extends ViewModel {
     attachedImages = new MutableLiveData<>(Collections.emptyList());
   }
 
+  /**
+   * Returns whether the last submission completed successfully.
+   *
+   * @return live data stream of submission state.
+   */
   public LiveData<Boolean> getSubmitted() {
     return submitted;
   }
 
+  /**
+   * Returns the most recent error, if any.
+   *
+   * @return live data stream of errors.
+   */
   public LiveData<Throwable> getThrowable() {
     return throwable;
   }
 
+  /**
+   * Returns a paged stream of issue report summaries.
+   *
+   * @param activity activity used for authentication flows.
+   * @return live data stream of paging data.
+   */
   public LiveData<PagingData<IssueReportSummary>> getIssueReports(Activity activity) {
     if (issueReports == null) {
       issueReports = PagingLiveData.getLiveData(issueReportService.getIssueReportsPager(activity));
@@ -53,15 +77,29 @@ public class IssueReportViewModel extends ViewModel {
     return issueReports;
   }
 
+  /**
+   * Returns the currently attached image URIs for a new report submission.
+   *
+   * @return live data stream of attached image URIs.
+   */
   public LiveData<List<Uri>> getAttachedImages() {
     return attachedImages;
   }
 
+  /**
+   * Clears submission and error state.
+   */
   public void resetState() {
     submitted.setValue(null);
     throwable.setValue(null);
   }
 
+  /**
+   * Submits a new issue report.
+   *
+   * @param activity activity used for authentication flows.
+   * @param request report request payload.
+   */
   public void submit(Activity activity, IssueReportRequest request) {
     throwable.setValue(null);
     submitted.setValue(null);
@@ -75,6 +113,11 @@ public class IssueReportViewModel extends ViewModel {
         });
   }
 
+  /**
+   * Adds a single attached image URI.
+   *
+   * @param uri image URI to attach.
+   */
   public void addAttachedImage(Uri uri) {
     if (uri == null) {
       return;
@@ -85,6 +128,11 @@ public class IssueReportViewModel extends ViewModel {
     attachedImages.setValue(Collections.unmodifiableList(updated));
   }
 
+  /**
+   * Adds multiple attached image URIs.
+   *
+   * @param uris image URIs to attach.
+   */
   public void addAttachedImages(Uri[] uris) {
     if (uris == null || uris.length == 0) {
       return;
@@ -97,6 +145,11 @@ public class IssueReportViewModel extends ViewModel {
     attachedImages.setValue(Collections.unmodifiableList(updated));
   }
 
+  /**
+   * Removes a single attached image URI.
+   *
+   * @param uri image URI to remove.
+   */
   public void removeAttachedImage(Uri uri) {
     if (uri == null) {
       return;
@@ -111,6 +164,9 @@ public class IssueReportViewModel extends ViewModel {
     }
   }
 
+  /**
+   * Removes all attached images.
+   */
   public void clearAttachedImages() {
     attachedImages.setValue(Collections.emptyList());
   }

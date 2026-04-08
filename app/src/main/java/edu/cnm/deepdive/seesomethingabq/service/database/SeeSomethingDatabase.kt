@@ -17,15 +17,34 @@ import java.util.UUID
 
 @Database(entities = [UserProfile::class, IssueType::class], version = SeeSomethingDatabase.VERSION)
 @TypeConverters(Converters::class)
+/**
+ * Room database for the Android app's cached server data.
+ */
 abstract class SeeSomethingDatabase: RoomDatabase() {
 
+  /**
+   * Returns the [UserDao].
+   *
+   * @return user DAO.
+   */
   abstract fun getUserDao(): UserDao
+
+  /**
+   * Returns the [IssueTypeDao].
+   *
+   * @return issue type DAO.
+   */
   abstract fun getIssueTypeDao(): IssueTypeDao
 
   companion object {
+    /** Database file name. */
     const val NAME = "seesomething-db"
+    /** Current schema version. */
     const val VERSION = 2
 
+    /**
+     * Migration from schema version 1 to 2.
+     */
     val MIGRATION_1_2: Migration = object : Migration(1, 2) {
       override fun migrate(db: SupportSQLiteDatabase) {
         db.execSQL(
@@ -48,23 +67,62 @@ abstract class SeeSomethingDatabase: RoomDatabase() {
   }
 }
 
+/**
+ * Room type converters for non-primitive types stored in the database.
+ */
 class Converters {
 
+  /**
+   * Converts an [Instant] into epoch milliseconds.
+   *
+   * @param instant instant value.
+   * @return epoch milliseconds, or {@code null}.
+   */
   @TypeConverter
   fun toLong(instant: Instant?): Long? = instant?.toEpochMilli()
 
+  /**
+   * Converts epoch milliseconds into an [Instant].
+   *
+   * @param epochMilli epoch milliseconds.
+   * @return instant value, or {@code null}.
+   */
   @TypeConverter
   fun toInstant(epochMilli: Long?): Instant? = epochMilli?.let { Instant.ofEpochMilli(it) }
 
+  /**
+   * Converts a [URL] into a string.
+   *
+   * @param url URL value.
+   * @return string value, or {@code null}.
+   */
   @TypeConverter
   fun toString(url: URL?): String? = url?.toString()
 
+  /**
+   * Converts a string into a [URL].
+   *
+   * @param string string value.
+   * @return URL value, or {@code null}.
+   */
   @TypeConverter
   fun toUrl(string: String?): URL? = string?.let { URI(it).toURL() }
 
+  /**
+   * Converts a [UUID] into a string.
+   *
+   * @param uuid UUID value.
+   * @return string value, or {@code null}.
+   */
   @TypeConverter
   fun toString(uuid: UUID?): String? = uuid?.toString()
 
+  /**
+   * Converts a string into a [UUID].
+   *
+   * @param string string value.
+   * @return UUID value, or {@code null}.
+   */
   @TypeConverter
   fun toUUID(string: String?): UUID? = string?.let { UUID.fromString(it) }
 

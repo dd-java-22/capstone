@@ -6,6 +6,9 @@ import com.google.gson.stream.JsonWriter
 import jakarta.inject.Inject
 import java.time.Instant
 
+/**
+ * Gson [TypeAdapter] for serializing/deserializing [Instant] values using ISO-8601 strings.
+ */
 class InstantTypeAdapter @Inject constructor() : TypeAdapter<Instant>() {
 
   override fun write(out: JsonWriter, value: Instant?) {

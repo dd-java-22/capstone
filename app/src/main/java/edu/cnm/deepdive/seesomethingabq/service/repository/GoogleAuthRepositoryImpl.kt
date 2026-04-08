@@ -23,6 +23,9 @@ import java.util.concurrent.CompletionException
 import java.util.concurrent.CompletableFuture
 
 @Singleton
+/**
+ * Default [GoogleAuthRepository] implementation using [CredentialManager] Google ID token flows.
+ */
 class GoogleAuthRepositoryImpl @Inject constructor(
     @ApplicationContext context: Context
 ) : GoogleAuthRepository {
