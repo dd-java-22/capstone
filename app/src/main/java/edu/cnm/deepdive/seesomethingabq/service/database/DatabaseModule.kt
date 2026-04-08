@@ -11,8 +11,17 @@ import jakarta.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
+/**
+ * Hilt module providing the app's Room database.
+ */
 class DatabaseModule {
 
+  /**
+   * Provides the [SeeSomethingDatabase] singleton.
+   *
+   * @param context application context.
+   * @return Room database instance.
+   */
   @Provides
   @Singleton
   fun provideSeeSomethingDatabase(@ApplicationContext context: Context): SeeSomethingDatabase =

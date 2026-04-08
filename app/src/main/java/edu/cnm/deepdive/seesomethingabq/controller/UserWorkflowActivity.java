@@ -32,6 +32,9 @@ import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.ActivityUserWorkflowBinding;
 
 @AndroidEntryPoint
+/**
+ * Activity hosting the user workflow navigation graph for signed-in user screens.
+ */
 public class UserWorkflowActivity extends AppCompatActivity {
 
   private ActivityUserWorkflowBinding binding;

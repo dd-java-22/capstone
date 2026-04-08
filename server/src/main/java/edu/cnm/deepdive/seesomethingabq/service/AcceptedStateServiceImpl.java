@@ -11,11 +11,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+/**
+ * Default {@link AcceptedStateService} implementation backed by {@link AcceptedStateRepository}.
+ */
 @Service
 public class AcceptedStateServiceImpl implements AcceptedStateService {
 
   private final AcceptedStateRepository repository;
 
+  /**
+   * Creates a service using the provided repository.
+   *
+   * @param repository accepted state repository.
+   */
   @Autowired
   public AcceptedStateServiceImpl(AcceptedStateRepository repository) {
     this.repository = repository;

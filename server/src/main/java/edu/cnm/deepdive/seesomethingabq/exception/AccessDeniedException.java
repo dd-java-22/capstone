@@ -5,18 +5,37 @@ package edu.cnm.deepdive.seesomethingabq.exception;
  */
 public class AccessDeniedException extends RuntimeException {
 
+  /**
+   * Creates an instance with no detail message.
+   */
   public AccessDeniedException() {
     super();
   }
 
+  /**
+   * Creates an instance with a detail message.
+   *
+   * @param message detail message.
+   */
   public AccessDeniedException(String message) {
     super(message);
   }
 
+  /**
+   * Creates an instance with a detail message and cause.
+   *
+   * @param message detail message.
+   * @param cause underlying cause.
+   */
   public AccessDeniedException(String message, Throwable cause) {
     super(message, cause);
   }
 
+  /**
+   * Creates an instance with a cause.
+   *
+   * @param cause underlying cause.
+   */
   public AccessDeniedException(Throwable cause) {
     super(cause);
   }

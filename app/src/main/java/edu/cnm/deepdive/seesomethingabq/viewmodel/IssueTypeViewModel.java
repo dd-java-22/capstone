@@ -11,6 +11,9 @@ import edu.cnm.deepdive.seesomethingabq.service.IssueTypeService;
 import jakarta.inject.Inject;
 import java.util.List;
 
+/**
+ * ViewModel exposing issue types and refresh operations to the UI.
+ */
 @HiltViewModel
 public class IssueTypeViewModel extends ViewModel {
 
@@ -21,6 +24,11 @@ public class IssueTypeViewModel extends ViewModel {
   private final LiveData<List<IssueType>> issueTypes;
   private final MutableLiveData<Throwable> throwable;
 
+  /**
+   * Creates a ViewModel using the provided issue type service.
+   *
+   * @param issueTypeService service used to load and refresh issue types.
+   */
   @Inject
   IssueTypeViewModel(IssueTypeService issueTypeService) {
     this.issueTypeService = issueTypeService;
@@ -28,14 +36,29 @@ public class IssueTypeViewModel extends ViewModel {
     throwable = new MutableLiveData<>();
   }
 
+  /**
+   * Returns observable issue types.
+   *
+   * @return live data stream of issue types.
+   */
   public LiveData<List<IssueType>> getIssueTypes() {
     return issueTypes;
   }
 
+  /**
+   * Returns the most recent error, if any.
+   *
+   * @return live data stream of errors.
+   */
   public LiveData<Throwable> getThrowable() {
     return throwable;
   }
 
+  /**
+   * Refreshes issue types from the server.
+   *
+   * @param activity activity used for authentication flows.
+   */
   public void refresh(Activity activity) {
     throwable.setValue(null);
     issueTypeService.refresh(activity)

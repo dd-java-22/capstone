@@ -21,8 +21,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportStatusUpdateRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest;
-import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerIssueReportResponse;
+import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import java.util.List;
@@ -52,14 +53,48 @@ class ManagerIssueReportControllerUnitTest {
 
   @Test
   void getAllDelegatesToServiceAndReturnsPage() {
-    Page<IssueReport> page = new PageImpl<>(List.of(new IssueReport(), new IssueReport()));
+    IssueReport report1 = issueReportFixture(
+        UUID.fromString("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+        "First report",
+        "ACCEPTED"
+    );
+    IssueReport report2 = issueReportFixture(
+        UUID.fromString("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+        "Second report",
+        "PENDING"
+    );
+    Page<IssueReport> page = new PageImpl<>(List.of(report1, report2));
     when(issueReportService.getAll(org.mockito.ArgumentMatchers.any(Pageable.class)))
         .thenReturn(page);
 
-    Page<ManagerIssueReportResponse> result = controller.getAll(10, 0);
+    Page<IssueReportSummary> result = controller.getAll(10, 0);
 
     assertEquals(2, result.getContent().size());
+    assertEquals(report1.getExternalId(), result.getContent().get(0).getExternalId());
     verify(issueReportService).getAll(org.mockito.ArgumentMatchers.any(Pageable.class));
+  }
+
+  private static IssueReport issueReportFixture(UUID externalId, String description, String statusTag) {
+    AcceptedState state = new AcceptedState();
+    state.setStatusTag(statusTag);
+    state.setStatusTagDescription(statusTag);
+
+    IssueReport report = new IssueReport();
+    // Populate only fields accessed by IssueReportSummary.fromIssueReport.
+    setField(report, "externalId", externalId);
+    report.setTextDescription(description);
+    report.setAcceptedState(state);
+    return report;
+  }
+
+  private static void setField(Object target, String fieldName, Object value) {
+    try {
+      var field = target.getClass().getDeclaredField(fieldName);
+      field.setAccessible(true);
+      field.set(target, value);
+    } catch (ReflectiveOperationException e) {
+      throw new AssertionError(e);
+    }
   }
 
   @Test

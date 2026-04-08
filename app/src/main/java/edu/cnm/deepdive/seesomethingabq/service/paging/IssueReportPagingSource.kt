@@ -7,6 +7,12 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService
 import kotlinx.coroutines.future.await
 
+/**
+ * Paging 3 source that loads pages of [IssueReportSummary] from [IssueReportService].
+ *
+ * @property activity activity used for authentication flows.
+ * @property issueReportService service used to fetch pages.
+ */
 class IssueReportPagingSource(
   private val activity: Activity,
   private val issueReportService: IssueReportService

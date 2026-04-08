@@ -49,11 +49,23 @@ public class ManagerIssueReportController {
 
   private final IssueReportService service;
 
+  /**
+   * Creates a controller exposing manager-only issue report administration operations.
+   *
+   * @param service issue report service.
+   */
   @Autowired
   public ManagerIssueReportController(IssueReportService service) {
     this.service = service;
   }
 
+  /**
+   * Returns a page of issue report summaries.
+   *
+   * @param pageSize page size.
+   * @param pageNumber zero-based page index.
+   * @return page of report summaries.
+   */
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   @Transactional(readOnly = true)
   public Page<IssueReportSummary> getAll(
@@ -68,6 +80,13 @@ public class ManagerIssueReportController {
     return service.getAll(pageable).map(IssueReportSummary::fromIssueReport);
   }
 
+  /**
+   * Updates the accepted-state/status of an issue report.
+   *
+   * @param externalId report external ID.
+   * @param request request payload containing the new status tag.
+   * @return updated issue report.
+   */
   @PutMapping(
       value = "/{externalId}/status",
       consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -80,6 +99,13 @@ public class ManagerIssueReportController {
     return service.setAcceptedState(externalId, request.getStatusTag());
   }
 
+  /**
+   * Replaces the issue types associated with an issue report.
+   *
+   * @param externalId report external ID.
+   * @param request request payload containing the replacement issue type tags.
+   * @return updated issue report.
+   */
   @PutMapping(
       value = "/{externalId}/issue-types",
       consumes = MediaType.APPLICATION_JSON_VALUE,

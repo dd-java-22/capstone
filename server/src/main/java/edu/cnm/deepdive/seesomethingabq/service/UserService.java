@@ -81,14 +81,44 @@ public interface UserService {
    */
   UserProfile updateAvatar(Long id, URL avatar);
 
+  /**
+   * Returns all user profiles.
+   *
+   * @return list of user profiles.
+   */
   List<UserProfile> getAll();
 
+  /**
+   * Returns the user profile for the currently authenticated user, creating one if needed.
+   *
+   * @return current user's profile.
+   */
   UserProfile getMe();
 
+  /**
+   * Finds a user profile by external identifier.
+   *
+   * @param externalId user external ID.
+   * @return optional containing the user profile if found.
+   */
   Optional<UserProfile> getByExternalId(UUID externalId);
 
+  /**
+   * Sets manager privilege for a user profile.
+   *
+   * @param externalId user external ID.
+   * @param manager {@code true} to grant manager privileges; {@code false} to revoke.
+   * @return updated user profile.
+   */
   UserProfile setManagerStatus(UUID externalId, boolean manager);
 
+  /**
+   * Sets enabled/disabled status for a user profile.
+   *
+   * @param externalId user external ID.
+   * @param enabled {@code true} to enable; {@code false} to disable.
+   * @return updated user profile.
+   */
   UserProfile setEnabled(UUID externalId, boolean enabled);
 
 }

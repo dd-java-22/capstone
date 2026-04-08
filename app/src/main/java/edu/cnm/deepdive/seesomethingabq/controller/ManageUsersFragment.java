@@ -27,6 +27,9 @@ import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManageUsersBinding;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 
 @AndroidEntryPoint
+/**
+ * Fragment providing a manager-facing entry point for user management screens.
+ */
 public class ManageUsersFragment extends Fragment {
 
   private FragmentManageUsersBinding binding;

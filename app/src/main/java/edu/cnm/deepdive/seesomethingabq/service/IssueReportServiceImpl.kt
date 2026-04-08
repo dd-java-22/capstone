@@ -32,6 +32,9 @@ import java.util.concurrent.CompletableFuture
  * for convenient use from Java-based ViewModels.
  */
 @Singleton
+/**
+ * Default [IssueReportService] implementation backed by [SeeSomethingWebService].
+ */
 class IssueReportServiceImpl @Inject constructor(
   private val authRepository: GoogleAuthRepository,
   private val webService: SeeSomethingWebService,

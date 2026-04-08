@@ -2,7 +2,6 @@ package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.exception.AccessDeniedException;
 import edu.cnm.deepdive.seesomethingabq.exception.ResourceNotFoundException;
-import edu.cnm.deepdive.seesomethingabq.model.dto.AddImageRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportImage;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
@@ -65,28 +64,6 @@ public class ReportImageServiceImpl implements ReportImageService {
         .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
   }
 
-  @Override
-  public ReportImage addImage(UUID externalId, AddImageRequest request) {
-    UserProfile currentUser = userService.getCurrentUser();
-    IssueReport report = issueReportRepository.findByExternalId(externalId)
-        .orElseThrow(() -> new ResourceNotFoundException("Issue report not found"));
-
-    // Check access: user must own the report
-    if (!report.getUserProfile().getId().equals(currentUser.getId())) {
-      throw new AccessDeniedException("You can only add images to your own reports");
-    }
-
-    // Create and populate the new image
-    ReportImage image = new ReportImage();
-    image.setIssueReport(report);
-    image.setImageLocator(request.getImageLocator());
-    image.setFilename(request.getFilename());
-    image.setMimeType(request.getMimeType());
-    image.setAlbumOrder(request.getAlbumOrder());
-
-    return reportImageRepository.save(image);
-  }
-
   /**
    * Uploads an image file and creates a corresponding {@link ReportImage} metadata entry.
    * <p>
@@ -108,6 +85,10 @@ public class ReportImageServiceImpl implements ReportImageService {
   public ReportImage uploadImage(UUID externalKey, MultipartFile file)
       throws IOException, HttpMediaTypeException {
 
+    if (file == null || file.isEmpty()) {
+      throw new IllegalArgumentException("Upload file must not be empty.");
+    }
+
     UserProfile currentUser = userService.getCurrentUser();
     IssueReport report = getReportOrThrow(externalKey);
 
@@ -123,7 +104,8 @@ public class ReportImageServiceImpl implements ReportImageService {
     image.setIssueReport(report);
     image.setFilename(file.getOriginalFilename());
     image.setMimeType(file.getContentType());
-    image.setImageLocator(URI.create("file:" + storageKey));
+    // Store an internal locator; do not expose filesystem paths to clients.
+    image.setImageLocator(URI.create("stored:" + storageKey));
     image.setAlbumOrder(report.getReportImages().size());
 
     return reportImageRepository.save(image);

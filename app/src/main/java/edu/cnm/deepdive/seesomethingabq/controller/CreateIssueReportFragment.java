@@ -32,6 +32,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -45,6 +47,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -85,6 +88,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @AndroidEntryPoint
+/**
+ * Fragment that collects issue report details (description, issue types, location, and attachments)
+ * and submits a new report via the {@link IssueReportViewModel}.
+ */
 public class CreateIssueReportFragment extends Fragment {
 
   //region Fields
@@ -105,11 +112,11 @@ public class CreateIssueReportFragment extends Fragment {
   private boolean reportSubmitted;
   private boolean cleanedUpOnExit;
   private ActivityResultLauncher<PickVisualMediaRequest> pickGalleryImageLauncher;
-  private final List<Uri> selectedGalleryImageUri = new ArrayList<>();
 
   private LocationCandidateAdapter locationCandidateAdapter;
   private final Handler debounceHandler = new Handler(Looper.getMainLooper());
   private Runnable pendingSearch;
+  private CancellationTokenSource currentLocationCancellationTokenSource;
 
   private PlacesClient placesClient;
   private AutocompleteSessionToken sessionToken;
@@ -204,7 +211,7 @@ public class CreateIssueReportFragment extends Fragment {
     issueReportViewModel.getThrowable()
         .observe(getViewLifecycleOwner(), this::handleSubmitFailure);
     issueReportViewModel.getAttachedImages()
-        .observe(getViewLifecycleOwner(), (uris) -> Log.d(TAG, "attachedImages=" + uris));
+        .observe(getViewLifecycleOwner(), this::renderAttachedImages);
   }
 
   @Override
@@ -221,6 +228,10 @@ public class CreateIssueReportFragment extends Fragment {
     if (pendingSearch != null) {
       debounceHandler.removeCallbacks(pendingSearch);
       pendingSearch = null;
+    }
+    if (currentLocationCancellationTokenSource != null) {
+      currentLocationCancellationTokenSource.cancel();
+      currentLocationCancellationTokenSource = null;
     }
     binding = null;
     super.onDestroyView();
@@ -447,11 +458,15 @@ public class CreateIssueReportFragment extends Fragment {
         .setMaxUpdateAgeMillis(10000)
         .build();
 
-    CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
+    currentLocationCancellationTokenSource = new CancellationTokenSource();
 
-    fusedLocationClient.getCurrentLocation(request, cancellationTokenSource.getToken())
+    fusedLocationClient.getCurrentLocation(request,
+            currentLocationCancellationTokenSource.getToken())
         .addOnSuccessListener(location -> {
-          if (location == null || binding == null) {
+          if (binding == null) {
+            return;
+          }
+          if (location == null) {
             showLocationPlaceholder(getString(R.string.location_unavailable));
             return;
           }
@@ -670,6 +685,49 @@ public class CreateIssueReportFragment extends Fragment {
     return File.createTempFile("issue_report_", ".jpg", cameraDir);
   }
 
+  private void renderAttachedImages(List<Uri> uris) {
+    if (binding == null) {
+      return;
+    }
+
+    binding.attachedImagesContainer.removeAllViews();
+
+    if (uris == null || uris.isEmpty()) {
+      binding.attachedImagesScroll.setVisibility(View.GONE);
+      return;
+    }
+
+    LayoutInflater inflater = LayoutInflater.from(requireContext());
+    binding.attachedImagesScroll.setVisibility(View.VISIBLE);
+
+    for (Uri uri : uris) {
+      if (uri == null) {
+        continue;
+      }
+      View itemView = inflater.inflate(
+          R.layout.item_attached_image_thumbnail,
+          binding.attachedImagesContainer,
+          false
+      );
+
+      ImageView thumbnail = itemView.findViewById(R.id.attached_image_thumbnail);
+      ImageButton removeButton = itemView.findViewById(R.id.remove_attached_image_button);
+
+      Glide.with(thumbnail)
+          .load(uri)
+          .placeholder(R.drawable.ic_image_placeholder)
+          .error(R.drawable.ic_broken_image)
+          .centerCrop()
+          .override(240, 240)
+          .thumbnail(0.25f)
+          .into(thumbnail);
+
+      removeButton.setOnClickListener(v -> issueReportViewModel.removeAttachedImage(uri));
+
+      binding.attachedImagesContainer.addView(itemView);
+    }
+  }
+
   private void clearPendingAttachments() {
     cleanedUpOnExit = true;
     if (issueReportViewModel == null) {
@@ -699,12 +757,18 @@ public class CreateIssueReportFragment extends Fragment {
   }
 
   private void showLocationLoading() {
+    if (binding == null) {
+      return;
+    }
     binding.locationLoadingIndicator.setVisibility(View.VISIBLE);
     binding.locationResultsList.setVisibility(View.GONE);
     binding.locationResultsPlaceholder.setVisibility(View.GONE);
   }
 
   private void showLocationCandidates(List<PlacePredictionCandidate> candidates) {
+    if (binding == null) {
+      return;
+    }
     binding.locationLoadingIndicator.setVisibility(View.GONE);
     binding.locationResultsPlaceholder.setVisibility(View.GONE);
     binding.locationResultsList.setVisibility(View.VISIBLE);
@@ -713,6 +777,9 @@ public class CreateIssueReportFragment extends Fragment {
   }
 
   private void showLocationPlaceholder(String message) {
+    if (binding == null) {
+      return;
+    }
     binding.locationLoadingIndicator.setVisibility(View.GONE);
     binding.locationResultsList.setVisibility(View.GONE);
     binding.locationResultsPlaceholder.setVisibility(View.VISIBLE);
@@ -720,6 +787,9 @@ public class CreateIssueReportFragment extends Fragment {
   }
 
   private void hideLocationResults() {
+    if (binding == null) {
+      return;
+    }
     binding.locationLoadingIndicator.setVisibility(View.GONE);
     binding.locationResultsList.setVisibility(View.GONE);
     binding.locationResultsPlaceholder.setVisibility(View.GONE);

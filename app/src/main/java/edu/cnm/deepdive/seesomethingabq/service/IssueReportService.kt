@@ -18,38 +18,56 @@ import okhttp3.ResponseBody
 interface IssueReportService {
 
   /**
-   * Submits a new issue report and returns the created report, including its external ID.
+   * Submits an issue report for the currently authenticated user.
+   *
+   * @param activity activity used for authentication flows.
+   * @param request request payload describing the report.
+   * @return future that completes when submission is done.
    */
-  fun submit(activity: Activity, request: IssueReportRequest): CompletableFuture<IssueReport>
+    fun submit(activity: Activity, request: IssueReportRequest): CompletableFuture<IssueReport>
+
+    /**
+     * Uploads all provided image URIs for the given report ID.
+     *
+     * The returned future completes when all uploads have finished.
+     */
+    fun uploadImages(
+        activity: Activity,
+        reportId: String,
+        uris: List<Uri>
+    ): CompletableFuture<Void?>
+
+    /**
+     * Downloads the raw image file for the given report and image IDs.
+     *
+     * The caller is responsible for consuming and closing the [ResponseBody].
+     */
+    fun downloadImageFile(
+        activity: Activity,
+        reportId: String,
+        imageId: String
+    ): CompletableFuture<ResponseBody>
 
   /**
-   * Uploads all provided image URIs for the given report ID.
+   * Retrieves a single paginated page of issue report summaries.
    *
-   * The returned future completes when all uploads have finished.
+   * @param activity activity used for authentication flows.
+   * @param page zero-based page number.
+   * @param size page size.
+   * @return future completing with a paginated response.
    */
-  fun uploadImages(
-    activity: Activity,
-    reportId: String,
-    uris: List<Uri>
-  ): CompletableFuture<Void?>
-
-  /**
-   * Downloads the raw image file for the given report and image IDs.
-   *
-   * The caller is responsible for consuming and closing the [ResponseBody].
-   */
-  fun downloadImageFile(
-    activity: Activity,
-    reportId: String,
-    imageId: String
-  ): CompletableFuture<ResponseBody>
-
   fun getIssueReportsPage(
     activity: Activity,
     page: Int = 0,
     size: Int = 10
   ): CompletableFuture<PaginatedResponse<IssueReportSummary>>
 
+  /**
+   * Creates a paging [Pager] for issue report summaries.
+   *
+   * @param activity activity used for authentication flows.
+   * @return pager producing [IssueReportSummary] items.
+   */
   fun getIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
 
 

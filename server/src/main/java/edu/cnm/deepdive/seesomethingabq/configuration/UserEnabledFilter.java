@@ -23,6 +23,12 @@ public class UserEnabledFilter extends OncePerRequestFilter {
 
   private final UserProfileRepository userProfileRepository;
 
+  /**
+   * Creates a filter that consults {@link UserProfileRepository} to determine whether an
+   * authenticated principal is enabled.
+   *
+   * @param userProfileRepository repository used to resolve {@link UserProfile} records.
+   */
   public UserEnabledFilter(UserProfileRepository userProfileRepository) {
     this.userProfileRepository = userProfileRepository;
   }

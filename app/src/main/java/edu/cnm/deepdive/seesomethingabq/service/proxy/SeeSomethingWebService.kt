@@ -25,25 +25,47 @@ import retrofit2.http.Query
  */
 interface SeeSomethingWebService {
 
-  /** Retrieves the authenticated user's profile. */
+  /**
+   * Retrieves the current user's profile from the server.
+   *
+   * @param bearerToken Authorization header value.
+   * @return user profile.
+   */
   @GET("users/me")
   suspend fun getMe(
     @Header("Authorization") bearerToken: String
   ): UserProfile
 
-  /** Retrieves the list of available issue types. */
+  /**
+   * Retrieves all issue types from the server.
+   *
+   * @param bearerToken Authorization header value.
+   * @return list of issue types.
+   */
   @GET("issue-types")
   suspend fun getIssueTypes(
     @Header("Authorization") bearerToken: String
   ): List<IssueType>
 
-  /** Retrieves all issue reports submitted by the authenticated user. */
+  /**
+   * Retrieves the current user's issue report summaries.
+   *
+   * @param bearerToken Authorization header value.
+   * @return list of report summaries.
+   */
   @GET("issue-reports/mine")
   suspend fun getMyReports(
     @Header("Authorization") bearerToken: String
   ): List<IssueReportSummary>
 
-  /** Retrieves a paginated list of issue reports for managers. */
+  /**
+   * Retrieves a page of issue report summaries for manager views.
+   *
+   * @param bearerToken Authorization header value.
+   * @param page zero-based page number.
+   * @param size page size.
+   * @return paginated response of report summaries.
+   */
   @GET("manager/issue-reports")
   suspend fun getIssueReportsPage(
     @Header("Authorization") bearerToken: String,
@@ -52,7 +74,10 @@ interface SeeSomethingWebService {
   ): PaginatedResponse<IssueReportSummary>
 
   /**
-   * Submits a new issue report and returns the created report, including its external ID.
+   * Submits a new issue report.
+   *
+   * @param bearerToken Authorization header value.
+   * @param request report request payload.
    */
   @POST("issue-reports")
   suspend fun submitIssueReport(

@@ -24,16 +24,30 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller exposing issue report operations for authenticated users.
+ */
 @RestController
 @RequestMapping("/issue-reports")
 public class IssueReportController {
 
   private final IssueReportService issueReportService;
 
+  /**
+   * Creates a controller delegating issue report operations to the service layer.
+   *
+   * @param issueReportService service providing issue report operations.
+   */
   public IssueReportController(IssueReportService issueReportService) {
     this.issueReportService = issueReportService;
   }
 
+  /**
+   * Returns summaries of issue reports owned by the currently authenticated user.
+   *
+   * @param sort sort key/direction parameter (passed through to the service).
+   * @return list of report summaries.
+   */
   @GetMapping(
       value = "/mine",
       produces = MediaType.APPLICATION_JSON_VALUE
@@ -43,6 +57,12 @@ public class IssueReportController {
     return issueReportService.getReportsForCurrentUser(sort);
   }
 
+  /**
+   * Creates a new issue report for the currently authenticated user.
+   *
+   * @param request request payload describing the issue report.
+   * @return response containing the created report and a {@code Location} header.
+   */
   @PostMapping(
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
@@ -55,16 +75,34 @@ public class IssueReportController {
     return ResponseEntity.created(location).body(created);
   }
 
+  /**
+   * Returns a single issue report by external identifier.
+   *
+   * @param externalId report external ID.
+   * @return issue report entity.
+   */
   @GetMapping("/{externalId}")
   public IssueReport getReport(@PathVariable UUID externalId) {
     return issueReportService.getReportByExternalId(externalId);
   }
 
+  /**
+   * Updates an existing issue report.
+   *
+   * @param externalId report external ID.
+   * @param request request payload describing updates to apply.
+   * @return updated issue report entity.
+   */
   @PutMapping("/{externalId}")
   public IssueReport updateReport(@PathVariable UUID externalId, @RequestBody IssueReportRequest request) {
     return issueReportService.updateReport(externalId, request);
   }
 
+  /**
+   * Deletes an issue report by external identifier.
+   *
+   * @param externalId report external ID.
+   */
   @DeleteMapping("/{externalId}")
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteReport(@PathVariable UUID externalId) {
