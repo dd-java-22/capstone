@@ -221,6 +221,12 @@ dokka {
 
         suppressGeneratedFiles.set(true)
         skipDeprecated.set(false)
+
+        sourceLink {
+            localDirectory.set(file("src/main/java"))
+            remoteUrl("https://github.com/dd-java-22/capstone/blob/main/app/src/main/java")
+            remoteLineSuffix.set("#L")
+        }
     }
 }
 
