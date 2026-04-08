@@ -32,6 +32,9 @@ import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.ActivityManagerWorkflowBinding;
 
 @AndroidEntryPoint
+/**
+ * Activity hosting the manager workflow navigation graph and bottom navigation for manager screens.
+ */
 public class ManagerWorkflowActivity extends AppCompatActivity {
 
   private ActivityManagerWorkflowBinding binding;

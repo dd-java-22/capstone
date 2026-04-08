@@ -35,10 +35,20 @@ public class LocationCandidateAdapter
   private List<PlacePredictionCandidate> candidates = Collections.emptyList();
   private final OnCandidateSelectedListener listener;
 
+  /**
+   * Creates an adapter that notifies a listener when a candidate is selected.
+   *
+   * @param listener selection listener.
+   */
   public LocationCandidateAdapter(OnCandidateSelectedListener listener) {
     this.listener = listener;
   }
 
+  /**
+   * Replaces the displayed candidates and refreshes the list.
+   *
+   * @param candidates candidates to display.
+   */
   public void setCandidates(List<PlacePredictionCandidate> candidates) {
     this.candidates = candidates;
     notifyDataSetChanged();
@@ -66,6 +76,11 @@ public class LocationCandidateAdapter
 
   public interface OnCandidateSelectedListener {
 
+    /**
+     * Called when a location prediction candidate is selected.
+     *
+     * @param location selected candidate.
+     */
     void onSelected(PlacePredictionCandidate location);
   }
 

@@ -32,6 +32,9 @@ import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserDashboardBinding
 import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
 
 @AndroidEntryPoint
+/**
+ * Fragment showing the signed-in user's dashboard and navigation to report creation.
+ */
 public class UserDashboardFragment extends Fragment {
 
   private FragmentUserDashboardBinding binding;
