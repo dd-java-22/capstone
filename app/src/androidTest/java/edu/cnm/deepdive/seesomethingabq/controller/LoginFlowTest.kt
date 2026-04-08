@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.controller
 
+import androidx.navigation.fragment.NavHostFragment
 import androidx.test.core.app.ActivityScenario
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
@@ -12,11 +13,12 @@ import edu.cnm.deepdive.seesomethingabq.service.proxy.SeeSomethingWebService
 import edu.cnm.deepdive.seesomethingabq.service.repository.FakeGoogleAuthRepository
 import edu.cnm.deepdive.seesomethingabq.service.repository.FakeSeeSomethingWebService
 import edu.cnm.deepdive.seesomethingabq.service.repository.GoogleAuthRepository
-import org.hamcrest.Matchers.allOf
-import org.hamcrest.Matchers.`is`
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
+import java.util.concurrent.CountDownLatch
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 @HiltAndroidTest
@@ -46,16 +48,27 @@ class LoginFlowTest {
         fakeWebService.failGetMe = false
 
         // When: Launching the activity
-        ActivityScenario.launch(UserWorkflowActivity::class.java)
+        val scenario = ActivityScenario.launch(UserWorkflowActivity::class.java)
 
         // Then: User Dashboard should be displayed (either via auto-login or clicking if needed)
-        // We check for the TextView inside the ConstraintLayout of the dashboard
-        onView(
-            allOf(
-                withText("User Dashboard"),
-                withParent(withClassName(`is`("androidx.constraintlayout.widget.ConstraintLayout")))
-            )
-        ).check(matches(isDisplayed()))
+        // We verify that the NavController reached the dashboard destination.
+        val latch = CountDownLatch(1)
+        scenario.onActivity { activity ->
+            val navHostFragment = activity.supportFragmentManager
+                .findFragmentById(R.id.nav_host_fragment_container) as NavHostFragment
+            val navController = navHostFragment.navController
+            if (navController.currentDestination?.id == R.id.user_dashboard_fragment) {
+                latch.countDown()
+            } else {
+                navController.addOnDestinationChangedListener { _, destination, _ ->
+                    if (destination.id == R.id.user_dashboard_fragment) {
+                        latch.countDown()
+                    }
+                }
+            }
+        }
+
+        assertTrue("Timed out waiting for navigation to User Dashboard", latch.await(5, TimeUnit.SECONDS))
     }
 
     @Test
