@@ -20,7 +20,6 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
-import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;

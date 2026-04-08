@@ -3,6 +3,10 @@ GET http://localhost:8080/see-something/manager/users
 Authorization: Bearer {{bearerToken}}
 
 ###
+GET http://localhost:8080/see-something/manager/users?pageNumber=1&pageSize=2
+Authorization: Bearer {{bearerToken}}
+
+###
 GET http://localhost:8080/see-something/manager/users/{{userProfileExternalId}}
 Authorization: Bearer {{bearerToken}}
 
