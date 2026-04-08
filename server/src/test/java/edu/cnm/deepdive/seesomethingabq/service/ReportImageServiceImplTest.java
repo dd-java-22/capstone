@@ -195,6 +195,7 @@ class ReportImageServiceImplTest {
     MultipartFile file = org.mockito.Mockito.mock(MultipartFile.class);
     when(file.getOriginalFilename()).thenReturn("photo.jpg");
     when(file.getContentType()).thenReturn("image/jpeg");
+    when(file.isEmpty()).thenReturn(false);
 
     when(userService.getCurrentUser()).thenReturn(owner);
     when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
@@ -204,7 +205,7 @@ class ReportImageServiceImplTest {
     ReportImage result = service.uploadImage(REPORT_EXTERNAL_ID, file);
 
     assertNotNull(result);
-    assertEquals(URI.create("file:" + STORAGE_KEY), result.getImageLocator());
+    assertEquals(URI.create("stored:" + STORAGE_KEY), result.getImageLocator());
     assertEquals("photo.jpg", result.getFilename());
     assertEquals("image/jpeg", result.getMimeType());
     assertEquals(0, result.getAlbumOrder());
@@ -216,6 +217,7 @@ class ReportImageServiceImplTest {
   @Test
   void uploadImage_notOwner_throwsAccessDenied() throws Exception {
     MultipartFile file = org.mockito.Mockito.mock(MultipartFile.class);
+    when(file.isEmpty()).thenReturn(false);
     when(userService.getCurrentUser()).thenReturn(manager);
     when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
 
@@ -227,10 +229,21 @@ class ReportImageServiceImplTest {
   @Test
   void uploadImage_reportNotFound_throws() {
     MultipartFile file = org.mockito.Mockito.mock(MultipartFile.class);
+    when(file.isEmpty()).thenReturn(false);
     when(userService.getCurrentUser()).thenReturn(owner);
     when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.empty());
 
     assertThrows(ResourceNotFoundException.class, () -> service.uploadImage(REPORT_EXTERNAL_ID, file));
+  }
+
+  @Test
+  void uploadImage_emptyFile_throwsBadRequest() throws Exception {
+    MultipartFile file = org.mockito.Mockito.mock(MultipartFile.class);
+    when(file.isEmpty()).thenReturn(true);
+
+    assertThrows(IllegalArgumentException.class, () -> service.uploadImage(REPORT_EXTERNAL_ID, file));
+    verify(storageService, never()).store(any());
+    verify(reportImageRepository, never()).save(any());
   }
 
   @Test
@@ -242,6 +255,13 @@ class ReportImageServiceImplTest {
 
     assertEquals(resource, result);
     verify(storageService).retrieve(STORAGE_KEY);
+  }
+
+  @Test
+  void getImageFile_missingBackingFile_throws() throws IOException {
+    when(storageService.retrieve(STORAGE_KEY)).thenThrow(new IOException("missing"));
+
+    assertThrows(IOException.class, () -> service.getImageFile(STORAGE_KEY));
   }
 
   @Test

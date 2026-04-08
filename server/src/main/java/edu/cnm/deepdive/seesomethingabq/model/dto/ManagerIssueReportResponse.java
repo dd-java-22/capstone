@@ -120,7 +120,7 @@ public class ManagerIssueReportResponse {
     dto.setTextDescription(report.getTextDescription());
     dto.setReportImages(
         report.getReportImages().stream()
-            .map(ReportImageResponse::fromEntity)
+            .map((image) -> ReportImageResponse.fromEntity(report.getExternalId(), image))
             .toList()
     );
     return dto;
@@ -367,12 +367,15 @@ public class ManagerIssueReportResponse {
       this.albumOrder = albumOrder;
     }
 
-    public static ReportImageResponse fromEntity(ReportImage reportImage) {
+    public static ReportImageResponse fromEntity(UUID reportExternalId, ReportImage reportImage) {
       if (reportImage == null) {
         return null;
       }
       ReportImageResponse dto = new ReportImageResponse();
-      dto.setImageLocator(reportImage.getImageLocator());
+      // API-facing locator: canonical binary content endpoint.
+      if (reportExternalId != null && reportImage.getExternalId() != null) {
+        dto.setImageLocator(URI.create("/issue-reports/" + reportExternalId + "/images/" + reportImage.getExternalId()));
+      }
       dto.setFilename(reportImage.getFilename());
       dto.setMimeType(reportImage.getMimeType());
       dto.setAlbumOrder(reportImage.getAlbumOrder());

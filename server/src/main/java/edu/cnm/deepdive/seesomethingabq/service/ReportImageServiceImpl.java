@@ -108,6 +108,10 @@ public class ReportImageServiceImpl implements ReportImageService {
   public ReportImage uploadImage(UUID externalKey, MultipartFile file)
       throws IOException, HttpMediaTypeException {
 
+    if (file == null || file.isEmpty()) {
+      throw new IllegalArgumentException("Upload file must not be empty.");
+    }
+
     UserProfile currentUser = userService.getCurrentUser();
     IssueReport report = getReportOrThrow(externalKey);
 
@@ -123,7 +127,8 @@ public class ReportImageServiceImpl implements ReportImageService {
     image.setIssueReport(report);
     image.setFilename(file.getOriginalFilename());
     image.setMimeType(file.getContentType());
-    image.setImageLocator(URI.create("file:" + storageKey));
+    // Store an internal locator; do not expose filesystem paths to clients.
+    image.setImageLocator(URI.create("stored:" + storageKey));
     image.setAlbumOrder(report.getReportImages().size());
 
     return reportImageRepository.save(image);

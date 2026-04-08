@@ -48,16 +48,31 @@ public class ReportImageController {
   }
 
   /**
-   * Retrieves metadata for a specific image belonging to an issue report. Access is restricted to
-   * the report owner and managers.
+   * Serves the raw image file associated with a specific {@link ReportImage}. This endpoint returns
+   * the actual binary image data, allowing the front-end to display the image. The MIME type is
+   * dynamically set based on the stored metadata.
    *
    * @param externalId The external ID (UUID) of the issue report.
    * @param imageId The external ID (UUID) of the image.
-   * @return The requested {@link ReportImage} metadata.
+   * @return A {@link ResponseEntity} containing the image file as a {@link Resource}.
+   * @throws IOException If the file cannot be retrieved from storage.
    */
-  @GetMapping(value = "/{imageId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public ReportImage getImage(@PathVariable UUID externalId, @PathVariable UUID imageId) {
-    return service.getImage(externalId, imageId);
+  @GetMapping(value = "/{imageId}", produces = MediaType.ALL_VALUE)
+  public ResponseEntity<Resource> getImage(@PathVariable UUID externalId, @PathVariable UUID imageId) {
+    ReportImage image = service.getImage(externalId, imageId);
+    String key = image.getImageLocator().getSchemeSpecificPart();
+    Resource resource;
+    try {
+      resource = service.getImageFile(key);
+    } catch (IOException e) {
+      // Preserve current behavior: unreadable/missing stored file is a server error (500).
+      throw new RuntimeException(e);
+    }
+
+    return ResponseEntity
+        .ok()
+        .contentType(MediaType.parseMediaType(image.getMimeType()))
+        .body(resource);
   }
 
   /**
@@ -95,43 +110,15 @@ public class ReportImageController {
       consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  @ResponseStatus(HttpStatus.CREATED)
-  public ReportImage uploadImage(
+  public ResponseEntity<ReportImage> uploadImage(
       @PathVariable UUID externalId,
       @RequestPart("file") MultipartFile file
   ) throws IOException, HttpMediaTypeException {
-    return service.uploadImage(externalId, file);
-  }
-
-  /**
-   * Serves the raw image file associated with a specific {@link ReportImage}. This endpoint returns
-   * the actual binary image data, allowing the front-end to display the image. The MIME type is
-   * dynamically set based on the stored metadata.
-   *
-   * <p>This endpoint is typically used by the UI to render images in the report details view.</p>
-   *
-   * @param externalId The external ID (UUID) of the issue report.
-   * @param imageId     The external ID (UUID) of the image.
-   * @return A {@link ResponseEntity} containing the image file as a {@link Resource}.
-   * @throws IOException If the file cannot be retrieved from storage.
-   */
-  @GetMapping(
-      value = "/{imageId}/file",
-      produces = MediaType.ALL_VALUE
-  )
-  public ResponseEntity<Resource> getImageFile(
-      @PathVariable UUID externalId,
-      @PathVariable UUID imageId
-  ) throws IOException {
-
-    ReportImage image = service.getImage(externalId, imageId);
-    String key = image.getImageLocator().getSchemeSpecificPart();
-    Resource resource = service.getImageFile(key);
-
-    return ResponseEntity
-        .ok()
-        .contentType(MediaType.parseMediaType(image.getMimeType()))
-        .body(resource);
+    ReportImage created = service.uploadImage(externalId, file);
+    URI location = linkTo(methodOn(ReportImageController.class)
+        .getImage(externalId, created.getExternalId()))
+        .toUri();
+    return ResponseEntity.created(location).body(created);
   }
 
   /**

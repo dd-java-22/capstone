@@ -1,12 +1,14 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import static org.hamcrest.Matchers.endsWith;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.hamcrest.Matchers.endsWith;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -14,6 +16,7 @@ import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
 import edu.cnm.deepdive.seesomethingabq.model.dto.AddImageRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportImage;
 import edu.cnm.deepdive.seesomethingabq.service.ReportImageService;
+import java.nio.charset.StandardCharsets;
 import java.net.URI;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,6 +37,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
 
 @SpringBootTest
 @ActiveProfiles("service")
@@ -63,22 +69,93 @@ class ReportImageControllerTest {
 
   @Test
   @WithMockUser(roles = "USER")
-  void getImage_returnsImage() throws Exception {
+  void getImage_returnsBinaryContent() throws Exception {
     UUID reportId = UUID.randomUUID();
     UUID imageId = UUID.randomUUID();
 
     ReportImage image = new ReportImage();
-    image.setFilename("test.jpg");
     image.setMimeType("image/jpeg");
-    image.setImageLocator(URI.create("file://test.jpg"));
+    image.setImageLocator(URI.create("stored:test.jpg"));
 
     when(reportImageService.getImage(reportId, imageId)).thenReturn(image);
+    Resource resource = new ByteArrayResource("hello".getBytes(StandardCharsets.UTF_8));
+    when(reportImageService.getImageFile("test.jpg")).thenReturn(resource);
 
     mockMvc.perform(
             get("/issue-reports/{reportId}/images/{imageId}", reportId, imageId)
         )
         .andExpect(status().isOk())
-        .andExpect(jsonPath("$.filename").value("test.jpg"));
+        .andExpect(content().contentType("image/jpeg"))
+        .andExpect(content().bytes("hello".getBytes(StandardCharsets.UTF_8)));
+  }
+
+  @Test
+  @WithMockUser(roles = "USER")
+  void uploadImage_returnsCreatedAndLocation() throws Exception {
+    UUID reportId = UUID.randomUUID();
+    UUID imageId = UUID.randomUUID();
+
+    ReportImage created = new ReportImage();
+    ReflectionTestUtils.setField(created, "externalId", imageId);
+    created.setFilename("photo.jpg");
+    created.setMimeType("image/jpeg");
+    created.setImageLocator(URI.create("stored:abc123.jpg"));
+
+    when(reportImageService.uploadImage(
+        org.mockito.ArgumentMatchers.eq(reportId),
+        org.mockito.ArgumentMatchers.any()
+    )).thenReturn(created);
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file",
+        "photo.jpg",
+        "image/jpeg",
+        "data".getBytes(StandardCharsets.UTF_8)
+    );
+
+    mockMvc.perform(
+            multipart("/issue-reports/{reportId}/images/upload", reportId)
+                .file(file)
+                .with(csrf())
+        )
+        .andExpect(status().isCreated())
+        .andExpect(header().string("Location",
+            endsWith("/issue-reports/" + reportId + "/images/" + imageId)));
+
+    verify(reportImageService).uploadImage(
+        org.mockito.ArgumentMatchers.eq(reportId),
+        org.mockito.ArgumentMatchers.any()
+    );
+  }
+
+  @Test
+  @WithMockUser(roles = "USER")
+  void uploadImage_emptyFile_returnsBadRequest() throws Exception {
+    UUID reportId = UUID.randomUUID();
+
+    when(reportImageService.uploadImage(
+        org.mockito.ArgumentMatchers.eq(reportId),
+        org.mockito.ArgumentMatchers.any()
+    )).thenThrow(new IllegalArgumentException("Upload file must not be empty."));
+
+    MockMultipartFile file = new MockMultipartFile(
+        "file",
+        "empty.jpg",
+        "image/jpeg",
+        new byte[0]
+    );
+
+    mockMvc.perform(
+            multipart("/issue-reports/{reportId}/images/upload", reportId)
+                .file(file)
+                .with(csrf())
+        )
+        .andExpect(status().isBadRequest());
+
+    verify(reportImageService).uploadImage(
+        org.mockito.ArgumentMatchers.eq(reportId),
+        org.mockito.ArgumentMatchers.any()
+    );
   }
 
   @Test
@@ -104,7 +181,7 @@ class ReportImageControllerTest {
                     {
                       "filename": "new.jpg",
                       "mimeType": "image/jpeg",
-                      "imageLocator": "file://new.jpg",
+                      "imageLocator": "stored:new.jpg",
                       "albumOrder": 1
                     }
                     """)
