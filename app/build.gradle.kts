@@ -17,6 +17,7 @@ import com.android.build.gradle.internal.tasks.factory.dependsOn
 import java.io.FileInputStream
 import java.util.Locale
 import java.util.Properties
+import org.jetbrains.dokka.gradle.engine.parameters.VisibilityModifier
 
 plugins {
     alias(libs.plugins.android.application)
@@ -27,6 +28,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.ksp)
     id("org.jetbrains.kotlin.kapt")
+    id("org.jetbrains.dokka") version "2.2.0"
     checkstyle
 }
 
@@ -196,6 +198,36 @@ dependencies {
         //noinspection ForeignDelegate
         implementation(libs.kotlin.jdk8) {
             because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+        }
+    }
+}
+
+dokka {
+    moduleName.set("SeeSomethingABQ Client")
+
+    dokkaPublications.html {
+        outputDirectory.set(rootProject.projectDir.resolve("docs/api/client"))
+        failOnWarning.set(false)
+        suppressInheritedMembers.set(false)
+    }
+
+    dokkaSourceSets.main {
+        documentedVisibilities.set(
+            setOf(
+                VisibilityModifier.Public,
+                VisibilityModifier.Protected
+            )
+        )
+
+        suppressGeneratedFiles.set(true)
+        skipDeprecated.set(false)
+
+        sourceLink {
+            localDirectory.set(file("src/main/java"))
+        }
+
+        sourceLink {
+            localDirectory.set(file("src/main/kotlin"))
         }
     }
 }

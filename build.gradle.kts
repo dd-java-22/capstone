@@ -25,3 +25,9 @@ plugins {
     alias(libs.plugins.kotlin.android).apply(false)
     alias(libs.plugins.ksp).apply(false)
 }
+
+tasks.register("generateApiDocs") {
+    group = "documentation"
+    description = "Generates server Javadoc and client Dokka docs into docs/api."
+    dependsOn(":server:javadoc", ":app:dokkaGeneratePublicationHtml")
+}

@@ -13,6 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
+import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.external.javadoc.JavadocMemberLevel
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
+
 plugins {
     java
     alias(libs.plugins.spring.boot)
@@ -31,11 +36,12 @@ tasks.javadoc {
 
     title = "${properties["appName"]} server ${properties["version"]}"
 
-    if (project.hasProperty("javadocDestDir")) {
-        setDestinationDir(
-            projectDir.toPath().resolve(properties["javadocDestDir"] as String).toFile()
-        )
-    }
+    source = sourceSets.main.get().allJava
+    classpath = sourceSets.main.get().compileClasspath
+
+    destinationDir = rootProject.projectDir.resolve("docs/api/server")
+
+    exclude("**/test/**")
 
     with(options as StandardJavadocDocletOptions) {
         windowTitle = docTitle
@@ -44,7 +50,6 @@ tasks.javadoc {
         isAuthor = false
         links(
             "https://docs.oracle.com/en/java/javase/${libs.versions.java.get()}/docs/api/",
-            // TODO Modify or add to this list for the specific libraries used.
             "https://docs.spring.io/spring-framework/docs/current/javadoc-api/",
             "https://docs.spring.io/spring-boot/api/java/",
             "https://docs.spring.io/spring-hateoas/docs/current/api/",
@@ -60,10 +65,12 @@ tasks.javadoc {
         )
         addBooleanOption("html5", true)
         addStringOption("Xdoclint:none", "-quiet")
+        encoding = "UTF-8"
+        charSet = "UTF-8"
+        docEncoding = "UTF-8"
     }
 
     isFailOnError = true
-
 }
 
 configurations {
