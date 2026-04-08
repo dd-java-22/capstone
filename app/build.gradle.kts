@@ -137,7 +137,7 @@ dependencies {
     implementation(libs.lifecycle.livedata)
 
     // Paging 3 library
-//    implementation(libs.view.pager)
+    // implementation(libs.view.pager)
     implementation("androidx.paging:paging-runtime:3.4.2")
 
     // Preferences/settings components
@@ -182,6 +182,9 @@ dependencies {
     androidTestImplementation(libs.hilt.android.testing)
     kspAndroidTest(libs.hilt.compiler)
     kspAndroidTest(libs.hilt.android.compiler)
+
+    // Glide for efficient local image thumbnail loading.
+    implementation("com.github.bumptech.glide:glide:5.0.5")
 
     // Google Places
     implementation("com.google.android.libraries.places:places:5.1.1")
