@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.seesomethingabq.service
 
 import android.app.Activity
+import android.net.Uri
 import androidx.paging.Pager
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
@@ -18,5 +19,12 @@ interface IssueReportService {
   ): CompletableFuture<PaginatedResponse<IssueReportSummary>>
 
   fun getIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
+
+  fun uploadImage(
+    activity: Activity,
+    reportId: String,
+    uri: Uri
+  ): CompletableFuture<Void?>
+
 
 }
