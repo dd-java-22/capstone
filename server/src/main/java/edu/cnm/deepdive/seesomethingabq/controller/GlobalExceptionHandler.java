@@ -30,11 +30,19 @@ import org.springframework.web.servlet.HandlerMapping;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  // Simple DTO for consistent error responses
+  /**
+   * Simple response payload for error messages returned by this handler.
+   *
+   * @param message error message.
+   * @param timestamp time the error response was created.
+   */
   public record ErrorResponse(String message, Instant timestamp) {}
 
   /**
    * Handles resource not found exceptions.
+   *
+   * @param ex exception being handled.
+   * @return error response payload.
    */
   @ExceptionHandler({
       ResourceNotFoundException.class,
@@ -48,6 +56,9 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles access denied exceptions.
+   *
+   * @param ex exception being handled.
+   * @return error response payload.
    */
   @ExceptionHandler(AccessDeniedException.class)
   @ResponseStatus(HttpStatus.FORBIDDEN)
@@ -57,6 +68,9 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles bad request exceptions.
+   *
+   * @param ex exception being handled.
+   * @return error response payload.
    */
   @ExceptionHandler({
       IllegalArgumentException.class,
@@ -69,6 +83,9 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles Bean Validation failures (e.g., invalid ReportLocation).
+   *
+   * @param ex exception being handled.
+   * @return error response payload.
    */
   @ExceptionHandler(ConstraintViolationException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -83,6 +100,9 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles path/query parameter conversion failures (e.g., invalid UUID, invalid int).
+   *
+   * @param ex exception being handled.
+   * @return error response payload.
    */
   @ExceptionHandler(MethodArgumentTypeMismatchException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -97,6 +117,10 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles low-level conversion failures that may not surface as a {@link MethodArgumentTypeMismatchException}.
+   *
+   * @param ex exception being handled.
+   * @param request HTTP request associated with the failure.
+   * @return error response payload.
    */
   @ExceptionHandler(ConversionFailedException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -118,6 +142,9 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles malformed/invalid request bodies (e.g., JSON parse errors) as a client error, not a 500.
+   *
+   * @param ex exception being handled.
+   * @return error response payload.
    */
   @ExceptionHandler(HttpMessageNotReadableException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -127,6 +154,9 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles multipart/form-data requests missing a required part (e.g., missing "file" upload).
+   *
+   * @param ex exception being handled.
+   * @return error response payload.
    */
   @ExceptionHandler(MissingServletRequestPartException.class)
   @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -136,6 +166,9 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles conflict exceptions (duplicate types, states, deleting in-use resources, etc.).
+   *
+   * @param ex exception being handled.
+   * @return error response payload.
    */
   @ExceptionHandler({
       ConflictException.class,
@@ -148,6 +181,9 @@ public class GlobalExceptionHandler {
 
   /**
    * Handles all other unhandled exceptions.
+   *
+   * @param ex exception being handled.
+   * @return error response payload.
    */
   @ExceptionHandler(Exception.class)
   @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
