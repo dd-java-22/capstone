@@ -11,21 +11,62 @@ import java.util.UUID;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+/**
+ * Spring Data repository for {@link IssueReport} persistence operations.
+ */
 public interface IssueReportRepository extends JpaRepository<IssueReport, Long> {
 
+  /**
+   * Finds an issue report by external identifier.
+   *
+   * @param externalId report external ID.
+   * @return optional containing the report if found.
+   */
   Optional<IssueReport> findByExternalId(UUID externalId);
 
+  /**
+   * Finds issue reports for a user profile with the specified sort order.
+   *
+   * @param userProfile report owner.
+   * @param sort sort order.
+   * @return matching issue reports.
+   */
   List<IssueReport> findByUserProfile(UserProfile userProfile, Sort sort);
 
+  /**
+   * Returns a user's reports ordered by first-reported time descending.
+   *
+   * @param userProfile report owner.
+   * @return matching issue reports.
+   */
   List<IssueReport> getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(
       UserProfile userProfile);
 
+  /**
+   * Returns reports in a specific accepted state ordered by first-reported time descending.
+   *
+   * @param acceptedState accepted state.
+   * @return matching issue reports.
+   */
   List<IssueReport> getIssueReportsByAcceptedStateOrderByTimeFirstReportedDesc(
       AcceptedState acceptedState);
 
+  /**
+   * Returns reports associated with the provided issue types ordered by first-reported time descending.
+   *
+   * @param issueTypes issue types.
+   * @return matching issue reports.
+   */
   List<IssueReport> getIssueReportsByIssueTypesOrderByTimeFirstReportedDesc(
       List<IssueType> issueTypes);
 
+  /**
+   * Returns reports whose last-modified time is within the provided range.
+   *
+   * @param timeLastModifiedAfter start of range (inclusive/exclusive depends on generated query).
+   * @param timeLastModifiedBefore end of range.
+   * @return matching issue reports.
+   */
   List<IssueReport> getIssueReportsByTimeLastModifiedBetween(
       Instant timeLastModifiedAfter, Instant timeLastModifiedBefore);
 }

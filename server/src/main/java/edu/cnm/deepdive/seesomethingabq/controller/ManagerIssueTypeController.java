@@ -20,22 +20,42 @@ import org.springframework.web.bind.annotation.RestController;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
+/**
+ * REST controller exposing manager-only issue type administration endpoints.
+ */
 @RestController
 @RequestMapping("/manager/issue-types")
 public class ManagerIssueTypeController {
 
   private final IssueTypeService service;
 
+  /**
+   * Creates a controller exposing manager-only issue type administration operations.
+   *
+   * @param service issue type service.
+   */
   @Autowired
   public ManagerIssueTypeController(IssueTypeService service) {
     this.service = service;
   }
 
+  /**
+   * Returns a single issue type by tag.
+   *
+   * @param issueTypeTag issue type tag.
+   * @return issue type entity.
+   */
   @GetMapping(path = "/{issueTypeTag}", produces = MediaType.APPLICATION_JSON_VALUE)
   public IssueType getIssueType(@PathVariable String issueTypeTag) {
     return service.getByIssueTypeTag(issueTypeTag);
   }
 
+  /**
+   * Creates a new issue type.
+   *
+   * @param newIssueType issue type to create.
+   * @return response containing the created entity and a {@code Location} header.
+   */
   @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<IssueType> createIssueType(@RequestBody IssueType newIssueType) {
     IssueType created = service.createNewIssueType(newIssueType);
@@ -45,6 +65,13 @@ public class ManagerIssueTypeController {
     return ResponseEntity.created(location).body(created);
   }
 
+  /**
+   * Updates the description of an issue type.
+   *
+   * @param issueTypeTag issue type tag.
+   * @param newIssueTypeDescription new description payload.
+   * @return updated issue type.
+   */
   @PatchMapping(path = "/{issueTypeTag}", consumes = MediaType.APPLICATION_JSON_VALUE)
   public IssueType updateIssueTypeDescription(
       @PathVariable String issueTypeTag,
@@ -53,6 +80,11 @@ public class ManagerIssueTypeController {
     return service.updateIssueTypeDescription(issueTypeTag, newIssueTypeDescription);
   }
 
+  /**
+   * Deletes an issue type if it is not currently referenced by any reports.
+   *
+   * @param issueTypeTag issue type tag.
+   */
   @DeleteMapping(path = "/{issueTypeTag}" )
   @ResponseStatus(HttpStatus.NO_CONTENT)
   public void deleteUnusedIssueType(@PathVariable String issueTypeTag) {

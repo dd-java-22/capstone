@@ -40,16 +40,33 @@ public class ManagerUserController {
 
   private final UserService service;
 
+  /**
+   * Creates a controller exposing manager-only user administration operations.
+   *
+   * @param service user service.
+   */
   @Autowired
   public ManagerUserController(UserService service) {
     this.service = service;
   }
 
+  /**
+   * Returns all user profiles.
+   *
+   * @return list of user profiles.
+   */
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
   public List<UserProfile> getAll() {
     return service.getAll();
   }
 
+  /**
+   * Returns a user profile by external identifier.
+   *
+   * @param externalId user external ID.
+   * @return user profile.
+   * @throws UserNotFoundException if no user exists with {@code externalId}.
+   */
   @GetMapping(value = "/{externalId}", produces = MediaType.APPLICATION_JSON_VALUE)
   public UserProfile get(@PathVariable UUID externalId) {
     return service
@@ -57,6 +74,13 @@ public class ManagerUserController {
         .orElseThrow(() -> new UserNotFoundException("User not found: " + externalId));
   }
 
+  /**
+   * Sets manager status for a user profile.
+   *
+   * @param externalId user external ID.
+   * @param request request payload containing desired manager flag.
+   * @return updated user profile.
+   */
   @PatchMapping(
       value = "/{externalId}/manager-status",
       consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -69,6 +93,13 @@ public class ManagerUserController {
     return service.setManagerStatus(externalId, request.isManager());
   }
 
+  /**
+   * Sets enabled/disabled status for a user profile.
+   *
+   * @param externalId user external ID.
+   * @param request request payload containing desired enabled flag.
+   * @return updated user profile.
+   */
   @PatchMapping(
       value = "/{externalId}/enabled",
       consumes = MediaType.APPLICATION_JSON_VALUE,

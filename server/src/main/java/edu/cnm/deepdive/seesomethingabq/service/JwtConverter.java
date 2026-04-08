@@ -12,12 +12,21 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
+/**
+ * Converts an authenticated {@link Jwt} into a Spring Security {@link UsernamePasswordAuthenticationToken}
+ * populated with a {@link UserProfile} principal.
+ */
 @Service
 @Profile("service")
 public class JwtConverter implements Converter<Jwt, UsernamePasswordAuthenticationToken> {
 
   private final UserService userService;
 
+  /**
+   * Creates a converter that resolves/creates user profiles via {@link UserService}.
+   *
+   * @param userService user service.
+   */
   @Autowired
   JwtConverter(UserService userService) {
     this.userService = userService;

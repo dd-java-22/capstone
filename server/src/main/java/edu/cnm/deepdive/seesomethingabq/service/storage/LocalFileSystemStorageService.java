@@ -29,6 +29,9 @@ import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.multipart.MultipartFile;
 
+/**
+ * {@link StorageService} implementation that stores content on the local file system.
+ */
 @Service
 public class LocalFileSystemStorageService implements StorageService {
 
@@ -41,6 +44,12 @@ public class LocalFileSystemStorageService implements StorageService {
 
   private Set<String> whiteList;
 
+  /**
+   * Creates a storage service configured by {@link StorageConfiguration}.
+   *
+   * @param storageConfiguration storage configuration properties.
+   * @param applicationHome application home, used when storage is configured relative to the app.
+   */
   @Autowired
   public LocalFileSystemStorageService(
       StorageConfiguration storageConfiguration,
