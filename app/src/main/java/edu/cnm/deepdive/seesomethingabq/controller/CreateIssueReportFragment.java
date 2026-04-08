@@ -88,6 +88,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @AndroidEntryPoint
+/**
+ * Fragment that collects issue report details (description, issue types, location, and attachments)
+ * and submits a new report via the {@link IssueReportViewModel}.
+ */
 public class CreateIssueReportFragment extends Fragment {
 
   //region Fields

@@ -30,6 +30,9 @@ import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManagerLoginBinding;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.LoginViewModel;
 
 @AndroidEntryPoint
+/**
+ * Fragment handling manager sign-in and navigation into manager-only screens.
+ */
 public class ManagerLoginFragment extends Fragment {
 
   private FragmentManagerLoginBinding binding;

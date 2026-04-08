@@ -29,6 +29,9 @@ import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManageIssuesBinding;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
 
 @AndroidEntryPoint
+/**
+ * Fragment displaying a paged list of issue reports for manager review.
+ */
 public class ManageIssuesFragment extends Fragment {
 
   private FragmentManageIssuesBinding binding;

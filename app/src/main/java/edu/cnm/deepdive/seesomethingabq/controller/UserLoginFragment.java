@@ -30,6 +30,9 @@ import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserLoginBinding;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
 
 @AndroidEntryPoint
+/**
+ * Fragment handling user sign-in and navigation into the user dashboard.
+ */
 public class UserLoginFragment extends Fragment {
 
   private FragmentUserLoginBinding binding;
