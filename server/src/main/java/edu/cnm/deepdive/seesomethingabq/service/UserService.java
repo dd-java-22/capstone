@@ -90,8 +90,6 @@ public interface UserService {
    */
   List<UserProfile> getAll();
 
-  // TODO: 4/8/2026 determine whether or not we can deprecate non-pageable getAll() 
-
   /**
    * Returns a page of user profiles.
    *
