@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.core.convert.ConversionFailedException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.servlet.HandlerMapping;
 
 /**
@@ -122,6 +123,15 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException ex) {
     return new ErrorResponse("Malformed request body.", Instant.now());
+  }
+
+  /**
+   * Handles multipart/form-data requests missing a required part (e.g., missing "file" upload).
+   */
+  @ExceptionHandler(MissingServletRequestPartException.class)
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ErrorResponse handleMissingServletRequestPart(MissingServletRequestPartException ex) {
+    return new ErrorResponse(ex.getMessage(), Instant.now());
   }
 
   /**

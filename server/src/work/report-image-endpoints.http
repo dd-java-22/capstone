@@ -1,26 +1,11 @@
 ###
-POST http://localhost:8080/see-something/issue-reports/{{externalKey}}/images
-Content-Type: application/json
-Authorization: bearer {{bearerToken}}
-Accept: application/json
-
-{
-  "imageLocator": "https://example.com/dev-images/dumped-trash-2.jpg",
-  "filename": "dumped-food.jpg",
-  "mimeType": "image/jpeg",
-  "albumOrder": 0
-}
-
-
-###
 GET http://localhost:8080/see-something/issue-reports/{{externalKey}}/images/{{imageId}}
-Content-Type: application/json
 Authorization: bearer {{bearerToken}}
-Accept: application/json
+Accept: image/jpeg
 
 
 ###
-POST http://localhost:8080/see-something/issue-reports/{{externalKey}}/images/upload
+POST http://localhost:8080/see-something/issue-reports/{{externalKey}}/images
 Authorization: bearer {{bearerToken}}
 Content-Type: multipart/form-data; boundary=----BOUNDARY
 
