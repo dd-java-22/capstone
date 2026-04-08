@@ -173,6 +173,23 @@
 
     </LinearLayout>
 
+    <HorizontalScrollView
+      android:id="@+id/attached_images_scroll"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/full_dynamic_spacing"
+      android:fillViewport="false"
+      android:scrollbars="none"
+      android:visibility="gone">
+
+      <LinearLayout
+        android:id="@+id/attached_images_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal" />
+
+    </HorizontalScrollView>
+
     <!-- Submit -->
 
     <com.google.android.material.button.MaterialButton

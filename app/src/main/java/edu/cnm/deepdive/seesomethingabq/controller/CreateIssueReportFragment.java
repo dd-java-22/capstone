@@ -32,6 +32,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.PickVisualMediaRequest;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -45,6 +47,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.location.CurrentLocationRequest;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -204,7 +207,7 @@ public class CreateIssueReportFragment extends Fragment {
     issueReportViewModel.getThrowable()
         .observe(getViewLifecycleOwner(), this::handleSubmitFailure);
     issueReportViewModel.getAttachedImages()
-        .observe(getViewLifecycleOwner(), (uris) -> Log.d(TAG, "attachedImages=" + uris));
+        .observe(getViewLifecycleOwner(), this::renderAttachedImages);
   }
 
   @Override
@@ -668,6 +671,49 @@ public class CreateIssueReportFragment extends Fragment {
     //noinspection ResultOfMethodCallIgnored
     cameraDir.mkdirs();
     return File.createTempFile("issue_report_", ".jpg", cameraDir);
+  }
+
+  private void renderAttachedImages(List<Uri> uris) {
+    if (binding == null) {
+      return;
+    }
+
+    binding.attachedImagesContainer.removeAllViews();
+
+    if (uris == null || uris.isEmpty()) {
+      binding.attachedImagesScroll.setVisibility(View.GONE);
+      return;
+    }
+
+    LayoutInflater inflater = LayoutInflater.from(requireContext());
+    binding.attachedImagesScroll.setVisibility(View.VISIBLE);
+
+    for (Uri uri : uris) {
+      if (uri == null) {
+        continue;
+      }
+      View itemView = inflater.inflate(
+          R.layout.item_attached_image_thumbnail,
+          binding.attachedImagesContainer,
+          false
+      );
+
+      ImageView thumbnail = itemView.findViewById(R.id.attached_image_thumbnail);
+      ImageButton removeButton = itemView.findViewById(R.id.remove_attached_image_button);
+
+      Glide.with(thumbnail)
+          .load(uri)
+          .placeholder(R.drawable.ic_image_placeholder)
+          .error(R.drawable.ic_broken_image)
+          .centerCrop()
+          .override(240, 240)
+          .thumbnail(0.25f)
+          .into(thumbnail);
+
+      removeButton.setOnClickListener(v -> issueReportViewModel.removeAttachedImage(uri));
+
+      binding.attachedImagesContainer.addView(itemView);
+    }
   }
 
   private void clearPendingAttachments() {
