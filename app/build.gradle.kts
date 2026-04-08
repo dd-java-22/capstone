@@ -221,14 +221,6 @@ dokka {
 
         suppressGeneratedFiles.set(true)
         skipDeprecated.set(false)
-
-        sourceLink {
-            localDirectory.set(file("src/main/java"))
-        }
-
-        sourceLink {
-            localDirectory.set(file("src/main/kotlin"))
-        }
     }
 }
 
