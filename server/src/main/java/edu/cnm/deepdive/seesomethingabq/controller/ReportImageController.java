@@ -1,6 +1,5 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
-import edu.cnm.deepdive.seesomethingabq.model.dto.AddImageRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportImage;
 import edu.cnm.deepdive.seesomethingabq.service.ReportImageService;
 import java.io.IOException;
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -76,25 +74,6 @@ public class ReportImageController {
   }
 
   /**
-   * Adds a new image metadata entry to an issue report. This endpoint does not upload a file; it
-   * only stores metadata. Only the report owner may add images.
-   *
-   * @param externalId The external ID (UUID) of the issue report.
-   * @param request     The image metadata to add.
-   * @return The newly created {@link ReportImage}.
-   */
-  @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public ResponseEntity<ReportImage> addImage(@PathVariable UUID externalId,
-      @RequestBody AddImageRequest request) {
-    ReportImage created = service.addImage(externalId, request);
-    URI location = linkTo(methodOn(ReportImageController.class)
-        .getImage(externalId, created.getExternalId()))
-        .toUri();
-    return ResponseEntity.created(location).body(created);
-  }
-
-  /**
    * Uploads an image file and creates a corresponding {@link ReportImage} metadata entry. The file
    * is stored using the configured {@code StorageService}, and the generated storage key is saved
    * as the image locator. Only the report owner may upload images.
@@ -105,12 +84,9 @@ public class ReportImageController {
    * @throws IOException             If an I/O error occurs while storing the file.
    * @throws HttpMediaTypeException  If the uploaded file's MIME type is not allowed.
    */
-  @PostMapping(
-      value = "/upload",
-      consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE
-  )
-  public ResponseEntity<ReportImage> uploadImage(
+  @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE)
+  public ResponseEntity<ReportImage> createImage(
       @PathVariable UUID externalId,
       @RequestPart("file") MultipartFile file
   ) throws IOException, HttpMediaTypeException {

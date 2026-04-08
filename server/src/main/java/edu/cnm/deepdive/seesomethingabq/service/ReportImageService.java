@@ -1,6 +1,5 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
-import edu.cnm.deepdive.seesomethingabq.model.dto.AddImageRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportImage;
 import java.io.IOException;
 import java.util.UUID;
@@ -21,15 +20,6 @@ public interface ReportImageService {
    * @return The requested report image.
    */
   ReportImage getImage(UUID externalId, UUID imageId);
-
-  /**
-   * Adds a new image to an issue report.
-   *
-   * @param externalKey The external ID (UUID) of the issue report.
-   * @param request The image data to add.
-   * @return The newly created report image.
-   */
-  ReportImage addImage(UUID externalKey, AddImageRequest request);
 
   /**
    * Uploads an image file and creates a corresponding {@link ReportImage} metadata entry.

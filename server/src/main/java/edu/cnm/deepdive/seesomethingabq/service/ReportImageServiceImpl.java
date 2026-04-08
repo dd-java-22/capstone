@@ -2,7 +2,6 @@ package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.exception.AccessDeniedException;
 import edu.cnm.deepdive.seesomethingabq.exception.ResourceNotFoundException;
-import edu.cnm.deepdive.seesomethingabq.model.dto.AddImageRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportImage;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
@@ -63,28 +62,6 @@ public class ReportImageServiceImpl implements ReportImageService {
 
     return reportImageRepository.findByIssueReportAndExternalId(report, imageId)
         .orElseThrow(() -> new ResourceNotFoundException("Image not found"));
-  }
-
-  @Override
-  public ReportImage addImage(UUID externalId, AddImageRequest request) {
-    UserProfile currentUser = userService.getCurrentUser();
-    IssueReport report = issueReportRepository.findByExternalId(externalId)
-        .orElseThrow(() -> new ResourceNotFoundException("Issue report not found"));
-
-    // Check access: user must own the report
-    if (!report.getUserProfile().getId().equals(currentUser.getId())) {
-      throw new AccessDeniedException("You can only add images to your own reports");
-    }
-
-    // Create and populate the new image
-    ReportImage image = new ReportImage();
-    image.setIssueReport(report);
-    image.setImageLocator(request.getImageLocator());
-    image.setFilename(request.getFilename());
-    image.setMimeType(request.getMimeType());
-    image.setAlbumOrder(request.getAlbumOrder());
-
-    return reportImageRepository.save(image);
   }
 
   /**

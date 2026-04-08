@@ -11,7 +11,6 @@ import static org.mockito.Mockito.when;
 
 import edu.cnm.deepdive.seesomethingabq.exception.AccessDeniedException;
 import edu.cnm.deepdive.seesomethingabq.exception.ResourceNotFoundException;
-import edu.cnm.deepdive.seesomethingabq.model.dto.AddImageRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportImage;
@@ -76,7 +75,7 @@ class ReportImageServiceImplTest {
     image = new ReportImage();
     setField(image, "externalId", IMAGE_EXTERNAL_ID);
     image.setIssueReport(report);
-    image.setImageLocator(URI.create("file:" + STORAGE_KEY));
+    image.setImageLocator(URI.create("stored:" + STORAGE_KEY));
     image.setFilename("photo.jpg");
     image.setMimeType("image/jpeg");
     image.setAlbumOrder(0);
@@ -135,59 +134,6 @@ class ReportImageServiceImplTest {
 
     assertThrows(ResourceNotFoundException.class,
         () -> service.getImage(REPORT_EXTERNAL_ID, IMAGE_EXTERNAL_ID));
-  }
-
-  @Test
-  void addImage_success() {
-    AddImageRequest request = new AddImageRequest();
-    request.setFilename("photo.jpg");
-    request.setMimeType("image/jpeg");
-    request.setAlbumOrder(0);
-    request.setImageLocator(URI.create("file:" + STORAGE_KEY));
-
-    when(userService.getCurrentUser()).thenReturn(owner);
-    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
-    when(reportImageRepository.save(any(ReportImage.class))).thenAnswer(invocation -> invocation.getArgument(0));
-
-    ReportImage result = service.addImage(REPORT_EXTERNAL_ID, request);
-
-    assertNotNull(result);
-    assertEquals(request.getFilename(), result.getFilename());
-    assertEquals(request.getMimeType(), result.getMimeType());
-    assertEquals(request.getAlbumOrder(), result.getAlbumOrder());
-    assertEquals(request.getImageLocator(), result.getImageLocator());
-    assertEquals(report, result.getIssueReport());
-    verify(reportImageRepository).save(any(ReportImage.class));
-  }
-
-  @Test
-  void addImage_notOwner_throwsAccessDenied() {
-    when(userService.getCurrentUser()).thenReturn(manager);
-    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
-
-    AddImageRequest request = new AddImageRequest();
-    request.setFilename("photo.jpg");
-    request.setMimeType("image/jpeg");
-    request.setAlbumOrder(0);
-    request.setImageLocator(URI.create("file:" + STORAGE_KEY));
-
-    assertThrows(AccessDeniedException.class, () -> service.addImage(REPORT_EXTERNAL_ID, request));
-    verify(reportImageRepository, never()).save(any());
-  }
-
-  @Test
-  void addImage_reportNotFound_throws() {
-    when(userService.getCurrentUser()).thenReturn(owner);
-    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.empty());
-
-    AddImageRequest request = new AddImageRequest();
-    request.setFilename("photo.jpg");
-    request.setMimeType("image/jpeg");
-    request.setAlbumOrder(0);
-    request.setImageLocator(URI.create("file:" + STORAGE_KEY));
-
-    assertThrows(ResourceNotFoundException.class, () -> service.addImage(REPORT_EXTERNAL_ID, request));
-    verify(reportImageRepository, never()).save(any());
   }
 
   @Test

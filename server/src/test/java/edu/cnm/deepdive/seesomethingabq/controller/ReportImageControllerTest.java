@@ -9,11 +9,9 @@ import static org.springframework.security.test.web.servlet.setup.SecurityMockMv
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
-import edu.cnm.deepdive.seesomethingabq.model.dto.AddImageRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportImage;
 import edu.cnm.deepdive.seesomethingabq.service.ReportImageService;
 import java.nio.charset.StandardCharsets;
@@ -21,13 +19,11 @@ import java.net.URI;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
-import org.springframework.http.MediaType;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
@@ -114,7 +110,7 @@ class ReportImageControllerTest {
     );
 
     mockMvc.perform(
-            multipart("/issue-reports/{reportId}/images/upload", reportId)
+            multipart("/issue-reports/{reportId}/images", reportId)
                 .file(file)
                 .with(csrf())
         )
@@ -146,7 +142,7 @@ class ReportImageControllerTest {
     );
 
     mockMvc.perform(
-            multipart("/issue-reports/{reportId}/images/upload", reportId)
+            multipart("/issue-reports/{reportId}/images", reportId)
                 .file(file)
                 .with(csrf())
         )
@@ -160,39 +156,19 @@ class ReportImageControllerTest {
 
   @Test
   @WithMockUser(roles = "USER")
-  void addImage_createsImage() throws Exception {
+  void uploadImage_missingFilePart_returnsBadRequest() throws Exception {
     UUID reportId = UUID.randomUUID();
-    UUID imageId = UUID.randomUUID();
-
-    ReportImage created = new ReportImage();
-    created.setFilename("new.jpg");
-    ReflectionTestUtils.setField(created, "externalId", imageId);
-
-    when(reportImageService.addImage(
-        org.mockito.ArgumentMatchers.eq(reportId),
-        org.mockito.ArgumentMatchers.any(AddImageRequest.class)
-    )).thenReturn(created);
 
     mockMvc.perform(
-            post("/issue-reports/{reportId}/images", reportId)
+            multipart("/issue-reports/{reportId}/images", reportId)
                 .with(csrf())
-                .contentType(MediaType.APPLICATION_JSON)
-                .content("""
-                    {
-                      "filename": "new.jpg",
-                      "mimeType": "image/jpeg",
-                      "imageLocator": "stored:new.jpg",
-                      "albumOrder": 1
-                    }
-                    """)
         )
-        .andExpect(status().isCreated())
-        .andExpect(header().string("Location",
-            endsWith("/issue-reports/" + reportId + "/images/" + imageId)))
-        .andExpect(jsonPath("$.filename").value("new.jpg"));
+        .andExpect(status().isBadRequest());
 
-    ArgumentCaptor<AddImageRequest> captor = ArgumentCaptor.forClass(AddImageRequest.class);
-    verify(reportImageService).addImage(org.mockito.ArgumentMatchers.eq(reportId), captor.capture());
+    verify(reportImageService, never()).uploadImage(
+        org.mockito.ArgumentMatchers.eq(reportId),
+        org.mockito.ArgumentMatchers.any()
+    );
   }
 
   @Test
