@@ -49,14 +49,20 @@ public class IssueReportViewModel extends ViewModel {
 
   public LiveData<PagingData<IssueReportSummary>> getIssueReports(Activity activity) {
     if (issueReports == null) {
-      issueReports = PagingLiveData.getLiveData(issueReportService.getAllIssueReportsPager(activity));
+      issueReports = PagingLiveData.cachedIn(
+          PagingLiveData.getLiveData(issueReportService.getAllIssueReportsPager(activity)),
+          this
+      );
     }
     return issueReports;
   }
 
   public LiveData<PagingData<IssueReportSummary>> getMyIssueReports(Activity activity) {
     if (myIssueReports == null) {
-      myIssueReports = PagingLiveData.getLiveData(issueReportService.getMyIssueReportsPager(activity));
+      myIssueReports = PagingLiveData.cachedIn(
+          PagingLiveData.getLiveData(issueReportService.getMyIssueReportsPager(activity)),
+          this
+      );
     }
     return myIssueReports;
   }
