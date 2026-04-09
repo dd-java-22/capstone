@@ -22,7 +22,9 @@ import com.google.android.material.chip.ChipDrawable
 @AndroidEntryPoint
 class ReportDetailFragment : Fragment() {
 
-    private lateinit var binding: FragmentReportDetailBinding
+    private var _binding: FragmentReportDetailBinding? = null
+    private val binding: FragmentReportDetailBinding
+        get() = _binding!!
     private val viewModel: IssueReportViewModel by viewModels()
     private val issueTypeViewModel: IssueTypeViewModel by viewModels()
     private val args: ReportDetailFragmentArgs by navArgs()
@@ -38,7 +40,7 @@ class ReportDetailFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentReportDetailBinding.inflate(inflater, container, false)
+        _binding = FragmentReportDetailBinding.inflate(inflater, container, false)
 
         binding.editButton.setOnClickListener {
             setEditing(true)
@@ -80,6 +82,7 @@ class ReportDetailFragment : Fragment() {
         viewModel.getReport(requireActivity(), reportId)
             .thenAccept { report ->
                 requireActivity().runOnUiThread {
+                    val binding = _binding ?: return@runOnUiThread
                     loadedReport = report
                     originalReport = report
                     selectedIssueTypeTags.clear()
@@ -87,7 +90,7 @@ class ReportDetailFragment : Fragment() {
                     setEditing(false)
 
                     // Populate form fields.
-                    binding.descriptionInput.setText(report.description ?: "")
+                    binding.descriptionInput.setText(report.description.orEmpty())
                     binding.locationInput.setText(bestLocationText(report))
                     populateIssueTypeChips()
 
@@ -122,6 +125,7 @@ class ReportDetailFragment : Fragment() {
 
     private fun cancelEdits() {
         val original = originalReport ?: return
+        val binding = _binding ?: return
         binding.descriptionInput.setText(original.description ?: "")
         selectedIssueTypeTags.clear()
         selectedIssueTypeTags.addAll(original.issueTypes)
@@ -139,8 +143,8 @@ class ReportDetailFragment : Fragment() {
             textDescription = description,
             latitude = current.latitude,
             longitude = current.longitude,
-            // Location is read-only in PR1; round-trip what we have loaded so we don't null it out.
-            streetCoordinate = binding.locationInput.text?.toString()?.trim()?.takeIf { it.isNotEmpty() },
+            // Location is read-only in PR1; don't mutate it (and don't overwrite streetCoordinate with a display string).
+            streetCoordinate = null,
             locationDescription = current.locationDescription,
             issueTypes = issueTypes
         )
@@ -149,9 +153,10 @@ class ReportDetailFragment : Fragment() {
         viewModel.updateReport(requireActivity(), current.externalId, request)
             .thenAccept { saved ->
                 requireActivity().runOnUiThread {
+                    val binding = _binding ?: return@runOnUiThread
                     loadedReport = saved
                     originalReport = saved
-                    binding.descriptionInput.setText(saved.description ?: "")
+                    binding.descriptionInput.setText(saved.description.orEmpty())
                     binding.locationInput.setText(bestLocationText(saved))
                     selectedIssueTypeTags.clear()
                     selectedIssueTypeTags.addAll(saved.issueTypes)
@@ -162,6 +167,7 @@ class ReportDetailFragment : Fragment() {
             }
             .exceptionally { thrown ->
                 requireActivity().runOnUiThread {
+                    val binding = _binding ?: return@runOnUiThread
                     Snackbar.make(
                         binding.root,
                         thrown?.message ?: "Save failed",
@@ -181,9 +187,7 @@ class ReportDetailFragment : Fragment() {
     }
 
     private fun populateIssueTypeChips() {
-        if (!this::binding.isInitialized) {
-            return
-        }
+        val binding = _binding ?: return
         binding.issueTypeChipGroup.removeAllViews()
         for (issueType in availableIssueTypes) {
             val tag = issueType.issueTypeTag
@@ -210,5 +214,10 @@ class ReportDetailFragment : Fragment() {
             }
             binding.issueTypeChipGroup.addView(chip)
         }
+    }
+
+    override fun onDestroyView() {
+        _binding = null
+        super.onDestroyView()
     }
 }
