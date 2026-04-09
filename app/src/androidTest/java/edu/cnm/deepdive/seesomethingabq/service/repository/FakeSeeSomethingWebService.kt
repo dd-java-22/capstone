@@ -82,6 +82,18 @@ class FakeSeeSomethingWebService @Inject constructor() : SeeSomethingWebService 
     )
   }
 
+  override suspend fun getManagerUser(bearerToken: String, externalId: UUID): UserProfileSummary {
+    return UserProfileSummary(
+      externalId = externalId,
+      displayName = fakeDisplayName,
+      email = fakeEmail,
+      avatar = null,
+      manager = fakeManager,
+      timeCreated = Instant.EPOCH,
+      userEnabled = fakeUserEnabled,
+    )
+  }
+
   override suspend fun submitIssueReport(bearerToken: String, request: IssueReportRequest) {
   }
 }

@@ -17,6 +17,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.future.future
 import java.util.concurrent.CompletableFuture
+import java.util.UUID
 
 @Singleton
 /**
@@ -37,6 +38,15 @@ class ManagerUserServiceImpl @Inject constructor(
     scope.future {
       val credential = getCredential(activity)
       webService.getManagerUsersPage("Bearer ${credential.idToken}", page, size)
+    }
+
+  override fun getManagerUser(
+    activity: Activity,
+    externalId: UUID
+  ): CompletableFuture<UserProfileSummary> =
+    scope.future {
+      val credential = getCredential(activity)
+      webService.getManagerUser("Bearer ${credential.idToken}", externalId)
     }
 
   override fun getManagerUsersPager(activity: Activity): Pager<Int, UserProfileSummary> {

@@ -9,8 +9,10 @@ import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.POST
+import java.util.UUID
 
 /**
  * Retrofit interface for the SeeSomethingABQ server API.
@@ -73,6 +75,19 @@ interface SeeSomethingWebService {
     @Query("pageNumber") page: Int = 0,
     @Query("pageSize") size: Int = 10
   ): PaginatedResponse<UserProfileSummary>
+
+  /**
+   * Retrieves a single manager-visible user profile by external ID.
+   *
+   * @param bearerToken Authorization header value.
+   * @param externalId user external ID (UUID).
+   * @return user profile summary.
+   */
+  @GET("manager/users/{externalId}")
+  suspend fun getManagerUser(
+    @Header("Authorization") bearerToken: String,
+    @Path("externalId") externalId: UUID
+  ): UserProfileSummary
 
   /**
    * Submits a new issue report.

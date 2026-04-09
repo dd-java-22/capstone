@@ -16,25 +16,40 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManagerUserDetailBinding;
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.ManagerUserDetailViewModel;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.UUID;
 
 @AndroidEntryPoint
 /**
  * Fragment displaying manager-facing details for a single user.
  *
- * This is a placeholder destination; UI will be filled in later.
+ * Read-only first pass; edit/mutation actions are placeholders.
  */
 public class ManagerUserDetailFragment extends Fragment {
 
+  private static final String TAG = ManagerUserDetailFragment.class.getSimpleName();
+
   private FragmentManagerUserDetailBinding binding;
+  private ManagerUserDetailViewModel viewModel;
+  private UUID externalId;
+
+  private final DateTimeFormatter dateTimeFormatter =
+      DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault());
 
   @Nullable
   @Override
@@ -47,8 +62,20 @@ public class ManagerUserDetailFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    UUID externalId = ManagerUserDetailFragmentArgs.fromBundle(requireArguments()).getExternalId();
-    binding.externalIdValue.setText(String.valueOf(externalId));
+    externalId = ManagerUserDetailFragmentArgs.fromBundle(requireArguments()).getExternalId();
+    viewModel = new ViewModelProvider(this).get(ManagerUserDetailViewModel.class);
+
+    bindPlaceholders(externalId);
+    setupButtons();
+
+    viewModel.getUser().observe(getViewLifecycleOwner(), this::bindUser);
+    viewModel.getThrowable().observe(getViewLifecycleOwner(), (throwable) -> {
+      if (throwable != null) {
+        Log.e(TAG, throwable.getMessage(), throwable);
+        Toast.makeText(requireContext(), "Failed to load user details", Toast.LENGTH_SHORT).show();
+      }
+    });
+    viewModel.load(requireActivity(), externalId);
   }
 
   @Override
@@ -57,5 +84,41 @@ public class ManagerUserDetailFragment extends Fragment {
     super.onDestroyView();
   }
 
-}
+  private void bindPlaceholders(UUID externalId) {
+    binding.displayName.setText("Loading...");
+    binding.email.setText("");
+    binding.authority.setText("");
+    binding.created.setText("");
+    binding.disabledMessage.setVisibility(View.GONE);
+    binding.managerAuthButton.setText("Authorize as Manager");
+    binding.accountActivationButton.setText("Deactivate Account");
+    binding.externalIdValue.setText(String.valueOf(externalId));
+  }
 
+  private void bindUser(UserProfileSummary user) {
+    if (user == null || binding == null) {
+      return;
+    }
+    binding.displayName.setText(user.getDisplayName());
+    binding.email.setText(user.getEmail());
+    binding.authority.setText(user.getManager() ? "Manager" : "User");
+    binding.created.setText(dateTimeFormatter.format(user.getTimeCreated()));
+    binding.disabledMessage.setVisibility(user.getUserEnabled() ? View.GONE : View.VISIBLE);
+    binding.managerAuthButton.setText(
+        user.getManager() ? "Revoke Manager Authorization" : "Authorize as Manager");
+    binding.accountActivationButton.setText(
+        user.getUserEnabled() ? "Deactivate Account" : "Reactivate Account");
+  }
+
+  private void setupButtons() {
+    binding.managerAuthButton.setOnClickListener((v) -> {
+      Log.d(TAG, "Manager auth button tapped for externalId=" + externalId);
+      Toast.makeText(requireContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+    });
+    binding.accountActivationButton.setOnClickListener((v) -> {
+      Log.d(TAG, "Account activation button tapped for externalId=" + externalId);
+      Toast.makeText(requireContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+    });
+  }
+
+}
