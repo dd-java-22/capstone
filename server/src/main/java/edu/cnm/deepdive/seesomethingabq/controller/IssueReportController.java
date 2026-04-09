@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportDto;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
@@ -67,12 +68,16 @@ public class IssueReportController {
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public ResponseEntity<IssueReport> createReport(@RequestBody IssueReportRequest request) {
+  public ResponseEntity<IssueReportDto> createReport(@RequestBody IssueReportRequest request) {
     IssueReport created = issueReportService.createReport(request);
+    IssueReportDto dto = IssueReportDto.from(created);
+
     URI location = linkTo(methodOn(IssueReportController.class)
         .getReport(created.getExternalId()))
         .toUri();
-    return ResponseEntity.created(location).body(created);
+
+    return ResponseEntity.created(location).body(dto);
+
   }
 
   /**
@@ -82,9 +87,11 @@ public class IssueReportController {
    * @return issue report entity.
    */
   @GetMapping("/{externalId}")
-  public IssueReport getReport(@PathVariable UUID externalId) {
-    return issueReportService.getReportByExternalId(externalId);
+  public IssueReportDto getReport(@PathVariable UUID externalId) {
+    IssueReport entity = issueReportService.getReportByExternalId(externalId);
+    return IssueReportDto.from(entity);
   }
+
 
   /**
    * Updates an existing issue report.

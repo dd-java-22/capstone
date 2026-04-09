@@ -15,11 +15,15 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -29,7 +33,9 @@ import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserDashboardBinding;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
+import java.util.Collections;
 
 @AndroidEntryPoint
 /**
@@ -40,15 +46,32 @@ public class UserDashboardFragment extends Fragment {
   private FragmentUserDashboardBinding binding;
   private UserViewModel viewModel;
 
+  // 1️⃣ Java version of ActivityResultLauncher
+  private final ActivityResultLauncher<String> pickImageLauncher =
+      registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
+        if (uri != null) {
+          uploadTestImage(uri);
+        }
+      });
+
   @Nullable
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+
     binding = FragmentUserDashboardBinding.inflate(inflater, container, false);
+
+    // Existing button
     binding.createIssueButton.setOnClickListener((v) -> {
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_create_issue_report_fragment);
     });
+
+    // 2️⃣ NEW: Test upload button
+    binding.testUploadButton.setOnClickListener(v -> {
+      pickImageLauncher.launch("image/*");
+    });
+
     return binding.getRoot();
   }
 
@@ -59,12 +82,33 @@ public class UserDashboardFragment extends Fragment {
 
     viewModel.getUser()
         .observe(getViewLifecycleOwner(), user -> {
-
           if (user != null) {
             binding.displayName.setText(user.getDisplayName());
             binding.oauthKey.setText(user.getOauthKey());
             binding.externalKey.setText(user.getExternalId().toString());
           }
+        });
+  }
+
+  // 3️⃣ Upload test image
+  private void uploadTestImage(Uri uri) {
+
+    // TODO: Replace with a real reportId from your backend
+    String testReportId = "3c9c48ad-f3bc-4e73-ab1e-52a22239c044";
+
+    IssueReportViewModel reportViewModel =
+        new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
+
+    reportViewModel.uploadImages(requireActivity(), testReportId, Collections.singletonList(uri))
+        .thenAccept(result -> requireActivity().runOnUiThread(() ->
+            Toast.makeText(requireContext(), "Upload complete!", Toast.LENGTH_SHORT).show()
+        ))
+        .exceptionally(e -> {
+          requireActivity().runOnUiThread(() ->
+              Toast.makeText(requireContext(), "Upload failed: " + e.getMessage(),
+                  Toast.LENGTH_LONG).show()
+          );
+          return null;
         });
   }
 

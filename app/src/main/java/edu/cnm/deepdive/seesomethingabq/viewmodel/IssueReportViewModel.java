@@ -120,6 +120,11 @@ public class IssueReportViewModel extends ViewModel {
         });
   }
 
+  public CompletableFuture<Void> uploadImages(Activity activity, String reportId, List<Uri> uris) {
+    return issueReportService.uploadImages(activity, reportId, uris);
+  }
+
+
   /**
    * Submits a new issue report.
    *

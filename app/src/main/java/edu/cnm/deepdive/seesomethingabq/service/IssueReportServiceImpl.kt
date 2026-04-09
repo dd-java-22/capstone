@@ -58,8 +58,11 @@ class IssueReportServiceImpl @Inject constructor(
   ): CompletableFuture<IssueReport> =
     scope.future {
       val credential = getCredential(activity)
-      webService.submitIssueReport("Bearer ${credential.idToken}", request)
+      val report = webService.submitIssueReport("Bearer ${credential.idToken}", request)
+      report
     }
+
+
 
   override fun uploadImages(
     activity: Activity,
@@ -70,24 +73,28 @@ class IssueReportServiceImpl @Inject constructor(
       if (uris.isEmpty()) {
         return@future null
       }
+
       val credential = getCredential(activity)
       val bearer = "Bearer ${credential.idToken}"
 
       for (uri in uris) {
         val inputStream = activity.contentResolver.openInputStream(uri)
           ?: continue
+
         val bytes = inputStream.readBytes()
         inputStream.close()
 
         val requestBody = bytes.toRequestBody("image/jpeg".toMediaTypeOrNull())
         val part = MultipartBody.Part.createFormData(
-          "file",
-          "upload.jpg",
+          "file",              // MUST match @RequestPart("file")
+          "upload.jpg",        // filename (backend ignores it)
           requestBody
         )
 
+        // This calls POST /issue-reports/{reportId}/images
         webService.uploadImage(bearer, reportId, part)
       }
+
       null
     }
 

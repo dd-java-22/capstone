@@ -94,7 +94,7 @@ interface SeeSomethingWebService {
    * @return The created image metadata.
    */
   @Multipart
-  @POST("see-something/issue-reports/{reportId}/images/upload")
+  @POST("issue-reports/{reportId}/images")
   suspend fun uploadImage(
     @Header("Authorization") bearerToken: String,
     @Path("reportId") reportId: String,
@@ -104,7 +104,7 @@ interface SeeSomethingWebService {
   /**
    * Retrieves metadata for a specific image belonging to an issue report.
    */
-  @GET("see-something/issue-reports/{reportId}/images/{imageId}")
+  @GET("issue-reports/{reportId}/images/{imageId}") // ⭐ FIXED
   suspend fun getImageMetadata(
     @Header("Authorization") bearerToken: String,
     @Path("reportId") reportId: String,
@@ -116,17 +116,19 @@ interface SeeSomethingWebService {
    *
    * @return The image file as a streaming response body.
    */
-  @GET("see-something/issue-reports/{reportId}/images/{imageId}/file")
+  @GET("issue-reports/{reportId}/images/{imageId}/file") // ⭐ FIXED
   suspend fun downloadImageFile(
     @Header("Authorization") bearerToken: String,
     @Path("reportId") reportId: String,
     @Path("imageId") imageId: String
   ): ResponseBody
 
+  /**
+   * Retrieves a full issue report including metadata and image list.
+   */
   @GET("issue-reports/{reportId}")
   suspend fun getIssueReport(
     @Header("Authorization") bearerToken: String,
     @Path("reportId") reportId: String
   ): IssueReport
-
 }
