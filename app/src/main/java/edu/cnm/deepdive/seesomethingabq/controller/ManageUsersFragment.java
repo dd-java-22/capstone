@@ -28,6 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.controller.adapter.ManagerUserAdapter;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManageUsersBinding;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.ManageUsersViewModel;
+import java.util.Locale;
 
 @AndroidEntryPoint
 /**
@@ -57,7 +58,9 @@ public class ManageUsersFragment extends Fragment {
       Log.d(
           TAG,
           String.format(
-              "Tapped user: name=%s; email=%s; manager=%s; enabled=%s",
+              Locale.US,
+              "Tapped user: externalId=%s; name=%s; email=%s; manager=%s; enabled=%s",
+              user.getExternalId(),
               user.getDisplayName(),
               user.getEmail(),
               user.getManager(),
