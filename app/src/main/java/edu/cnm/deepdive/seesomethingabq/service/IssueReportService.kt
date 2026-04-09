@@ -1,14 +1,19 @@
 package edu.cnm.deepdive.seesomethingabq.service
 
 import android.app.Activity
+import android.net.Uri
 import androidx.paging.Pager
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReport
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
 import java.util.concurrent.CompletableFuture
+import okhttp3.ResponseBody
 
 /**
- * Service for submitting and retrieving issue reports from the server API.
+ * Defines high-level operations for working with issue reports on the client side.
+ *
+ * This service coordinates authentication, Retrofit calls, and paging.
  */
 interface IssueReportService {
 
@@ -19,7 +24,29 @@ interface IssueReportService {
    * @param request request payload describing the report.
    * @return future that completes when submission is done.
    */
-  fun submit(activity: Activity, request: IssueReportRequest): CompletableFuture<Void?>
+    fun submit(activity: Activity, request: IssueReportRequest): CompletableFuture<IssueReport>
+
+    /**
+     * Uploads all provided image URIs for the given report ID.
+     *
+     * The returned future completes when all uploads have finished.
+     */
+    fun uploadImages(
+        activity: Activity,
+        reportId: String,
+        uris: List<Uri>
+    ): CompletableFuture<Void?>
+
+    /**
+     * Downloads the raw image file for the given report and image IDs.
+     *
+     * The caller is responsible for consuming and closing the [ResponseBody].
+     */
+    fun downloadImageFile(
+        activity: Activity,
+        reportId: String,
+        imageId: String
+    ): CompletableFuture<ResponseBody>
 
   /**
    * Retrieves a single paginated page of issue report summaries.
@@ -42,5 +69,12 @@ interface IssueReportService {
    * @return pager producing [IssueReportSummary] items.
    */
   fun getIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
+
+
+  fun getReport(
+    activity: Activity,
+    reportId: String
+  ): CompletableFuture<IssueReport>
+
 
 }
