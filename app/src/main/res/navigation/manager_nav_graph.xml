@@ -45,6 +45,24 @@
     android:id="@+id/manage_users_fragment"
     android:name="edu.cnm.deepdive.seesomethingabq.controller.ManageUsersFragment"
     android:label="Manage Users"
-    tools:layout="@layout/fragment_manage_users"/>
+    tools:layout="@layout/fragment_manage_users">
+
+    <action
+      android:id="@+id/navigate_to_manager_user_detail_fragment"
+      app:destination="@id/manager_user_detail_fragment"/>
+
+  </fragment>
+
+  <fragment
+    android:id="@+id/manager_user_detail_fragment"
+    android:name="edu.cnm.deepdive.seesomethingabq.controller.ManagerUserDetailFragment"
+    android:label="User Detail"
+    tools:layout="@layout/fragment_manager_user_detail">
+
+    <argument
+      android:name="externalId"
+      app:argType="java.util.UUID"/>
+
+  </fragment>
 
 </navigation>

@@ -13,11 +13,13 @@ import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.Path
+import retrofit2.http.Query
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
-import retrofit2.http.Path
-import retrofit2.http.Query
+
+import java.util.UUID
 
 /**
  * Defines the Retrofit HTTP API for interacting with the SeeSomethingABQ backend service.
@@ -88,6 +90,19 @@ interface SeeSomethingWebService {
     @Query("pageNumber") page: Int = 0,
     @Query("pageSize") size: Int = 10
   ): PaginatedResponse<UserProfileSummary>
+
+  /**
+   * Retrieves a single manager-visible user profile by external ID.
+   *
+   * @param bearerToken Authorization header value.
+   * @param externalId user external ID (UUID).
+   * @return user profile summary.
+   */
+  @GET("manager/users/{externalId}")
+  suspend fun getManagerUser(
+    @Header("Authorization") bearerToken: String,
+    @Path("externalId") externalId: UUID
+  ): UserProfileSummary
 
   /**
    * Submits a new issue report.

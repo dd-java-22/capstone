@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.controller.adapter.ManagerUserAdapter;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManageUsersBinding;
@@ -67,6 +68,9 @@ public class ManageUsersFragment extends Fragment {
               user.getUserEnabled()
           )
       );
+      Navigation.findNavController(view)
+          .navigate(ManageUsersFragmentDirections
+              .navigateToManagerUserDetailFragment(user.getExternalId()));
     });
     binding.managerUsersRecycler.setAdapter(adapter);
     viewModel.getUsers(requireActivity()).observe(getViewLifecycleOwner(), pagingData -> {

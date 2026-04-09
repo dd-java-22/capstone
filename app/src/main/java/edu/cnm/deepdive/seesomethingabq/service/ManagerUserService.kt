@@ -5,11 +5,24 @@ import androidx.paging.Pager
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary
 import java.util.concurrent.CompletableFuture
+import java.util.UUID
 
 /**
  * Service for retrieving manager-visible user data from the server API.
  */
 interface ManagerUserService {
+
+  /**
+   * Retrieves a single user profile summary by external ID for manager views.
+   *
+   * @param activity activity used for authentication flows.
+   * @param externalId user external ID (UUID).
+   * @return future completing with the user profile summary.
+   */
+  fun getManagerUser(
+    activity: Activity,
+    externalId: UUID
+  ): CompletableFuture<UserProfileSummary>
 
   /**
    * Retrieves a single paginated page of user profile summaries for manager views.
