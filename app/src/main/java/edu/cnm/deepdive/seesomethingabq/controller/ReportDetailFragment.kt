@@ -9,19 +9,29 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
+import dagger.hilt.android.AndroidEntryPoint
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentReportDetailBinding
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReport
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
+import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
+import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel
+import com.google.android.material.chip.Chip
+import com.google.android.material.chip.ChipDrawable
 
+@AndroidEntryPoint
 class ReportDetailFragment : Fragment() {
 
     private lateinit var binding: FragmentReportDetailBinding
     private val viewModel: IssueReportViewModel by viewModels()
+    private val issueTypeViewModel: IssueTypeViewModel by viewModels()
     private val args: ReportDetailFragmentArgs by navArgs()
 
     private var loadedReport: IssueReport? = null
+    private var originalReport: IssueReport? = null
     private var editing: Boolean = false
+    private val selectedIssueTypeTags: MutableSet<String> = linkedSetOf()
+    private var availableIssueTypes: List<IssueType> = emptyList()
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +48,28 @@ class ReportDetailFragment : Fragment() {
             save()
         }
 
+        binding.cancelButton.setOnClickListener {
+            cancelEdits()
+        }
+
+        // Location/images are not editable in PR1; keep controls disabled.
+        binding.locationInput.isEnabled = false
+        binding.useCurrentLocationButton.isEnabled = false
+        binding.takePhotoButton.isEnabled = false
+        binding.attachGalleryImageButton.isEnabled = false
+
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        issueTypeViewModel.issueTypes.observe(viewLifecycleOwner) { issueTypes ->
+            if (issueTypes != null) {
+                availableIssueTypes = issueTypes
+                populateIssueTypeChips()
+            }
+        }
+        issueTypeViewModel.refresh(requireActivity())
     }
 
     override fun onResume() {
@@ -50,13 +81,17 @@ class ReportDetailFragment : Fragment() {
             .thenAccept { report ->
                 requireActivity().runOnUiThread {
                     loadedReport = report
+                    originalReport = report
+                    selectedIssueTypeTags.clear()
+                    selectedIssueTypeTags.addAll(report.issueTypes)
                     setEditing(false)
 
-                    // Populate text fields
-                    binding.reportDescription.setText(report.description ?: "")
-                    binding.reportIssueTypes.setText(report.issueTypes.joinToString(", "))
+                    // Populate form fields.
+                    binding.descriptionInput.setText(report.description ?: "")
+                    binding.locationInput.setText(bestLocationText(report))
+                    populateIssueTypeChips()
 
-                    // Setup RecyclerView
+                    // Setup existing images display (read-only).
                     val adapter = ReportImageAdapter(
                         requireActivity(),
                         report.reportImages ?: emptyList(),
@@ -72,34 +107,40 @@ class ReportDetailFragment : Fragment() {
 
     private fun setEditing(editing: Boolean) {
         this.editing = editing
-        binding.reportDescription.isEnabled = editing
-        binding.reportDescription.isFocusable = editing
-        binding.reportDescription.isFocusableInTouchMode = editing
 
-        binding.reportIssueTypes.isEnabled = editing
-        binding.reportIssueTypes.isFocusable = editing
-        binding.reportIssueTypes.isFocusableInTouchMode = editing
+        binding.descriptionInput.isEnabled = editing
+        binding.descriptionInput.isFocusable = editing
+        binding.descriptionInput.isFocusableInTouchMode = editing
+
+        // Chips are always visible; enable/disable selection by mode.
+        populateIssueTypeChips()
 
         binding.saveButton.visibility = if (editing) View.VISIBLE else View.GONE
+        binding.cancelButton.visibility = if (editing) View.VISIBLE else View.GONE
         binding.editButton.visibility = if (editing) View.GONE else View.VISIBLE
+    }
+
+    private fun cancelEdits() {
+        val original = originalReport ?: return
+        binding.descriptionInput.setText(original.description ?: "")
+        selectedIssueTypeTags.clear()
+        selectedIssueTypeTags.addAll(original.issueTypes)
+        populateIssueTypeChips()
+        setEditing(false)
     }
 
     private fun save() {
         val current = loadedReport ?: return
 
-        val description = binding.reportDescription.text?.toString()?.trim().orEmpty()
-        val issueTypes = binding.reportIssueTypes.text
-            ?.toString()
-            ?.split(",")
-            ?.map { it.trim() }
-            ?.filter { it.isNotEmpty() }
-            ?: emptyList()
+        val description = binding.descriptionInput.text?.toString()?.trim().orEmpty()
+        val issueTypes = selectedIssueTypeTags.toList()
 
         val request = IssueReportRequest(
             textDescription = description,
             latitude = current.latitude,
             longitude = current.longitude,
-            streetCoordinate = null, // Not currently part of IssueReport DTO; preserve server value by omission.
+            // Location is read-only in PR1; round-trip what we have loaded so we don't null it out.
+            streetCoordinate = binding.locationInput.text?.toString()?.trim()?.takeIf { it.isNotEmpty() },
             locationDescription = current.locationDescription,
             issueTypes = issueTypes
         )
@@ -109,8 +150,12 @@ class ReportDetailFragment : Fragment() {
             .thenAccept { saved ->
                 requireActivity().runOnUiThread {
                     loadedReport = saved
-                    binding.reportDescription.setText(saved.description ?: "")
-                    binding.reportIssueTypes.setText(saved.issueTypes.joinToString(", "))
+                    originalReport = saved
+                    binding.descriptionInput.setText(saved.description ?: "")
+                    binding.locationInput.setText(bestLocationText(saved))
+                    selectedIssueTypeTags.clear()
+                    selectedIssueTypeTags.addAll(saved.issueTypes)
+                    populateIssueTypeChips()
                     setEditing(false)
                     Snackbar.make(binding.root, "Saved", Snackbar.LENGTH_SHORT).show()
                 }
@@ -125,5 +170,45 @@ class ReportDetailFragment : Fragment() {
                 }
                 null
             }
+    }
+
+    private fun bestLocationText(report: IssueReport): String {
+        val description = report.locationDescription?.trim()
+        if (!description.isNullOrEmpty()) {
+            return description
+        }
+        return "${report.latitude}, ${report.longitude}"
+    }
+
+    private fun populateIssueTypeChips() {
+        if (!this::binding.isInitialized) {
+            return
+        }
+        binding.issueTypeChipGroup.removeAllViews()
+        for (issueType in availableIssueTypes) {
+            val tag = issueType.issueTypeTag
+            val chip = Chip(requireContext())
+            chip.setChipDrawable(ChipDrawable.createFromAttributes(
+                requireContext(),
+                null,
+                0,
+                com.google.android.material.R.style.Widget_Material3_Chip_Filter
+            ))
+            chip.text = tag
+            chip.isCheckable = true
+            chip.isChecked = selectedIssueTypeTags.contains(tag)
+            chip.isEnabled = editing
+            chip.setOnCheckedChangeListener { _, isChecked ->
+                if (!editing) {
+                    return@setOnCheckedChangeListener
+                }
+                if (isChecked) {
+                    selectedIssueTypeTags.add(tag)
+                } else {
+                    selectedIssueTypeTags.remove(tag)
+                }
+            }
+            binding.issueTypeChipGroup.addView(chip)
+        }
     }
 }
