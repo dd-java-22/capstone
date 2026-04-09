@@ -24,6 +24,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavBackStackEntry;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import dagger.hilt.android.AndroidEntryPoint;
@@ -44,6 +47,7 @@ import java.util.UUID;
 public class ManagerUserDetailFragment extends Fragment {
 
   private static final String TAG = ManagerUserDetailFragment.class.getSimpleName();
+  private static final String MANAGER_USERS_REFRESH_REQUIRED = "manager_users_refresh_required";
 
   private FragmentManagerUserDetailBinding binding;
   private ManagerUserDetailViewModel viewModel;
@@ -130,6 +134,7 @@ public class ManagerUserDetailFragment extends Fragment {
 
     if (mutationInProgress) {
       showMutationSuccess();
+      markManagerUsersRefreshRequired();
       mutationInProgress = false;
       pendingMutation = null;
       setButtonsEnabled(true);
@@ -219,6 +224,14 @@ public class ManagerUserDetailFragment extends Fragment {
       message = "Failed to update account activation";
     }
     Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_SHORT).show();
+  }
+
+  private void markManagerUsersRefreshRequired() {
+    NavController navController = Navigation.findNavController(requireView());
+    NavBackStackEntry previousEntry = navController.getPreviousBackStackEntry();
+    if (previousEntry != null) {
+      previousEntry.getSavedStateHandle().set(MANAGER_USERS_REFRESH_REQUIRED, true);
+    }
   }
 
 }
