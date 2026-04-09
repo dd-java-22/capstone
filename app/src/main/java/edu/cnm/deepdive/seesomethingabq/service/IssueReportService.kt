@@ -9,14 +9,23 @@ import java.util.concurrent.CompletableFuture
 
 interface IssueReportService {
 
-  fun submit(activity: Activity, request: IssueReportRequest): CompletableFuture<Void?>
+    fun submit(activity: Activity, request: IssueReportRequest): CompletableFuture<Void?>
 
-  fun getIssueReportsPage(
-    activity: Activity,
-    page: Int = 0,
-    size: Int = 10
-  ): CompletableFuture<PaginatedResponse<IssueReportSummary>>
+    fun getAllIssueReportsPage(
+        activity: Activity,
+        page: Int = 0,
+        size: Int = 10
+    ): CompletableFuture<PaginatedResponse<IssueReportSummary>>
 
-  fun getIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
+    fun getMyIssueReportsPage(
+        activity: Activity,
+        page: Int = 0,
+        size: Int = 10
+    ): CompletableFuture<PaginatedResponse<IssueReportSummary>>
+
+
+    fun getAllIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
+
+    fun getMyIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
 
 }

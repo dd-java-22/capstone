@@ -22,8 +22,15 @@ interface SeeSomethingWebService {
   @GET("issue-reports/mine")
   suspend fun getMyReports(@Header("Authorization") bearerToken: String): List<IssueReportSummary>
 
+  @GET("issue-reports/mine")
+  suspend fun getMyIssueReportsPage(
+    @Header("Authorization") bearerToken: String,
+    @Query("pageNumber") page: Int = 0,
+    @Query("pageSize") size: Int = 10
+  ): PaginatedResponse<IssueReportSummary>
+
   @GET("manager/issue-reports")
-  suspend fun getIssueReportsPage(
+  suspend fun getAllIssueReportsPage(
     @Header("Authorization") bearerToken: String,
     @Query("pageNumber") page: Int = 0,
     @Query("pageSize") size: Int = 10

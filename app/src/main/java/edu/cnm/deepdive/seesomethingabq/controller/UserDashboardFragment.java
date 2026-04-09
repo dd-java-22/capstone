@@ -16,7 +16,6 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,14 +27,19 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
+import edu.cnm.deepdive.seesomethingabq.controller.adapter.IssueReportAdapter;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserDashboardBinding;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
 
 @AndroidEntryPoint
 public class UserDashboardFragment extends Fragment {
 
   private FragmentUserDashboardBinding binding;
-  private UserViewModel viewModel;
+  private UserViewModel userViewModel;
+  private IssueReportViewModel issueReportViewModel;
+  private IssueReportAdapter adapter;
+
 
   @Nullable
   @Override
@@ -52,9 +56,8 @@ public class UserDashboardFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    viewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
-
-    viewModel.getUser()
+    userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+    userViewModel.getUser()
         .observe(getViewLifecycleOwner(), user -> {
 
           if (user != null) {
@@ -63,6 +66,16 @@ public class UserDashboardFragment extends Fragment {
             binding.externalKey.setText(user.getExternalId().toString());
           }
         });
+
+    adapter = new IssueReportAdapter();
+    binding.issueReportsRecycler.setAdapter(adapter);
+    issueReportViewModel
+        .getMyIssueReports(requireActivity())
+        .observe(
+            getViewLifecycleOwner(),
+            pagingData ->
+                adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData)
+        );
   }
 
   @Override

@@ -8,6 +8,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -15,7 +17,7 @@ public interface IssueReportRepository extends JpaRepository<IssueReport, Long> 
 
   Optional<IssueReport> findByExternalId(UUID externalId);
 
-  List<IssueReport> findByUserProfile(UserProfile userProfile, Sort sort);
+  Page<IssueReport> findByUserProfile(UserProfile userProfile, Pageable pageable);
 
   List<IssueReport> getIssueReportsByUserProfileOrderByTimeFirstReportedDesc(
       UserProfile userProfile);

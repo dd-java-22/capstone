@@ -28,6 +28,7 @@ public class IssueReportViewModel extends ViewModel {
   private final MutableLiveData<Boolean> submitted;
   private final MutableLiveData<Throwable> throwable;
   private LiveData<PagingData<IssueReportSummary>> issueReports;
+  private LiveData<PagingData<IssueReportSummary>> myIssueReports;
   private final MutableLiveData<List<Uri>> attachedImages;
 
   @Inject
@@ -48,9 +49,16 @@ public class IssueReportViewModel extends ViewModel {
 
   public LiveData<PagingData<IssueReportSummary>> getIssueReports(Activity activity) {
     if (issueReports == null) {
-      issueReports = PagingLiveData.getLiveData(issueReportService.getIssueReportsPager(activity));
+      issueReports = PagingLiveData.getLiveData(issueReportService.getAllIssueReportsPager(activity));
     }
     return issueReports;
+  }
+
+  public LiveData<PagingData<IssueReportSummary>> getMyIssueReports(Activity activity) {
+    if (myIssueReports == null) {
+      myIssueReports = PagingLiveData.getLiveData(issueReportService.getMyIssueReportsPager(activity));
+    }
+    return myIssueReports;
   }
 
   public LiveData<List<Uri>> getAttachedImages() {

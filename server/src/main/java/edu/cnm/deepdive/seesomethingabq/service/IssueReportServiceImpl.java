@@ -58,14 +58,10 @@ public class IssueReportServiceImpl implements IssueReportService {
   }
 
   @Override
-  public List<IssueReportSummary> getReportsForCurrentUser(String sortParam) {
+  public Page<IssueReport> getReportsForCurrentUser(Pageable pageable) {
     UserProfile currentUser = userService.getCurrentUser();
-    Sort sort = parseSort(sortParam);
-    List<IssueReport> reports =
-        issueReportRepository.findByUserProfile(currentUser, sort);
-    return reports.stream()
-        .map(IssueReportSummary::fromIssueReport)
-        .toList();
+//    Sort sort = parseSort(sortParam);
+    return issueReportRepository.findByUserProfile(currentUser, pageable);
   }
 
   @Override

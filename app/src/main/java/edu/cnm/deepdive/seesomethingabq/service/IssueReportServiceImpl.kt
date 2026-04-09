@@ -21,40 +21,68 @@ import java.util.concurrent.CompletableFuture
 
 @Singleton
 class IssueReportServiceImpl @Inject constructor(
-  private val authRepository: GoogleAuthRepository,
-  private val webService: SeeSomethingWebService,
+    private val authRepository: GoogleAuthRepository,
+    private val webService: SeeSomethingWebService,
 ) : IssueReportService {
 
-  private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+    private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
-  override fun getIssueReportsPage(
-    activity: Activity,
-    page: Int,
-    size: Int
-  ): CompletableFuture<PaginatedResponse<IssueReportSummary>> =
-    scope.future {
-      val credential = getCredential(activity)
-      webService.getIssueReportsPage("Bearer ${credential.idToken}", page, size)
+    override fun getAllIssueReportsPage(
+        activity: Activity,
+        page: Int,
+        size: Int
+    ): CompletableFuture<PaginatedResponse<IssueReportSummary>> =
+        scope.future {
+            val credential = getCredential(activity)
+            webService.getAllIssueReportsPage("Bearer ${credential.idToken}", page, size)
+        }
+
+    override fun getMyIssueReportsPage(
+        activity: Activity,
+        page: Int,
+        size: Int
+    ): CompletableFuture<PaginatedResponse<IssueReportSummary>> =
+        scope.future {
+            val credential = getCredential(activity)
+            webService.getMyIssueReportsPage("Bearer ${credential.idToken}", page, size)
+        }
+
+    override fun submit(activity: Activity, request: IssueReportRequest): CompletableFuture<Void?> =
+        scope.future {
+            val credential = getCredential(activity)
+            webService.submitIssueReport("Bearer ${credential.idToken}", request)
+            null
+        }
+
+    override fun getAllIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 10,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                IssueReportPagingSource { pageNum, pageSize ->
+                    getAllIssueReportsPage(activity, pageNum, pageSize)
+                }
+            }
+        )
     }
 
-  override fun submit(activity: Activity, request: IssueReportRequest): CompletableFuture<Void?> =
-      scope.future {
-          val credential = getCredential(activity)
-          webService.submitIssueReport("Bearer ${credential.idToken}", request)
-          null
-      }
+    override fun getMyIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary> {
+        return Pager(
+            config = PagingConfig(
+                pageSize = 10,
+                enablePlaceholders = false
+            ),
+            pagingSourceFactory = {
+                IssueReportPagingSource { pageNum, pageSize ->
+                    getMyIssueReportsPage(activity, pageNum, pageSize)
+                }
+            }
+        )
+    }
 
-  override fun getIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary> {
-    return Pager(
-      config = PagingConfig(
-        pageSize = 10,
-        enablePlaceholders = false
-      ),
-      pagingSourceFactory = { IssueReportPagingSource(activity, this) }
-    )
-  }
-
-  private suspend fun getCredential(activity: Activity): GoogleIdTokenCredential =
-    authRepository.getValidCredential(activity).await()
+    private suspend fun getCredential(activity: Activity): GoogleIdTokenCredential =
+        authRepository.getValidCredential(activity).await()
 
 }

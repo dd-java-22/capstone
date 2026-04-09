@@ -10,8 +10,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface IssueReportService {
 
-  //GET /issue-reports/mine?sort={sort}
-  List<IssueReportSummary> getReportsForCurrentUser(String sortParam);
+  //GET /issue-reports/mine/
+  Page<IssueReport> getReportsForCurrentUser(Pageable pageable);
 
   //POST /issue-reports
   IssueReport createReport(IssueReportRequest request);
