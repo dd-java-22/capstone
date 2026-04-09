@@ -16,15 +16,19 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import dagger.hilt.android.AndroidEntryPoint;
+import edu.cnm.deepdive.seesomethingabq.controller.adapter.ManagerUserAdapter;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManageUsersBinding;
-import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
+import edu.cnm.deepdive.seesomethingabq.viewmodel.ManageUsersViewModel;
+import java.util.Locale;
 
 @AndroidEntryPoint
 /**
@@ -32,8 +36,11 @@ import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
  */
 public class ManageUsersFragment extends Fragment {
 
+  private static final String TAG = ManageUsersFragment.class.getSimpleName();
+
   private FragmentManageUsersBinding binding;
-  private IssueReportService issueReportService;
+  private ManageUsersViewModel viewModel;
+  private ManagerUserAdapter adapter;
 
   @Nullable
   @Override
@@ -41,6 +48,30 @@ public class ManageUsersFragment extends Fragment {
       @Nullable Bundle savedInstanceState) {
     binding = FragmentManageUsersBinding.inflate(inflater, container, false);
     return binding.getRoot();
+  }
+
+  @Override
+  public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    super.onViewCreated(view, savedInstanceState);
+    viewModel = new ViewModelProvider(this).get(ManageUsersViewModel.class);
+    adapter = new ManagerUserAdapter(user -> {
+      Log.d(
+          TAG,
+          String.format(
+              Locale.US,
+              "Tapped user: externalId=%s; name=%s; email=%s; manager=%s; enabled=%s",
+              user.getExternalId(),
+              user.getDisplayName(),
+              user.getEmail(),
+              user.getManager(),
+              user.getUserEnabled()
+          )
+      );
+    });
+    binding.managerUsersRecycler.setAdapter(adapter);
+    viewModel.getUsers(requireActivity()).observe(getViewLifecycleOwner(), pagingData -> {
+      adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData);
+    });
   }
 
   @Override

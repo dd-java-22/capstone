@@ -20,6 +20,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for user profile business logic operations. Implementations of this interface
@@ -87,6 +89,14 @@ public interface UserService {
    * @return list of user profiles.
    */
   List<UserProfile> getAll();
+
+  /**
+   * Returns a page of user profiles.
+   *
+   * @param pageable paging information.
+   * @return page of user profiles.
+   */
+  Page<UserProfile> getAll(Pageable pageable);
 
   /**
    * Returns the user profile for the currently authenticated user, creating one if needed.
