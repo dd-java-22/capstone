@@ -46,5 +46,33 @@ interface ManagerUserService {
    */
   fun getManagerUsersPager(activity: Activity): Pager<Int, UserProfileSummary>
 
+  /**
+   * Sets (grants/revokes) manager authorization status for a user.
+   *
+   * @param activity activity used for authentication flows.
+   * @param externalId user external ID (UUID).
+   * @param isManager desired manager status.
+   * @return future completing with the updated user profile summary.
+   */
+  fun setManagerStatus(
+    activity: Activity,
+    externalId: UUID,
+    isManager: Boolean
+  ): CompletableFuture<UserProfileSummary>
+
+  /**
+   * Sets enabled/active status for a user.
+   *
+   * @param activity activity used for authentication flows.
+   * @param externalId user external ID (UUID).
+   * @param isEnabled desired enabled status.
+   * @return future completing with the updated user profile summary.
+   */
+  fun setEnabledStatus(
+    activity: Activity,
+    externalId: UUID,
+    isEnabled: Boolean
+  ): CompletableFuture<UserProfileSummary>
+
 }
 

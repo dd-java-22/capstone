@@ -66,6 +66,30 @@ public class ManagerUserDetailViewModel extends ViewModel {
         });
   }
 
+  public void setManagerStatus(Activity activity, UUID externalId, boolean isManager) {
+    throwable.setValue(null);
+    managerUserService.setManagerStatus(activity, externalId, isManager)
+        .whenComplete((user, throwable) -> {
+          if (throwable == null) {
+            this.user.postValue(user);
+          } else {
+            postThrowable(throwable);
+          }
+        });
+  }
+
+  public void setEnabledStatus(Activity activity, UUID externalId, boolean isEnabled) {
+    throwable.setValue(null);
+    managerUserService.setEnabledStatus(activity, externalId, isEnabled)
+        .whenComplete((user, throwable) -> {
+          if (throwable == null) {
+            this.user.postValue(user);
+          } else {
+            postThrowable(throwable);
+          }
+        });
+  }
+
   private void postThrowable(Throwable throwable) {
     Log.e(TAG, throwable.getMessage(), throwable);
     this.throwable.postValue(throwable);
