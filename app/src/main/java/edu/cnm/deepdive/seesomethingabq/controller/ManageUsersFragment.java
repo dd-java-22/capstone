@@ -24,6 +24,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavBackStackEntry;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.controller.adapter.ManagerUserAdapter;
@@ -38,6 +40,7 @@ import java.util.Locale;
 public class ManageUsersFragment extends Fragment {
 
   private static final String TAG = ManageUsersFragment.class.getSimpleName();
+  private static final String MANAGER_USERS_REFRESH_REQUIRED = "manager_users_refresh_required";
 
   private FragmentManageUsersBinding binding;
   private ManageUsersViewModel viewModel;
@@ -76,6 +79,19 @@ public class ManageUsersFragment extends Fragment {
     viewModel.getUsers(requireActivity()).observe(getViewLifecycleOwner(), pagingData -> {
       adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData);
     });
+
+    NavController navController = Navigation.findNavController(view);
+    NavBackStackEntry currentEntry = navController.getCurrentBackStackEntry();
+    if (currentEntry != null) {
+      currentEntry.getSavedStateHandle()
+          .<Boolean>getLiveData(MANAGER_USERS_REFRESH_REQUIRED, false)
+          .observe(getViewLifecycleOwner(), refreshRequired -> {
+            if (Boolean.TRUE.equals(refreshRequired)) {
+              currentEntry.getSavedStateHandle().set(MANAGER_USERS_REFRESH_REQUIRED, false);
+              adapter.refresh();
+            }
+          });
+    }
   }
 
   @Override
