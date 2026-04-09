@@ -7,6 +7,7 @@ data class IssueReport(
     @SerializedName("textDescription") val description: String?,
     @SerializedName("latitude") val latitude: Double,
     @SerializedName("longitude") val longitude: Double,
+    @SerializedName("streetCoordinate") val streetCoordinate: String?,
     @SerializedName("locationDescription") val locationDescription: String?,
     @SerializedName("issueTypes") val issueTypes: List<String>,
     @SerializedName("reportImages") val reportImages: List<ReportImageDto>?

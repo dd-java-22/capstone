@@ -144,7 +144,7 @@ class ReportDetailFragment : Fragment() {
             latitude = current.latitude,
             longitude = current.longitude,
             // Location is read-only in PR1; don't mutate it (and don't overwrite streetCoordinate with a display string).
-            streetCoordinate = null,
+            streetCoordinate = current.streetCoordinate,
             locationDescription = current.locationDescription,
             issueTypes = issueTypes
         )
