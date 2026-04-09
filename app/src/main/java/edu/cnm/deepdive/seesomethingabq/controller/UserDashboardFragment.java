@@ -57,6 +57,8 @@ public class UserDashboardFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+    issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
+
     userViewModel.getUser()
         .observe(getViewLifecycleOwner(), user -> {
 

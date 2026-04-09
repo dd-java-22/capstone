@@ -46,7 +46,7 @@ public class ManageIssuesFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    issueReportViewModel = new ViewModelProvider(this).get(IssueReportViewModel.class);
+    issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
     adapter = new IssueReportAdapter();
     binding.issueReportsRecycler.setAdapter(adapter);
     issueReportViewModel
