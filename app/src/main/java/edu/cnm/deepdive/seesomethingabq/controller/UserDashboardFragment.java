@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavBackStackEntry;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
@@ -38,6 +39,8 @@ import kotlin.Unit;
  * Fragment showing the signed-in user's dashboard and navigation to report creation.
  */
 public class UserDashboardFragment extends Fragment {
+
+  private static final String USER_REPORTS_REFRESH_REQUIRED = "user_reports_refresh_required";
 
   private FragmentUserDashboardBinding binding;
   private UserViewModel userViewModel;
@@ -83,6 +86,20 @@ public class UserDashboardFragment extends Fragment {
       return Unit.INSTANCE;
     });
     binding.issueReportsRecycler.setAdapter(adapter);
+
+    NavController navController = Navigation.findNavController(view);
+    NavBackStackEntry currentEntry = navController.getCurrentBackStackEntry();
+    if (currentEntry != null) {
+      currentEntry.getSavedStateHandle()
+          .<Boolean>getLiveData(USER_REPORTS_REFRESH_REQUIRED, false)
+          .observe(getViewLifecycleOwner(), refreshRequired -> {
+            if (Boolean.TRUE.equals(refreshRequired)) {
+              currentEntry.getSavedStateHandle().set(USER_REPORTS_REFRESH_REQUIRED, false);
+              adapter.refresh();
+            }
+          });
+    }
+
     issueReportViewModel
         .getMyIssueReports(requireActivity())
         .observe(

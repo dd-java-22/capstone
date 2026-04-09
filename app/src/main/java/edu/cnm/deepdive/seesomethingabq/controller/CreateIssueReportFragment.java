@@ -46,6 +46,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.navigation.NavBackStackEntry;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.location.CurrentLocationRequest;
@@ -98,6 +99,7 @@ public class CreateIssueReportFragment extends Fragment {
   private static final String TAG = CreateIssueReportFragment.class.getSimpleName();
   private static final int SEARCH_DEBOUNCE_MS = 500;
   private static final int MIN_QUERY_LENGTH = 3;
+  private static final String USER_REPORTS_REFRESH_REQUIRED = "user_reports_refresh_required";
 
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
@@ -148,7 +150,7 @@ public class CreateIssueReportFragment extends Fragment {
     binding.backToDashboardButton.setOnClickListener((v) -> {
       clearPendingAttachments();
       NavController navController = Navigation.findNavController(v);
-      navController.navigate(R.id.navigate_to_user_dashboard_fragment);
+      navController.popBackStack();
     });
 
     binding.useCurrentLocationButton.setOnClickListener((v) -> requestCurrentLocation());
@@ -646,7 +648,11 @@ public class CreateIssueReportFragment extends Fragment {
       reportSubmitted = true;
       clearPendingAttachments();
       NavController navController = Navigation.findNavController(binding.getRoot());
-      navController.navigate(R.id.navigate_to_user_dashboard_fragment);
+      NavBackStackEntry previousEntry = navController.getPreviousBackStackEntry();
+      if (previousEntry != null) {
+        previousEntry.getSavedStateHandle().set(USER_REPORTS_REFRESH_REQUIRED, true);
+      }
+      navController.popBackStack();
     }
   }
 

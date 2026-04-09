@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.GridLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
@@ -21,6 +22,10 @@ import com.google.android.material.chip.ChipDrawable
 
 @AndroidEntryPoint
 class ReportDetailFragment : Fragment() {
+
+    companion object {
+        private const val USER_REPORTS_REFRESH_REQUIRED = "user_reports_refresh_required"
+    }
 
     private var _binding: FragmentReportDetailBinding? = null
     private val binding: FragmentReportDetailBinding
@@ -163,6 +168,8 @@ class ReportDetailFragment : Fragment() {
                     populateIssueTypeChips()
                     setEditing(false)
                     Snackbar.make(binding.root, "Saved", Snackbar.LENGTH_SHORT).show()
+                    findNavController().previousBackStackEntry?.savedStateHandle
+                        ?.set(USER_REPORTS_REFRESH_REQUIRED, true)
                 }
             }
             .exceptionally { thrown ->
