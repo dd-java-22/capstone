@@ -217,22 +217,23 @@ class IssueReportServiceImplTest {
     UserProfile user = new UserProfile();
     when(userService.getCurrentUser()).thenReturn(user);
 
-    when(issueReportRepository.findByUserProfile(any(UserProfile.class), any(Sort.class)))
+    when(issueReportRepository.findByUserProfile(any(UserProfile.class), any(Pageable.class)))
         .thenAnswer(invocation -> {
-          Sort sort = invocation.getArgument(1, Sort.class);
+          Pageable pageable = invocation.getArgument(1, Pageable.class);
+          Sort sort = pageable.getSort();
           Sort.Order order = sort.getOrderFor("timeLastModified");
           if (order != null && order.isAscending()) {
-            return List.of(older, newer);
+            return new PageImpl<>(List.of(older, newer));
           } else {
-            return List.of(newer, older);
+            return new PageImpl<>(List.of(newer, older));
           }
         });
 
-    List<IssueReportSummary> results =
-        service.getReportsForCurrentUser("last_modified,asc");
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("timeLastModified")));
+    Page<IssueReport> page = service.getReportsForCurrentUser(pageable);
 
-    assertThat(results)
-        .extracting(IssueReportSummary::getDescription)
+    assertThat(page.getContent())
+        .extracting(IssueReport::getTextDescription)
         .containsExactly("OLDER", "NEWER");
   }
 
@@ -253,22 +254,23 @@ class IssueReportServiceImplTest {
     UserProfile user = new UserProfile();
     when(userService.getCurrentUser()).thenReturn(user);
 
-    when(issueReportRepository.findByUserProfile(any(UserProfile.class), any(Sort.class)))
+    when(issueReportRepository.findByUserProfile(any(UserProfile.class), any(Pageable.class)))
         .thenAnswer(invocation -> {
-          Sort sort = invocation.getArgument(1, Sort.class);
+          Pageable pageable = invocation.getArgument(1, Pageable.class);
+          Sort sort = pageable.getSort();
           Sort.Order order = sort.getOrderFor("timeLastModified");
           if (order != null && order.isAscending()) {
-            return List.of(older, newer);
+            return new PageImpl<>(List.of(older, newer));
           } else {
-            return List.of(newer, older);
+            return new PageImpl<>(List.of(newer, older));
           }
         });
 
-    List<IssueReportSummary> results =
-        service.getReportsForCurrentUser("last_modified,desc");
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.desc("timeLastModified")));
+    Page<IssueReport> page = service.getReportsForCurrentUser(pageable);
 
-    assertThat(results)
-        .extracting(IssueReportSummary::getDescription)
+    assertThat(page.getContent())
+        .extracting(IssueReport::getTextDescription)
         .containsExactly("NEWER", "OLDER");
   }
 
@@ -276,17 +278,19 @@ class IssueReportServiceImplTest {
   void getReportsForCurrentUser_parsesFirstReportedAscIntoSort() {
     UserProfile user = new UserProfile();
     when(userService.getCurrentUser()).thenReturn(user);
-    when(issueReportRepository.findByUserProfile(any(UserProfile.class), any(Sort.class)))
-        .thenReturn(List.of());
+    when(issueReportRepository.findByUserProfile(any(UserProfile.class), any(Pageable.class)))
+        .thenReturn(new PageImpl<>(List.of()));
 
-    ArgumentCaptor<Sort> sortCaptor = ArgumentCaptor.forClass(Sort.class);
+    ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
 
-    service.getReportsForCurrentUser("first_reported,asc");
+    Pageable pageable = PageRequest.of(0, 10, Sort.by(Sort.Order.asc("timeFirstReported")));
+    service.getReportsForCurrentUser(pageable);
 
     verify(issueReportRepository)
-        .findByUserProfile(any(UserProfile.class), sortCaptor.capture());
+        .findByUserProfile(any(UserProfile.class), pageableCaptor.capture());
 
-    Sort sort = sortCaptor.getValue();
+    Pageable capturedPageable = pageableCaptor.getValue();
+    Sort sort = capturedPageable.getSort();
     Sort.Order order = sort.getOrderFor("timeFirstReported");
     assertThat(order).isNotNull();
     assertThat(order.isAscending()).isTrue();
