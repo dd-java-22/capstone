@@ -15,6 +15,9 @@ import jakarta.persistence.UniqueConstraint;
 import java.util.LinkedList;
 import java.util.List;
 
+/**
+ * JPA entity representing the accepted-state/status associated with an {@link IssueReport}.
+ */
 @Entity
 @Table(
   name = "accepted_state",
@@ -43,26 +46,56 @@ public class AcceptedState {
   @JsonIgnore
   private final List<IssueReport> issueReports = new LinkedList<>();
 
+  /**
+   * Returns the database identifier for this accepted state.
+   *
+   * @return primary key value.
+   */
   public Long getId() {
     return id;
   }
 
+  /**
+   * Returns the status tag value.
+   *
+   * @return status tag.
+   */
   public String getStatusTag() {
     return statusTag;
   }
 
+  /**
+   * Sets the status tag value.
+   *
+   * @param statusTag status tag.
+   */
   public void setStatusTag(String statusTag) {
     this.statusTag = statusTag;
   }
 
+  /**
+   * Returns the human-readable status description.
+   *
+   * @return status description.
+   */
   public String getStatusTagDescription() {
     return statusTagDescription;
   }
 
+  /**
+   * Sets the human-readable status description.
+   *
+   * @param statusTagDescription status description.
+   */
   public void setStatusTagDescription(String statusTagDescription) {
     this.statusTagDescription = statusTagDescription;
   }
 
+  /**
+   * Returns the issue reports currently associated with this accepted state.
+   *
+   * @return associated issue reports.
+   */
   @JsonIgnore
   public List<IssueReport> getIssueReports() {
     return issueReports;

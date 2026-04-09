@@ -35,6 +35,9 @@ import java.util.List;
 import java.util.UUID;
 import org.hibernate.annotations.CreationTimestamp;
 
+/**
+ * JPA entity representing a user profile backed by an OAuth subject key.
+ */
 @Entity
 @Table(
   name = "user_profile",
@@ -89,22 +92,47 @@ public class UserProfile {
   @JsonIgnore
   private final List<IssueReport> issueReports = new LinkedList<>();
 
+  /**
+   * Returns the database identifier for this user profile.
+   *
+   * @return primary key value.
+   */
   public Long getId() {
     return id;
   }
 
+  /**
+   * Returns the external identifier for this user profile.
+   *
+   * @return external ID.
+   */
   public UUID getExternalId() {
     return externalId;
   }
 
+  /**
+   * Returns the OAuth subject key for this user.
+   *
+   * @return OAuth key.
+   */
   public String getOauthKey() {
     return oauthKey;
   }
 
+  /**
+   * Sets the OAuth subject key for this user.
+   *
+   * @param oauthKey OAuth key.
+   */
   public void setOauthKey(String oauthKey) {
     this.oauthKey = oauthKey;
   }
 
+  /**
+   * Returns the display name for this user.
+   *
+   * @return display name.
+   */
   public String getDisplayName() {
     return displayName;
   }
@@ -118,42 +146,92 @@ public class UserProfile {
     this.displayName = displayName;
   }
 
+  /**
+   * Returns the avatar URL, if configured.
+   *
+   * @return avatar URL.
+   */
   public URL getAvatar() {
     return avatar;
   }
 
+  /**
+   * Sets the avatar URL.
+   *
+   * @param avatar avatar URL.
+   */
   public void setAvatar(URL avatar) {
     this.avatar = avatar;
   }
 
+  /**
+   * Returns the email address.
+   *
+   * @return email address.
+   */
   public String getEmail() {
     return email;
   }
 
+  /**
+   * Sets the email address.
+   *
+   * @param email email address.
+   */
   public void setEmail(String email) {
     this.email = email;
   }
 
+  /**
+   * Returns whether this user has manager privileges.
+   *
+   * @return {@code true} if manager; {@code false} otherwise.
+   */
   public boolean isManager() {
     return isManager;
   }
 
+  /**
+   * Sets whether this user has manager privileges.
+   *
+   * @param isManager {@code true} if manager; {@code false} otherwise.
+   */
   public void setIsManager(boolean isManager) {
     this.isManager = isManager;
   }
 
+  /**
+   * Returns the time this user profile was created.
+   *
+   * @return creation timestamp.
+   */
   public Instant getTimeCreated() {
     return timeCreated;
   }
 
+  /**
+   * Returns whether the user account is enabled.
+   *
+   * @return {@code true} if enabled; {@code false} otherwise.
+   */
   public boolean getUserEnabled() {
     return userEnabled;
   }
 
+  /**
+   * Sets whether the user account is enabled.
+   *
+   * @param userEnabled {@code true} to enable; {@code false} to disable.
+   */
   public void setUserEnabled(boolean userEnabled) {
     this.userEnabled = userEnabled;
   }
 
+  /**
+   * Returns the issue reports created by this user.
+   *
+   * @return issue reports.
+   */
   public List<IssueReport> getIssueReports() {
     return issueReports;
   }

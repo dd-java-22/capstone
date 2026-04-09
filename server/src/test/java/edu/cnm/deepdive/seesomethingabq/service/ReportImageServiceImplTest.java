@@ -1,8 +1,17 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import edu.cnm.deepdive.seesomethingabq.exception.AccessDeniedException;
 import edu.cnm.deepdive.seesomethingabq.exception.ResourceNotFoundException;
-import edu.cnm.deepdive.seesomethingabq.model.dto.AddImageRequest;
+import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportImage;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
@@ -11,28 +20,26 @@ import edu.cnm.deepdive.seesomethingabq.service.repository.ReportImageRepository
 import edu.cnm.deepdive.seesomethingabq.service.storage.StorageService;
 import java.io.IOException;
 import java.net.URI;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.springframework.core.io.ByteArrayResource;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.core.io.Resource;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.multipart.MultipartFile;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
-
-/**
- * Unit tests for {@link ReportImageServiceImpl}. Uses Mockito to isolate the service
- * from repositories, storage, and user context.
- */
+@ExtendWith(MockitoExtension.class)
 class ReportImageServiceImplTest {
+
+  private static final UUID REPORT_EXTERNAL_ID =
+      UUID.fromString("11111111-1111-1111-1111-111111111111");
+  private static final UUID IMAGE_EXTERNAL_ID =
+      UUID.fromString("22222222-2222-2222-2222-222222222222");
+  private static final String STORAGE_KEY = "abc123.jpg";
 
   @Mock
   private ReportImageRepository reportImageRepository;
@@ -54,299 +61,233 @@ class ReportImageServiceImplTest {
   private IssueReport report;
   private ReportImage image;
 
-  private final UUID reportExternalId = UUID.randomUUID();
-  private final UUID imageExternalId = UUID.randomUUID();
-
-  private final UUID reportId = UUID.randomUUID();
-  private final UUID imageId = UUID.randomUUID();
-
   @BeforeEach
-  void setup() throws Exception {
-    MockitoAnnotations.openMocks(this);
+  void setUp() {
+    owner = userFixture(10L, false);
+    manager = userFixture(11L, true);
 
-    service = new ReportImageServiceImpl(
-        reportImageRepository,
-        issueReportRepository,
-        userService,
-        storageService
-    );
-
-    reportImageRepository = mock(ReportImageRepository.class);
-    issueReportRepository = mock(IssueReportRepository.class);
-    userService = mock(UserService.class);
-    storageService = mock(StorageService.class);
-
-    // Create owner
-    owner = new UserProfile();
-    setField(owner, "id", 1L);
-    setField(owner, "externalId", UUID.randomUUID());
-    owner.setIsManager(false);
-
-    // Create manager
-    manager = new UserProfile();
-    setField(manager, "id", 2L);
-    setField(manager, "externalId", UUID.randomUUID());
-    manager.setIsManager(true);
-
-    owner = mock(UserProfile.class);
-    when(owner.getId()).thenReturn(1L);
-    when(owner.isManager()).thenReturn(false);
-
-    // Create report
     report = new IssueReport();
-    setField(report, "externalId", reportId);
-    setField(report, "userProfile", owner);
+    setField(report, "externalId", REPORT_EXTERNAL_ID);
+    report.setUserProfile(owner);
+    report.setTextDescription("Broken street light");
+    report.setAcceptedState(acceptedStateFixture("PENDING"));
 
-    manager = mock(UserProfile.class);
-    when(manager.getId()).thenReturn(2L);
-    when(manager.isManager()).thenReturn(true);
-
-    // Create image
     image = new ReportImage();
-    setField(image, "externalId", imageId);
+    setField(image, "externalId", IMAGE_EXTERNAL_ID);
     image.setIssueReport(report);
-    image.setImageLocator(URI.create("file://test.jpg"));
-    image.setFilename("test.jpg");
+    image.setImageLocator(URI.create("stored:" + STORAGE_KEY));
+    image.setFilename("photo.jpg");
     image.setMimeType("image/jpeg");
-
-    report = mock(IssueReport.class);
-    when(report.getUserProfile()).thenReturn(owner);
-    when(report.getReportImages()).thenReturn(List.of());
-
-    image = mock(ReportImage.class);
-    when(image.getExternalId()).thenReturn(imageExternalId);
-    when(image.getMimeType()).thenReturn("image/jpeg");
-    when(image.getImageLocator()).thenReturn(URI.create("file:abc123.jpg"));
+    image.setAlbumOrder(0);
   }
-
-  // Helper to set private fields via reflection
-  private void setField(Object target, String fieldName, Object value) throws Exception {
-    var field = target.getClass().getDeclaredField(fieldName);
-    field.setAccessible(true);
-    field.set(target, value);
-  }
-
-//  @Test
-//  void deleteImage_ownerCanDelete() {
-//    when(reportImageRepository.findByExternalId(imageId)).thenReturn(Optional.of(image));
-//    when(userService.getCurrentUser()).thenReturn(owner);
-//
-//    service.deleteImage(reportId, imageId);
-//
-//    verify(reportImageRepository).delete(image);
-//    assertNull(image.getIssueReport());
-//  }
-//
-//  @Test
-//  void deleteImage_managerCanDelete() {
-//    when(reportImageRepository.findByExternalId(imageId)).thenReturn(Optional.of(image));
-//    when(userService.getCurrentUser()).thenReturn(manager);
-//
-//    service.deleteImage(reportId, imageId);
-//
-//    verify(reportImageRepository).delete(image);
-//  }
-//
-//  @Test
-//  void deleteImage_wrongReport_throwsNotFound() {
-//    when(reportImageRepository.findByExternalId(imageId)).thenReturn(Optional.of(image));
-//    UUID wrongReportId = UUID.randomUUID();
-//
-//    assertThrows(ResourceNotFoundException.class,
-//        () -> service.deleteImage(wrongReportId, imageId));
-//  }
-//
-//  @Test
-//  void deleteImage_notOwner_throwsAccessDenied() {
-//    UserProfile stranger = new UserProfile();
-//    try {
-//      setField(stranger, "id", 99L);
-//      setField(stranger, "externalId", UUID.randomUUID());
-//    } catch (Exception ignored) {}
-//
-//    when(reportImageRepository.findByExternalId(imageId)).thenReturn(Optional.of(image));
-//    when(userService.getCurrentUser()).thenReturn(stranger);
-//
-//    assertThrows(AccessDeniedException.class,
-//        () -> service.deleteImage(reportId, imageId));
-//  }
-
-  @Test
-  void addImage_ownerCanAdd() {
-    AddImageRequest request = new AddImageRequest();
-    request.setFilename("new.jpg");
-    request.setMimeType("image/jpeg");
-    request.setImageLocator(URI.create("file://new.jpg"));
-    request.setAlbumOrder(1);
-
-    when(issueReportRepository.findByExternalId(reportId)).thenReturn(Optional.of(report));
-    when(userService.getCurrentUser()).thenReturn(owner);
-    when(reportImageRepository.save(any())).thenReturn(image);
-
-    ReportImage result = service.addImage(reportId, request);
-
-    assertEquals("test.jpg", result.getFilename());
-  }
-
-  @Test
-  void addImage_notOwner_throwsAccessDenied() {
-    UserProfile stranger = new UserProfile();
-    try {
-      setField(stranger, "id", 99L);
-      setField(stranger, "externalId", UUID.randomUUID());
-    } catch (Exception ignored) {}
-
-    AddImageRequest request = new AddImageRequest();
-
-    when(issueReportRepository.findByExternalId(reportId)).thenReturn(Optional.of(report));
-    when(userService.getCurrentUser()).thenReturn(stranger);
-
-    assertThrows(AccessDeniedException.class,
-        () -> service.addImage(reportId, request));
-  }
-
-  // ---------------------------------------------------------
-  // getImage
-  // ---------------------------------------------------------
 
   @Test
   void getImage_ownerAllowed() {
     when(userService.getCurrentUser()).thenReturn(owner);
-    when(issueReportRepository.findByExternalId(reportExternalId))
-        .thenReturn(Optional.of(report));
-    when(reportImageRepository.findByIssueReportAndExternalId(report, imageExternalId))
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
+    when(reportImageRepository.findByIssueReportAndExternalId(report, IMAGE_EXTERNAL_ID))
         .thenReturn(Optional.of(image));
 
-    ReportImage result = service.getImage(reportExternalId, imageExternalId);
+    ReportImage result = service.getImage(REPORT_EXTERNAL_ID, IMAGE_EXTERNAL_ID);
 
     assertEquals(image, result);
+    verify(reportImageRepository).findByIssueReportAndExternalId(report, IMAGE_EXTERNAL_ID);
   }
 
   @Test
   void getImage_managerAllowed() {
     when(userService.getCurrentUser()).thenReturn(manager);
-    when(issueReportRepository.findByExternalId(reportExternalId))
-        .thenReturn(Optional.of(report));
-    when(reportImageRepository.findByIssueReportAndExternalId(report, imageExternalId))
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
+    when(reportImageRepository.findByIssueReportAndExternalId(report, IMAGE_EXTERNAL_ID))
         .thenReturn(Optional.of(image));
 
-    ReportImage result = service.getImage(reportExternalId, imageExternalId);
+    ReportImage result = service.getImage(REPORT_EXTERNAL_ID, IMAGE_EXTERNAL_ID);
 
     assertEquals(image, result);
   }
 
   @Test
-  void getImage_unauthorizedUser_throws() {
-    UserProfile stranger = mock(UserProfile.class);
-    when(stranger.getId()).thenReturn(99L);
-    when(stranger.isManager()).thenReturn(false);
-
+  void getImage_unauthorizedUser_throwsAccessDenied() {
+    UserProfile stranger = userFixture(99L, false);
     when(userService.getCurrentUser()).thenReturn(stranger);
-    when(issueReportRepository.findByExternalId(reportExternalId))
-        .thenReturn(Optional.of(report));
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
 
     assertThrows(AccessDeniedException.class,
-        () -> service.getImage(reportExternalId, imageExternalId));
+        () -> service.getImage(REPORT_EXTERNAL_ID, IMAGE_EXTERNAL_ID));
   }
 
   @Test
-  void getImage_notFound_throws() {
+  void getImage_reportNotFound_throws() {
     when(userService.getCurrentUser()).thenReturn(owner);
-    when(issueReportRepository.findByExternalId(reportExternalId))
-        .thenReturn(Optional.of(report));
-    when(reportImageRepository.findByIssueReportAndExternalId(report, imageExternalId))
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.empty());
+
+    assertThrows(ResourceNotFoundException.class,
+        () -> service.getImage(REPORT_EXTERNAL_ID, IMAGE_EXTERNAL_ID));
+  }
+
+  @Test
+  void getImage_imageNotFound_throws() {
+    when(userService.getCurrentUser()).thenReturn(owner);
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
+    when(reportImageRepository.findByIssueReportAndExternalId(report, IMAGE_EXTERNAL_ID))
         .thenReturn(Optional.empty());
 
     assertThrows(ResourceNotFoundException.class,
-        () -> service.getImage(reportExternalId, imageExternalId));
+        () -> service.getImage(REPORT_EXTERNAL_ID, IMAGE_EXTERNAL_ID));
   }
-
-  // ---------------------------------------------------------
-  // addImage
-  // ---------------------------------------------------------
-
-  @Test
-  void addImage_success() {
-    AddImageRequest request = new AddImageRequest();
-    request.setFilename("photo.jpg");
-    request.setMimeType("image/jpeg");
-    request.setAlbumOrder(0);
-    request.setImageLocator(URI.create("file:abc123.jpg"));
-
-    when(userService.getCurrentUser()).thenReturn(owner);
-    when(issueReportRepository.findByExternalId(reportExternalId))
-        .thenReturn(Optional.of(report));
-    when(reportImageRepository.save(ArgumentMatchers.any())).thenReturn(image);
-
-    ReportImage result = service.addImage(reportExternalId, request);
-
-    assertNotNull(result);
-  }
-
-  // ---------------------------------------------------------
-  // uploadImage
-  // ---------------------------------------------------------
 
   @Test
   void uploadImage_success() throws IOException, HttpMediaTypeException {
-    MultipartFile file = mock(MultipartFile.class);
+    MultipartFile file = org.mockito.Mockito.mock(MultipartFile.class);
     when(file.getOriginalFilename()).thenReturn("photo.jpg");
     when(file.getContentType()).thenReturn("image/jpeg");
+    when(file.isEmpty()).thenReturn(false);
 
     when(userService.getCurrentUser()).thenReturn(owner);
-    when(issueReportRepository.findByExternalId(reportExternalId))
-        .thenReturn(Optional.of(report));
-    when(storageService.store(file)).thenReturn("abc123.jpg");
-    when(reportImageRepository.save(ArgumentMatchers.any())).thenReturn(image);
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
+    when(storageService.store(file)).thenReturn(STORAGE_KEY);
+    when(reportImageRepository.save(any(ReportImage.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-    ReportImage result = service.uploadImage(reportExternalId, file);
+    ReportImage result = service.uploadImage(REPORT_EXTERNAL_ID, file);
 
     assertNotNull(result);
+    assertEquals(URI.create("stored:" + STORAGE_KEY), result.getImageLocator());
+    assertEquals("photo.jpg", result.getFilename());
+    assertEquals("image/jpeg", result.getMimeType());
+    assertEquals(0, result.getAlbumOrder());
+    assertEquals(report, result.getIssueReport());
+    verify(storageService).store(file);
+    verify(reportImageRepository).save(any(ReportImage.class));
   }
 
-  // ---------------------------------------------------------
-  // getImageFile
-  // ---------------------------------------------------------
+  @Test
+  void uploadImage_notOwner_throwsAccessDenied() throws Exception {
+    MultipartFile file = org.mockito.Mockito.mock(MultipartFile.class);
+    when(file.isEmpty()).thenReturn(false);
+    when(userService.getCurrentUser()).thenReturn(manager);
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
+
+    assertThrows(AccessDeniedException.class, () -> service.uploadImage(REPORT_EXTERNAL_ID, file));
+    verify(storageService, never()).store(any());
+    verify(reportImageRepository, never()).save(any());
+  }
+
+  @Test
+  void uploadImage_reportNotFound_throws() {
+    MultipartFile file = org.mockito.Mockito.mock(MultipartFile.class);
+    when(file.isEmpty()).thenReturn(false);
+    when(userService.getCurrentUser()).thenReturn(owner);
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.empty());
+
+    assertThrows(ResourceNotFoundException.class, () -> service.uploadImage(REPORT_EXTERNAL_ID, file));
+  }
+
+  @Test
+  void uploadImage_emptyFile_throwsBadRequest() throws Exception {
+    MultipartFile file = org.mockito.Mockito.mock(MultipartFile.class);
+    when(file.isEmpty()).thenReturn(true);
+
+    assertThrows(IllegalArgumentException.class, () -> service.uploadImage(REPORT_EXTERNAL_ID, file));
+    verify(storageService, never()).store(any());
+    verify(reportImageRepository, never()).save(any());
+  }
 
   @Test
   void getImageFile_success() throws IOException {
-    Resource resource = new ByteArrayResource("test".getBytes());
-    when(storageService.retrieve("abc123.jpg")).thenReturn(resource);
+    Resource resource = org.mockito.Mockito.mock(Resource.class);
+    when(storageService.retrieve(STORAGE_KEY)).thenReturn(resource);
 
-    Resource result = service.getImageFile("abc123.jpg");
+    Resource result = service.getImageFile(STORAGE_KEY);
 
     assertEquals(resource, result);
+    verify(storageService).retrieve(STORAGE_KEY);
   }
 
-  // ---------------------------------------------------------
-  // deleteImage
-  // ---------------------------------------------------------
+  @Test
+  void getImageFile_missingBackingFile_throws() throws IOException {
+    when(storageService.retrieve(STORAGE_KEY)).thenThrow(new IOException("missing"));
+
+    assertThrows(IOException.class, () -> service.getImageFile(STORAGE_KEY));
+  }
 
   @Test
-  void deleteImage_success() throws IOException {
+  void deleteImage_ownerAllowed_deletesFileAndMetadata() throws IOException {
     when(userService.getCurrentUser()).thenReturn(owner);
-    when(issueReportRepository.findByExternalId(reportExternalId))
-        .thenReturn(Optional.of(report));
-    when(reportImageRepository.findByIssueReportAndExternalId(report, imageExternalId))
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
+    when(reportImageRepository.findByIssueReportAndExternalId(report, IMAGE_EXTERNAL_ID))
         .thenReturn(Optional.of(image));
 
-    service.deleteImage(reportExternalId, imageExternalId);
+    service.deleteImage(REPORT_EXTERNAL_ID, IMAGE_EXTERNAL_ID);
 
-    verify(storageService).delete("abc123.jpg");
+    verify(storageService).delete(STORAGE_KEY);
     verify(reportImageRepository).delete(image);
   }
 
   @Test
-  void deleteImage_unauthorized_throws() {
-    UserProfile stranger = mock(UserProfile.class);
-    when(stranger.getId()).thenReturn(99L);
-    when(stranger.isManager()).thenReturn(false);
+  void deleteImage_managerAllowed_deletesFileAndMetadata() throws IOException {
+    when(userService.getCurrentUser()).thenReturn(manager);
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
+    when(reportImageRepository.findByIssueReportAndExternalId(report, IMAGE_EXTERNAL_ID))
+        .thenReturn(Optional.of(image));
 
+    service.deleteImage(REPORT_EXTERNAL_ID, IMAGE_EXTERNAL_ID);
+
+    verify(storageService).delete(STORAGE_KEY);
+    verify(reportImageRepository).delete(image);
+  }
+
+  @Test
+  void deleteImage_wrongReportImageCombination_throwsNotFound() throws Exception {
+    when(userService.getCurrentUser()).thenReturn(owner);
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
+    when(reportImageRepository.findByIssueReportAndExternalId(report, IMAGE_EXTERNAL_ID))
+        .thenReturn(Optional.empty());
+
+    assertThrows(ResourceNotFoundException.class,
+        () -> service.deleteImage(REPORT_EXTERNAL_ID, IMAGE_EXTERNAL_ID));
+    verify(storageService, never()).delete(anyString());
+    verify(reportImageRepository, never()).delete(any());
+  }
+
+  @Test
+  void deleteImage_unauthorized_throwsAccessDenied() throws Exception {
+    UserProfile stranger = userFixture(99L, false);
     when(userService.getCurrentUser()).thenReturn(stranger);
-    when(issueReportRepository.findByExternalId(reportExternalId))
-        .thenReturn(Optional.of(report));
+    when(issueReportRepository.findByExternalId(REPORT_EXTERNAL_ID)).thenReturn(Optional.of(report));
 
     assertThrows(AccessDeniedException.class,
-        () -> service.deleteImage(reportExternalId, imageExternalId));
+        () -> service.deleteImage(REPORT_EXTERNAL_ID, IMAGE_EXTERNAL_ID));
+    verify(storageService, never()).delete(anyString());
+    verify(reportImageRepository, never()).delete(any());
   }
+
+  private static AcceptedState acceptedStateFixture(String statusTag) {
+    AcceptedState state = new AcceptedState();
+    state.setStatusTag(statusTag);
+    state.setStatusTagDescription(statusTag);
+    return state;
+  }
+
+  private static UserProfile userFixture(long id, boolean isManager) {
+    UserProfile user = new UserProfile();
+    setField(user, "id", id);
+    setField(user, "externalId", UUID.nameUUIDFromBytes(("user:" + id).getBytes()));
+    user.setIsManager(isManager);
+    user.setUserEnabled(true);
+    user.setOauthKey("oauth:" + id);
+    user.setEmail("user" + id + "@example.com");
+    user.setDisplayName("User " + id);
+    return user;
+  }
+
+  private static void setField(Object target, String fieldName, Object value) {
+    try {
+      var field = target.getClass().getDeclaredField(fieldName);
+      field.setAccessible(true);
+      field.set(target, value);
+    } catch (ReflectiveOperationException e) {
+      throw new AssertionError(e);
+    }
+  }
+
 }

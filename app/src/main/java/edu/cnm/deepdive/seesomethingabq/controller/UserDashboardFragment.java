@@ -33,6 +33,9 @@ import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
 
 @AndroidEntryPoint
+/**
+ * Fragment showing the signed-in user's dashboard and navigation to report creation.
+ */
 public class UserDashboardFragment extends Fragment {
 
   private FragmentUserDashboardBinding binding;
@@ -45,7 +48,10 @@ public class UserDashboardFragment extends Fragment {
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+
     binding = FragmentUserDashboardBinding.inflate(inflater, container, false);
+
+    // Existing button
     binding.createIssueButton.setOnClickListener((v) -> {
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_create_issue_report_fragment);
@@ -61,7 +67,6 @@ public class UserDashboardFragment extends Fragment {
 
     userViewModel.getUser()
         .observe(getViewLifecycleOwner(), user -> {
-
           if (user != null) {
             binding.displayName.setText(user.getDisplayName());
             binding.oauthKey.setText(user.getOauthKey());

@@ -9,6 +9,12 @@ import edu.cnm.deepdive.seesomethingabq.service.IssueReportService
 import kotlinx.coroutines.future.await
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Paging 3 source that loads pages of [IssueReportSummary] from [IssueReportService].
+ *
+ * @property activity activity used for authentication flows.
+ * @property issueReportService service used to fetch pages.
+ */
 class IssueReportPagingSource(
     private val reportSummaryPageProvider: (Int, Int) -> CompletableFuture<PaginatedResponse<IssueReportSummary>>
 ) : PagingSource<Int, IssueReportSummary>() {

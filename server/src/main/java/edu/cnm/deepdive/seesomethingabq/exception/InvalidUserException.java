@@ -5,6 +5,11 @@ package edu.cnm.deepdive.seesomethingabq.exception;
  */
 public class InvalidUserException extends BadRequestException {
 
+  /**
+   * Creates an instance with a detail message.
+   *
+   * @param message detail message.
+   */
   public InvalidUserException(String message) {
     super(message);
   }

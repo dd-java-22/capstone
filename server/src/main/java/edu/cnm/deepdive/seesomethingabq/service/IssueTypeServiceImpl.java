@@ -13,11 +13,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 
+/**
+ * Default {@link IssueTypeService} implementation backed by {@link IssueTypeRepository}.
+ */
 @Service
 public class IssueTypeServiceImpl implements IssueTypeService {
 
   private final IssueTypeRepository tagRepository;
 
+  /**
+   * Creates a service using the provided repository.
+   *
+   * @param tagRepository issue type repository.
+   */
   @Autowired
   public IssueTypeServiceImpl(IssueTypeRepository tagRepository) {
     this.tagRepository = tagRepository;

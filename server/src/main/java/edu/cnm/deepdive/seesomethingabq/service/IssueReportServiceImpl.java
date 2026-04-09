@@ -32,6 +32,9 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/**
+ * Default {@link IssueReportService} implementation providing report CRUD and administrative updates.
+ */
 @Service
 @Transactional
 public class IssueReportServiceImpl implements IssueReportService {
@@ -42,6 +45,15 @@ public class IssueReportServiceImpl implements IssueReportService {
   private final IssueTypeRepository issueTypeRepository;
   private final Validator validator;
 
+  /**
+   * Creates a service using the provided repositories and validator.
+   *
+   * @param issueReportRepository issue report repository.
+   * @param userService user service for resolving the current user.
+   * @param acceptedStateRepository accepted state repository.
+   * @param issueTypeRepository issue type repository.
+   * @param validator Bean Validation validator.
+   */
   @Autowired
   public IssueReportServiceImpl(
       IssueReportRepository issueReportRepository,

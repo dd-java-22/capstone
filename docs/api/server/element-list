@@ -1,0 +1,10 @@
+edu.cnm.deepdive.seesomethingabq
+edu.cnm.deepdive.seesomethingabq.configuration
+edu.cnm.deepdive.seesomethingabq.controller
+edu.cnm.deepdive.seesomethingabq.exception
+edu.cnm.deepdive.seesomethingabq.model.converter
+edu.cnm.deepdive.seesomethingabq.model.dto
+edu.cnm.deepdive.seesomethingabq.model.entity
+edu.cnm.deepdive.seesomethingabq.service
+edu.cnm.deepdive.seesomethingabq.service.repository
+edu.cnm.deepdive.seesomethingabq.service.storage

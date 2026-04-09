@@ -13,6 +13,9 @@ import jakarta.inject.Inject;
 import java.util.function.BiConsumer;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * ViewModel coordinating user sign-in/sign-out and exposing user and error state.
+ */
 @HiltViewModel
 public class UserViewModel extends ViewModel {
 
@@ -23,6 +26,11 @@ public class UserViewModel extends ViewModel {
   private final MutableLiveData<UserProfile> user;
   private final MutableLiveData<Throwable> throwable;
 
+  /**
+   * Creates a ViewModel using the provided user service.
+   *
+   * @param userService user service.
+   */
   @Inject
   UserViewModel(UserService userService) {
     this.userService = userService;
@@ -33,14 +41,29 @@ public class UserViewModel extends ViewModel {
     // TODO: 3/31/2026 explore starting log in here
   }
 
+  /**
+   * Returns the current user profile, if signed in.
+   *
+   * @return live data stream of user profiles.
+   */
   public LiveData<UserProfile> getUser() {
     return user;
   }
 
+  /**
+   * Returns the most recent error, if any.
+   *
+   * @return live data stream of errors.
+   */
   public LiveData<Throwable> getThrowable() {
     return throwable;
   }
 
+  /**
+   * Signs the user in and publishes the resulting profile.
+   *
+   * @param activity activity used to launch sign-in flows.
+   */
   public void signIn(Activity activity) {
     throwable.setValue(null);
 
@@ -48,6 +71,9 @@ public class UserViewModel extends ViewModel {
         .whenComplete(this::handleResult);
   }
 
+  /**
+   * Signs the user out and clears the current user.
+   */
   public void signOut() {
     throwable.setValue(null);
 

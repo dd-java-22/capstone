@@ -13,6 +13,11 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+
+import org.gradle.api.tasks.javadoc.Javadoc
+import org.gradle.external.javadoc.JavadocMemberLevel
+import org.gradle.external.javadoc.StandardJavadocDocletOptions
+
 plugins {
     java
     alias(libs.plugins.spring.boot)
@@ -31,11 +36,12 @@ tasks.javadoc {
 
     title = "${properties["appName"]} server ${properties["version"]}"
 
-    if (project.hasProperty("javadocDestDir")) {
-        setDestinationDir(
-            projectDir.toPath().resolve(properties["javadocDestDir"] as String).toFile()
-        )
-    }
+    source = sourceSets.main.get().allJava
+    classpath = sourceSets.main.get().compileClasspath
+
+    destinationDir = rootProject.projectDir.resolve("docs/api/server")
+
+    exclude("**/test/**")
 
     with(options as StandardJavadocDocletOptions) {
         windowTitle = docTitle
@@ -44,26 +50,27 @@ tasks.javadoc {
         isAuthor = false
         links(
             "https://docs.oracle.com/en/java/javase/${libs.versions.java.get()}/docs/api/",
-            // TODO Modify or add to this list for the specific libraries used.
             "https://docs.spring.io/spring-framework/docs/current/javadoc-api/",
             "https://docs.spring.io/spring-boot/api/java/",
             "https://docs.spring.io/spring-hateoas/docs/current/api/",
             "https://docs.spring.io/spring-data/commons/docs/current/api/",
             "https://docs.spring.io/spring-data/data-jpa/docs/current/api/",
             "https://docs.spring.io/spring-security/site/docs/current/api/",
-            "https://docs.jboss.org/hibernate/orm/current/javadocs/",
-            "https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-core/latest/",
-            "https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-databind/latest/",
-            "https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-annotations/latest/",
-            "https://javadoc.io/doc/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/latest/",
-            "https://javadoc.io/doc/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/latest/"
+            "https://docs.hibernate.org/orm/current/javadocs/",
+            "https://javadoc.io/doc/tools.jackson.core/jackson-core/3.1.0-rc1/",
+            "https://javadoc.io/doc/tools.jackson.core/jackson-databind/3.1.0-rc1/",
+            "https://javadoc.io/doc/com.fasterxml.jackson.core/jackson-annotations/2.21/",
+            "https://javadoc.io/doc/com.fasterxml.jackson.datatype/jackson-datatype-jdk8/2.21.2/",
+            "https://javadoc.io/doc/com.fasterxml.jackson.datatype/jackson-datatype-jsr310/2.21.2/"
         )
         addBooleanOption("html5", true)
         addStringOption("Xdoclint:none", "-quiet")
+        encoding = "UTF-8"
+        charSet = "UTF-8"
+        docEncoding = "UTF-8"
     }
 
     isFailOnError = true
-
 }
 
 configurations {

@@ -20,15 +20,20 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
-import java.util.List;
 import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -38,18 +43,46 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/manager/users")
 public class ManagerUserController {
 
+  private static final int DEFAULT_PAGE_SIZE = 20;
+  private static final int DEFAULT_PAGE_NUMBER = 0;
+
   private final UserService service;
 
+  /**
+   * Creates a controller exposing manager-only user administration operations.
+   *
+   * @param service user service.
+   */
   @Autowired
   public ManagerUserController(UserService service) {
     this.service = service;
   }
 
+  /**
+   * Returns all user profiles.
+   *
+   * @return list of user profiles.
+   */
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
-  public List<UserProfile> getAll() {
-    return service.getAll();
+  @Transactional(readOnly = true)
+  public Page<UserProfile> getAll(
+      @RequestParam(defaultValue = "" + DEFAULT_PAGE_SIZE) int pageSize,
+      @RequestParam(defaultValue = "" + DEFAULT_PAGE_NUMBER) int pageNumber
+  ) {
+    PageRequest pageable = PageRequest.of(
+        pageNumber, pageSize,
+        Sort.by(Direction.ASC, "displayName")
+    );
+    return service.getAll(pageable);
   }
 
+  /**
+   * Returns a user profile by external identifier.
+   *
+   * @param externalId user external ID.
+   * @return user profile.
+   * @throws UserNotFoundException if no user exists with {@code externalId}.
+   */
   @GetMapping(value = "/{externalId}", produces = MediaType.APPLICATION_JSON_VALUE)
   public UserProfile get(@PathVariable UUID externalId) {
     return service
@@ -57,6 +90,13 @@ public class ManagerUserController {
         .orElseThrow(() -> new UserNotFoundException("User not found: " + externalId));
   }
 
+  /**
+   * Sets manager status for a user profile.
+   *
+   * @param externalId user external ID.
+   * @param request    request payload containing desired manager flag.
+   * @return updated user profile.
+   */
   @PatchMapping(
       value = "/{externalId}/manager-status",
       consumes = MediaType.APPLICATION_JSON_VALUE,
@@ -69,6 +109,13 @@ public class ManagerUserController {
     return service.setManagerStatus(externalId, request.isManager());
   }
 
+  /**
+   * Sets enabled/disabled status for a user profile.
+   *
+   * @param externalId user external ID.
+   * @param request    request payload containing desired enabled flag.
+   * @return updated user profile.
+   */
   @PatchMapping(
       value = "/{externalId}/enabled",
       consumes = MediaType.APPLICATION_JSON_VALUE,

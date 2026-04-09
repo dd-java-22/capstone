@@ -20,6 +20,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 /**
  * Service interface for user profile business logic operations. Implementations of this interface
@@ -81,14 +83,52 @@ public interface UserService {
    */
   UserProfile updateAvatar(Long id, URL avatar);
 
+  /**
+   * Returns all user profiles.
+   *
+   * @return list of user profiles.
+   */
   List<UserProfile> getAll();
 
+  /**
+   * Returns a page of user profiles.
+   *
+   * @param pageable paging information.
+   * @return page of user profiles.
+   */
+  Page<UserProfile> getAll(Pageable pageable);
+
+  /**
+   * Returns the user profile for the currently authenticated user, creating one if needed.
+   *
+   * @return current user's profile.
+   */
   UserProfile getMe();
 
+  /**
+   * Finds a user profile by external identifier.
+   *
+   * @param externalId user external ID.
+   * @return optional containing the user profile if found.
+   */
   Optional<UserProfile> getByExternalId(UUID externalId);
 
+  /**
+   * Sets manager privilege for a user profile.
+   *
+   * @param externalId user external ID.
+   * @param manager {@code true} to grant manager privileges; {@code false} to revoke.
+   * @return updated user profile.
+   */
   UserProfile setManagerStatus(UUID externalId, boolean manager);
 
+  /**
+   * Sets enabled/disabled status for a user profile.
+   *
+   * @param externalId user external ID.
+   * @param enabled {@code true} to enable; {@code false} to disable.
+   * @return updated user profile.
+   */
   UserProfile setEnabled(UUID externalId, boolean enabled);
 
 }
