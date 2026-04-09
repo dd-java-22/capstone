@@ -1,40 +1,51 @@
 package edu.cnm.deepdive.seesomethingabq.controller.adapter
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import edu.cnm.deepdive.seesomethingabq.databinding.ItemManagerUserBinding
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary
+import java.util.function.Consumer
 
 /**
  * Paging adapter for manager-visible users.
- *
- * Uses a built-in Android row layout to avoid introducing new UI resources in this pass.
  */
-class ManagerUserAdapter :
+class ManagerUserAdapter(
+  private val onItemClick: Consumer<UserProfileSummary>
+) :
   PagingDataAdapter<UserProfileSummary, ManagerUserAdapter.ViewHolder>(DIFF_CALLBACK) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-    val view = LayoutInflater.from(parent.context)
-      .inflate(android.R.layout.simple_list_item_2, parent, false)
-    return ViewHolder(view)
+    val binding = ItemManagerUserBinding.inflate(
+      LayoutInflater.from(parent.context),
+      parent,
+      false
+    )
+    return ViewHolder(binding, onItemClick)
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
     getItem(position)?.let { holder.bind(it) }
   }
 
-  class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-
-    private val text1: TextView = itemView.findViewById(android.R.id.text1)
-    private val text2: TextView = itemView.findViewById(android.R.id.text2)
+  class ViewHolder(
+    private val binding: ItemManagerUserBinding,
+    private val onItemClick: Consumer<UserProfileSummary>
+  ) : RecyclerView.ViewHolder(binding.root) {
 
     fun bind(user: UserProfileSummary) {
-      text1.text = user.displayName
-      text2.text = user.email
+      binding.displayName.text = user.displayName.ifBlank { "(No name)" }
+      binding.email.text = user.email.ifBlank { "(No email)" }
+      binding.status.text = statusText(user.manager, user.userEnabled)
+      binding.root.setOnClickListener { onItemClick.accept(user) }
+    }
+
+    private fun statusText(isManager: Boolean, enabled: Boolean): String {
+      val managerText = if (isManager) "Manager" else "Not manager"
+      val enabledText = if (enabled) "Active" else "Disabled"
+      return "$managerText \u2022 $enabledText"
     }
   }
 
@@ -49,4 +60,3 @@ class ManagerUserAdapter :
   }
 
 }
-

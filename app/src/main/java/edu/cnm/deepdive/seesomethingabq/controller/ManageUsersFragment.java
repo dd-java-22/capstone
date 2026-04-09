@@ -16,6 +16,7 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +35,8 @@ import edu.cnm.deepdive.seesomethingabq.viewmodel.ManageUsersViewModel;
  */
 public class ManageUsersFragment extends Fragment {
 
+  private static final String TAG = ManageUsersFragment.class.getSimpleName();
+
   private FragmentManageUsersBinding binding;
   private ManageUsersViewModel viewModel;
   private ManagerUserAdapter adapter;
@@ -50,7 +53,18 @@ public class ManageUsersFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     viewModel = new ViewModelProvider(this).get(ManageUsersViewModel.class);
-    adapter = new ManagerUserAdapter();
+    adapter = new ManagerUserAdapter(user -> {
+      Log.d(
+          TAG,
+          String.format(
+              "Tapped user: name=%s; email=%s; manager=%s; enabled=%s",
+              user.getDisplayName(),
+              user.getEmail(),
+              user.getManager(),
+              user.getUserEnabled()
+          )
+      );
+    });
     binding.managerUsersRecycler.setAdapter(adapter);
     viewModel.getUsers(requireActivity()).observe(getViewLifecycleOwner(), pagingData -> {
       adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData);
