@@ -3,7 +3,9 @@ package edu.cnm.deepdive.seesomethingabq.service.proxy
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReport
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
+import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.ReportImageDto
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
@@ -13,6 +15,7 @@ import okhttp3.ResponseBody
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Header
+import retrofit2.http.PATCH
 import retrofit2.http.Path
 import retrofit2.http.Query
 import retrofit2.http.Multipart
@@ -109,6 +112,40 @@ interface SeeSomethingWebService {
   suspend fun getManagerUser(
     @Header("Authorization") bearerToken: String,
     @Path("externalId") externalId: UUID
+  ): UserProfileSummary
+
+  /**
+   * Sets manager authorization status for a user.
+   *
+   * Endpoint: PATCH /manager/users/{externalId}/manager-status
+   *
+   * @param bearerToken Authorization header value.
+   * @param externalId user external ID (UUID).
+   * @param request request body containing the desired manager status.
+   * @return updated user profile summary.
+   */
+  @PATCH("manager/users/{externalId}/manager-status")
+  suspend fun setManagerStatus(
+    @Header("Authorization") bearerToken: String,
+    @Path("externalId") externalId: UUID,
+    @Body request: ManagerStatusUpdateRequest
+  ): UserProfileSummary
+
+  /**
+   * Sets enabled/active status for a user.
+   *
+   * Endpoint: PATCH /manager/users/{externalId}/enabled
+   *
+   * @param bearerToken Authorization header value.
+   * @param externalId user external ID (UUID).
+   * @param request request body containing the desired enabled status.
+   * @return updated user profile summary.
+   */
+  @PATCH("manager/users/{externalId}/enabled")
+  suspend fun setEnabledStatus(
+    @Header("Authorization") bearerToken: String,
+    @Path("externalId") externalId: UUID,
+    @Body request: UserEnabledUpdateRequest
   ): UserProfileSummary
 
   /**

@@ -2,7 +2,9 @@ package edu.cnm.deepdive.seesomethingabq.service.repository
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
+import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
@@ -92,6 +94,24 @@ class FakeSeeSomethingWebService @Inject constructor() : SeeSomethingWebService 
       timeCreated = Instant.EPOCH,
       userEnabled = fakeUserEnabled,
     )
+  }
+
+  override suspend fun setManagerStatus(
+    bearerToken: String,
+    externalId: UUID,
+    request: ManagerStatusUpdateRequest
+  ): UserProfileSummary {
+    fakeManager = request.manager
+    return getManagerUser(bearerToken, externalId)
+  }
+
+  override suspend fun setEnabledStatus(
+    bearerToken: String,
+    externalId: UUID,
+    request: UserEnabledUpdateRequest
+  ): UserProfileSummary {
+    fakeUserEnabled = request.enabled
+    return getManagerUser(bearerToken, externalId)
   }
 
   override suspend fun submitIssueReport(bearerToken: String, request: IssueReportRequest) {

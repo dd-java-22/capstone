@@ -4,7 +4,9 @@ import android.app.Activity
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
+import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary
 import edu.cnm.deepdive.seesomethingabq.service.paging.ManagerUserPagingSource
 import edu.cnm.deepdive.seesomethingabq.service.proxy.SeeSomethingWebService
@@ -58,6 +60,34 @@ class ManagerUserServiceImpl @Inject constructor(
       pagingSourceFactory = { ManagerUserPagingSource(activity, this) }
     )
   }
+
+  override fun setManagerStatus(
+    activity: Activity,
+    externalId: UUID,
+    isManager: Boolean
+  ): CompletableFuture<UserProfileSummary> =
+    scope.future {
+      val credential = getCredential(activity)
+      webService.setManagerStatus(
+        "Bearer ${credential.idToken}",
+        externalId,
+        ManagerStatusUpdateRequest(isManager)
+      )
+    }
+
+  override fun setEnabledStatus(
+    activity: Activity,
+    externalId: UUID,
+    isEnabled: Boolean
+  ): CompletableFuture<UserProfileSummary> =
+    scope.future {
+      val credential = getCredential(activity)
+      webService.setEnabledStatus(
+        "Bearer ${credential.idToken}",
+        externalId,
+        UserEnabledUpdateRequest(isEnabled)
+      )
+    }
 
   private suspend fun getCredential(activity: Activity): GoogleIdTokenCredential =
     authRepository.getValidCredential(activity).await()

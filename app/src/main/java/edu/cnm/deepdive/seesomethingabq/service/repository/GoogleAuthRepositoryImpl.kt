@@ -107,7 +107,7 @@ class GoogleAuthRepositoryImpl @Inject constructor(
             } else {
                 val payload = String(Base64.decode(parts[1], Base64.URL_SAFE or Base64.NO_WRAP))
                 val expiration = JSONObject(payload).getLong("exp")
-                expiration < System.currentTimeMillis() / 1000 + 5 * 60
+                expiration < System.currentTimeMillis() / 1000
             }
         } catch (e: Exception) {
             true

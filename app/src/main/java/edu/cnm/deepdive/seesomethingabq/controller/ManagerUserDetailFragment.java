@@ -20,11 +20,15 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavBackStackEntry;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.snackbar.Snackbar;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManagerUserDetailBinding;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary;
@@ -43,13 +47,22 @@ import java.util.UUID;
 public class ManagerUserDetailFragment extends Fragment {
 
   private static final String TAG = ManagerUserDetailFragment.class.getSimpleName();
+  private static final String MANAGER_USERS_REFRESH_REQUIRED = "manager_users_refresh_required";
 
   private FragmentManagerUserDetailBinding binding;
   private ManagerUserDetailViewModel viewModel;
   private UUID externalId;
+  private boolean mutationInProgress;
+  private PendingMutation pendingMutation;
+  private boolean pendingTargetValue;
 
   private final DateTimeFormatter dateTimeFormatter =
       DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM).withZone(ZoneId.systemDefault());
+
+  private enum PendingMutation {
+    MANAGER_STATUS,
+    ENABLED_STATUS
+  }
 
   @Nullable
   @Override
@@ -72,7 +85,16 @@ public class ManagerUserDetailFragment extends Fragment {
     viewModel.getThrowable().observe(getViewLifecycleOwner(), (throwable) -> {
       if (throwable != null) {
         Log.e(TAG, throwable.getMessage(), throwable);
-        Toast.makeText(requireContext(), "Failed to load user details", Toast.LENGTH_SHORT).show();
+        if (mutationInProgress) {
+          showMutationFailure();
+          mutationInProgress = false;
+          pendingMutation = null;
+          setButtonsEnabled(true);
+        } else {
+          Snackbar.make(binding.getRoot(), "Failed to load user details", Snackbar.LENGTH_SHORT)
+              .show();
+          setButtonsEnabled(false);
+        }
       }
     });
     viewModel.load(requireActivity(), externalId);
@@ -93,6 +115,7 @@ public class ManagerUserDetailFragment extends Fragment {
     binding.managerAuthButton.setText("Authorize as Manager");
     binding.accountActivationButton.setText("Deactivate Account");
     binding.externalIdValue.setText(String.valueOf(externalId));
+    setButtonsEnabled(false);
   }
 
   private void bindUser(UserProfileSummary user) {
@@ -110,17 +133,107 @@ public class ManagerUserDetailFragment extends Fragment {
         user.getManager() ? "Revoke Manager Authorization" : "Authorize as Manager");
     binding.accountActivationButton.setText(
         user.getUserEnabled() ? "Deactivate Account" : "Reactivate Account");
+
+    if (mutationInProgress) {
+      showMutationSuccess();
+      markManagerUsersRefreshRequired();
+      mutationInProgress = false;
+      pendingMutation = null;
+      setButtonsEnabled(true);
+    } else {
+      setButtonsEnabled(true);
+    }
   }
 
   private void setupButtons() {
     binding.managerAuthButton.setOnClickListener((v) -> {
-      Log.d(TAG, "Manager auth button tapped for externalId=" + externalId);
-      Toast.makeText(requireContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+      UserProfileSummary user = viewModel.getUser().getValue();
+      if (user == null || mutationInProgress) {
+        return;
+      }
+      boolean targetIsManager = !user.getManager();
+      String title = user.getManager() ? "Revoke Manager Authorization?" : "Authorize as Manager?";
+      String message = user.getManager()
+          ? "This will revoke manager authorization for this user."
+          : "This will authorize this user as a manager.";
+      new MaterialAlertDialogBuilder(requireContext())
+          .setTitle(title)
+          .setMessage(message)
+          .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+          .setPositiveButton("Confirm", (dialog, which) -> {
+            mutationInProgress = true;
+            pendingMutation = PendingMutation.MANAGER_STATUS;
+            pendingTargetValue = targetIsManager;
+            setButtonsEnabled(false);
+            viewModel.setManagerStatus(requireActivity(), externalId, targetIsManager);
+          })
+          .show();
     });
     binding.accountActivationButton.setOnClickListener((v) -> {
-      Log.d(TAG, "Account activation button tapped for externalId=" + externalId);
-      Toast.makeText(requireContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+      UserProfileSummary user = viewModel.getUser().getValue();
+      if (user == null || mutationInProgress) {
+        return;
+      }
+      boolean targetIsEnabled = !user.getUserEnabled();
+      String title = user.getUserEnabled() ? "Deactivate Account?" : "Reactivate Account?";
+      String message = user.getUserEnabled()
+          ? "This will deactivate the account and prevent sign-in."
+          : "This will reactivate the account and allow sign-in.";
+      new MaterialAlertDialogBuilder(requireContext())
+          .setTitle(title)
+          .setMessage(message)
+          .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+          .setPositiveButton("Confirm", (dialog, which) -> {
+            mutationInProgress = true;
+            pendingMutation = PendingMutation.ENABLED_STATUS;
+            pendingTargetValue = targetIsEnabled;
+            setButtonsEnabled(false);
+            viewModel.setEnabledStatus(requireActivity(), externalId, targetIsEnabled);
+          })
+          .show();
     });
+  }
+
+  private void setButtonsEnabled(boolean enabled) {
+    if (binding == null) {
+      return;
+    }
+    binding.managerAuthButton.setEnabled(enabled);
+    binding.accountActivationButton.setEnabled(enabled);
+  }
+
+  private void showMutationSuccess() {
+    if (binding == null || pendingMutation == null) {
+      return;
+    }
+    String message;
+    if (pendingMutation == PendingMutation.MANAGER_STATUS) {
+      message = pendingTargetValue ? "Manager authorization granted" : "Manager authorization revoked";
+    } else {
+      message = pendingTargetValue ? "Account reactivated" : "Account deactivated";
+    }
+    Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_SHORT).show();
+  }
+
+  private void showMutationFailure() {
+    if (binding == null || pendingMutation == null) {
+      return;
+    }
+    String message;
+    if (pendingMutation == PendingMutation.MANAGER_STATUS) {
+      message = "Failed to update manager authorization";
+    } else {
+      message = "Failed to update account activation";
+    }
+    Snackbar.make(binding.getRoot(), message, Snackbar.LENGTH_SHORT).show();
+  }
+
+  private void markManagerUsersRefreshRequired() {
+    NavController navController = Navigation.findNavController(requireView());
+    NavBackStackEntry previousEntry = navController.getPreviousBackStackEntry();
+    if (previousEntry != null) {
+      previousEntry.getSavedStateHandle().set(MANAGER_USERS_REFRESH_REQUIRED, true);
+    }
   }
 
 }
