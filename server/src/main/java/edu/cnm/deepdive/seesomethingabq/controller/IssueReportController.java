@@ -72,8 +72,8 @@ public class IssueReportController {
     IssueReport created = issueReportService.createReport(request);
     IssueReportDto dto = IssueReportDto.from(created);
 
-    URI location = linkTo(methodOn(IssueReportController.class)
-        .getReport(created.getExternalId()))
+    URI location = linkTo(IssueReportController.class)
+        .slash(created.getExternalId())
         .toUri();
 
     return ResponseEntity.created(location).body(dto);
