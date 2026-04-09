@@ -63,20 +63,34 @@
     android:layout_height="wrap_content"
     android:text="User Dashboard"
     android:textSize="24sp"
-    android:layout_marginBottom="24dp"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintBottom_toTopOf="@id/create_issue_button"
+    app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+    app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"/>
+    app:layout_constraintTop_toBottomOf="@id/external_key"
+    />
+
+
+  <androidx.recyclerview.widget.RecyclerView
+    android:id="@+id/recyclerView"
+    android:layout_width="0dp"
+    android:layout_height="0dp"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintTop_toBottomOf="@id/header_text"
+    app:layout_constraintBottom_toTopOf="@+id/create_issue_button"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    tools:listitem="@layout/item_issue_report"
+    />
 
   <Button
     android:id="@+id/create_issue_button"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:text="Create Issue Report"
-    app:layout_constraintTop_toBottomOf="@id/header_text"
     app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"/>
+    app:layout_constraintTop_toBottomOf="@+id/recyclerView"/>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
