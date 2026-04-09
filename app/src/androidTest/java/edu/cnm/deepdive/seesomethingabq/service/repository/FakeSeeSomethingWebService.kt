@@ -3,6 +3,7 @@ package edu.cnm.deepdive.seesomethingabq.service.repository
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
 import edu.cnm.deepdive.seesomethingabq.service.proxy.SeeSomethingWebService
@@ -62,6 +63,34 @@ class FakeSeeSomethingWebService @Inject constructor() : SeeSomethingWebService 
       number = 0,
       last = true,
       first = true,
+    )
+  }
+
+  override suspend fun getManagerUsersPage(
+    bearerToken: String,
+    page: Int,
+    size: Int
+  ): PaginatedResponse<UserProfileSummary> {
+    return PaginatedResponse(
+      totalElements = 0,
+      totalPages = 0,
+      content = emptyList(),
+      size = size,
+      number = page,
+      last = true,
+      first = page == 0,
+    )
+  }
+
+  override suspend fun getManagerUser(bearerToken: String, externalId: UUID): UserProfileSummary {
+    return UserProfileSummary(
+      externalId = externalId,
+      displayName = fakeDisplayName,
+      email = fakeEmail,
+      avatar = null,
+      manager = fakeManager,
+      timeCreated = Instant.EPOCH,
+      userEnabled = fakeUserEnabled,
     )
   }
 

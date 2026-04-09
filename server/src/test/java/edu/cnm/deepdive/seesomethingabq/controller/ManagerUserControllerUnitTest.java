@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -33,8 +34,14 @@ import java.util.UUID;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort.Direction;
 
 @ExtendWith(MockitoExtension.class)
 class ManagerUserControllerUnitTest {
@@ -52,12 +59,19 @@ class ManagerUserControllerUnitTest {
   @Test
   void getAllReturnsFullListFromService() {
     List<UserProfile> users = List.of(new UserProfile(), new UserProfile());
-    when(userService.getAll()).thenReturn(users);
+    Page<UserProfile> page = new PageImpl<>(users);
+    when(userService.getAll(any(Pageable.class))).thenReturn(page);
 
-    List<UserProfile> result = controller.getAll();
+    int pageSize = 20;
+    int pageNumber = 0;
+    Page<UserProfile> result = controller.getAll(pageSize, pageNumber);
 
-    assertSame(users, result);
-    verify(userService).getAll();
+    assertSame(page, result);
+    ArgumentCaptor<Pageable> pageableCaptor = ArgumentCaptor.forClass(Pageable.class);
+    verify(userService).getAll(pageableCaptor.capture());
+    Pageable pageable = pageableCaptor.getValue();
+    assertEquals(PageRequest.of(pageNumber, pageSize, org.springframework.data.domain.Sort.by(Direction.ASC, "displayName")),
+        pageable);
   }
 
   @Test
