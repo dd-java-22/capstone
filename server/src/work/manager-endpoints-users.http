@@ -7,7 +7,7 @@ GET http://localhost:8080/see-something/manager/users?pageNumber=1&pageSize=2
 Authorization: Bearer {{bearerToken}}
 
 ###
-GET http://localhost:8080/see-something/manager/users/f8d87b9d-a6cb-4809-bdf8-0ec5e63d364d
+GET http://localhost:8080/see-something/manager/users/{{userProfileExternalId}}
 Authorization: Bearer {{bearerToken}}
 
 ###
