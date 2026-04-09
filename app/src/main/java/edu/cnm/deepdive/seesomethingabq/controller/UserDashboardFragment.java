@@ -16,7 +16,6 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +43,10 @@ public class UserDashboardFragment extends Fragment {
   @Override
   public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
       @Nullable Bundle savedInstanceState) {
+
     binding = FragmentUserDashboardBinding.inflate(inflater, container, false);
+
+    // Existing button
     binding.createIssueButton.setOnClickListener((v) -> {
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_create_issue_report_fragment);
@@ -59,7 +61,6 @@ public class UserDashboardFragment extends Fragment {
 
     viewModel.getUser()
         .observe(getViewLifecycleOwner(), user -> {
-
           if (user != null) {
             binding.displayName.setText(user.getDisplayName());
             binding.oauthKey.setText(user.getOauthKey());

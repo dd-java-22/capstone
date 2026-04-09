@@ -33,7 +33,6 @@ class ProxyModule {
   @Provides
   @Singleton
   fun provideGson(adapter: TypeAdapter<Instant>): Gson = GsonBuilder()
-    .excludeFieldsWithoutExposeAnnotation()
     .registerTypeAdapter(Instant::class.java, adapter)
     .create()
 
