@@ -10,20 +10,51 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
-    <TextView
+    <EditText
       android:id="@+id/report_description"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:textSize="18sp"
       android:textStyle="bold"
+      android:enabled="false"
+      android:focusable="false"
+      android:inputType="textMultiLine"
       tools:text="Illegal dumping behind warehouse" />
 
-    <TextView
+    <EditText
       android:id="@+id/report_issue_types"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="8dp"
+      android:enabled="false"
+      android:focusable="false"
+      android:inputType="text"
       tools:text="Trash, Safety Hazard" />
+
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="12dp"
+      android:orientation="horizontal">
+
+      <Button
+        android:id="@+id/edit_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Edit" />
+
+      <Button
+        android:id="@+id/save_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:text="Save"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+    </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
       android:id="@+id/image_list"

@@ -148,7 +148,7 @@ class IssueReportServiceImpl @Inject constructor(
                 }
             }
         )
-    override fun getReport(
+  override fun getReport(
     activity: Activity,
     reportId: String
   ): CompletableFuture<IssueReport> =
@@ -157,6 +157,20 @@ class IssueReportServiceImpl @Inject constructor(
       webService.getIssueReport(
         "Bearer ${credential.idToken}",
         reportId
+      )
+    }
+
+  override fun updateReport(
+    activity: Activity,
+    reportId: String,
+    request: IssueReportRequest
+  ): CompletableFuture<IssueReport> =
+    scope.future {
+      val credential = getCredential(activity)
+      webService.updateIssueReport(
+        "Bearer ${credential.idToken}",
+        reportId,
+        request
       )
     }
 
