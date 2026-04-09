@@ -36,6 +36,7 @@ public class IssueReportViewModel extends ViewModel {
   private final MutableLiveData<Boolean> submitted;
   private final MutableLiveData<Throwable> throwable;
   private LiveData<PagingData<IssueReportSummary>> issueReports;
+  private LiveData<PagingData<IssueReportSummary>> myIssueReports;
   private final MutableLiveData<List<Uri>> attachedImages;
 
   /**
@@ -77,11 +78,22 @@ public class IssueReportViewModel extends ViewModel {
    */
   public LiveData<PagingData<IssueReportSummary>> getIssueReports(Activity activity) {
     if (issueReports == null) {
-      issueReports = PagingLiveData.getLiveData(
-          issueReportService.getIssueReportsPager(activity)
+      issueReports = PagingLiveData.cachedIn(
+          PagingLiveData.getLiveData(issueReportService.getAllIssueReportsPager(activity)),
+          this
       );
     }
     return issueReports;
+  }
+
+  public LiveData<PagingData<IssueReportSummary>> getMyIssueReports(Activity activity) {
+    if (myIssueReports == null) {
+      myIssueReports = PagingLiveData.cachedIn(
+          PagingLiveData.getLiveData(issueReportService.getMyIssueReportsPager(activity)),
+          this
+      );
+    }
+    return myIssueReports;
   }
 
   /**

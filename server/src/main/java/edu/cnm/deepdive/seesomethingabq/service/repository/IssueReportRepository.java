@@ -8,6 +8,8 @@ import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -25,13 +27,13 @@ public interface IssueReportRepository extends JpaRepository<IssueReport, Long> 
   Optional<IssueReport> findByExternalId(UUID externalId);
 
   /**
-   * Finds issue reports for a user profile with the specified sort order.
+   * Finds issue reports for a user profile with the specified pageable definition. order.
    *
    * @param userProfile report owner.
-   * @param sort sort order.
+   * @param pageable sort order.
    * @return matching issue reports.
    */
-  List<IssueReport> findByUserProfile(UserProfile userProfile, Sort sort);
+  Page<IssueReport> findByUserProfile(UserProfile userProfile, Pageable pageable);
 
   /**
    * Returns a user's reports ordered by first-reported time descending.

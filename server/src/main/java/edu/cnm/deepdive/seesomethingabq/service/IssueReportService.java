@@ -17,10 +17,10 @@ public interface IssueReportService {
   /**
    * Returns summaries of reports owned by the currently authenticated user.
    *
-   * @param sortParam sort key/direction string as provided by the controller.
-   * @return list of report summaries.
+   * @param pageable page number, size, and sort, defined by caller.
+   * @return page of report summaries.
    */
-  List<IssueReportSummary> getReportsForCurrentUser(String sortParam);
+  Page<IssueReport> getReportsForCurrentUser(Pageable pageable);
 
   /**
    * Creates a new report for the currently authenticated user.

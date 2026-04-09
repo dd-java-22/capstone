@@ -35,7 +35,7 @@ import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
 public class ManageIssuesFragment extends Fragment {
 
   private FragmentManageIssuesBinding binding;
-  private IssueReportViewModel viewModel;
+  private IssueReportViewModel issueReportViewModel;
   private IssueReportAdapter adapter;
 
   @Nullable
@@ -49,12 +49,13 @@ public class ManageIssuesFragment extends Fragment {
   @Override
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
-    viewModel = new ViewModelProvider(this).get(IssueReportViewModel.class);
+    issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
     adapter = new IssueReportAdapter();
     binding.issueReportsRecycler.setAdapter(adapter);
-    viewModel.getIssueReports(requireActivity()).observe(getViewLifecycleOwner(), pagingData -> {
-      adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData);
-    });
+    issueReportViewModel
+        .getIssueReports(requireActivity())
+        .observe(getViewLifecycleOwner(), pagingData ->
+            adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData));
   }
 
   @Override

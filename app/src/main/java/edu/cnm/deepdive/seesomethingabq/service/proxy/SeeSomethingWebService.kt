@@ -64,6 +64,13 @@ interface SeeSomethingWebService {
     @Header("Authorization") bearerToken: String
   ): List<IssueReportSummary>
 
+  @GET("issue-reports/mine")
+  suspend fun getMyIssueReportsPage(
+    @Header("Authorization") bearerToken: String,
+    @Query("pageNumber") page: Int = 0,
+    @Query("pageSize") size: Int = 10,
+  ): PaginatedResponse<IssueReportSummary>
+
   /**
    * Retrieves a page of issue report summaries for manager views.
    *
@@ -73,7 +80,7 @@ interface SeeSomethingWebService {
    * @return paginated response of report summaries.
    */
   @GET("manager/issue-reports")
-  suspend fun getIssueReportsPage(
+  suspend fun getAllIssueReportsPage(
     @Header("Authorization") bearerToken: String,
     @Query("pageNumber") page: Int = 0,
     @Query("pageSize") size: Int = 10

@@ -56,11 +56,26 @@ interface IssueReportService {
    * @param size page size.
    * @return future completing with a paginated response.
    */
-  fun getIssueReportsPage(
-    activity: Activity,
-    page: Int = 0,
-    size: Int = 10
-  ): CompletableFuture<PaginatedResponse<IssueReportSummary>>
+  fun getAllIssueReportsPage(
+        activity: Activity,
+        page: Int = 0,
+        size: Int = 10
+    ): CompletableFuture<PaginatedResponse<IssueReportSummary>>
+
+    /**
+     * Retrieves a single paginated page of issue report summaries
+     * submitted by the currently logged in user.
+     *
+     * @param activity activity used for authentication flows.
+     * @param page zero-based page number.
+     * @param size page size.
+     * @return future completing with a paginated response.
+     */
+    fun getMyIssueReportsPage(
+        activity: Activity,
+        page: Int = 0,
+        size: Int = 10
+    ): CompletableFuture<PaginatedResponse<IssueReportSummary>>
 
   /**
    * Creates a paging [Pager] for issue report summaries.
@@ -68,7 +83,15 @@ interface IssueReportService {
    * @param activity activity used for authentication flows.
    * @return pager producing [IssueReportSummary] items.
    */
-  fun getIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
+  fun getAllIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
+
+    /**
+     * Creates a paging [Pager] for issue report summaries only for the currently logged in user.
+     *
+     * @param activity activity used for authentication flows.
+     * @return pager producing [IssueReportSummary] items.
+     */
+  fun getMyIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
 
 
   fun getReport(

@@ -8,9 +8,14 @@ import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import java.net.URI;
 import java.util.List;
 import java.util.UUID;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,6 +36,9 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 @RestController
 @RequestMapping("/issue-reports")
 public class IssueReportController {
+
+  private static final int DEFAULT_PAGE_SIZE = 20;
+  private static final int DEFAULT_PAGE_NUMBER = 0;
 
   private final IssueReportService issueReportService;
 
@@ -53,9 +61,17 @@ public class IssueReportController {
       value = "/mine",
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public List<IssueReportSummary> getMyReports(
-      @RequestParam(defaultValue = "last_modified") String sort) {
-    return issueReportService.getReportsForCurrentUser(sort);
+  @Transactional(readOnly = true)
+  public Page<IssueReportSummary> getMyReports(
+      @RequestParam(defaultValue = "" + DEFAULT_PAGE_SIZE) int pageSize,
+      @RequestParam(defaultValue = "" + DEFAULT_PAGE_NUMBER) int pageNumber
+  ) {
+    PageRequest pageable = PageRequest.of(
+        pageNumber,
+        pageSize,
+        Sort.by(Direction.DESC, "timeLastModified")
+    );
+    return issueReportService.getReportsForCurrentUser(pageable).map(IssueReportSummary::fromIssueReport);
   }
 
   /**
