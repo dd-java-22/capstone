@@ -166,6 +166,7 @@ class ReportDetailFragment : Fragment() {
                     Snackbar.make(binding.root, "Saved", Snackbar.LENGTH_SHORT).show()
                     findNavController().previousBackStackEntry?.savedStateHandle
                         ?.set(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, true)
+                    findNavController().popBackStack()
                 }
             }
             .exceptionally { thrown ->
