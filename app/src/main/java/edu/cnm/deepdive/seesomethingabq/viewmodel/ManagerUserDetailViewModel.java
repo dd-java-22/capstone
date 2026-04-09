@@ -69,6 +69,10 @@ public class ManagerUserDetailViewModel extends ViewModel {
   public void setManagerStatus(Activity activity, UUID externalId, boolean isManager) {
     throwable.setValue(null);
     managerUserService.setManagerStatus(activity, externalId, isManager)
+        .thenCompose((updated) -> managerUserService
+            .getManagerUser(activity, externalId)
+            // If refresh fails, keep the server-confirmed mutation response.
+            .exceptionally((ignored) -> updated))
         .whenComplete((user, throwable) -> {
           if (throwable == null) {
             this.user.postValue(user);
@@ -81,6 +85,10 @@ public class ManagerUserDetailViewModel extends ViewModel {
   public void setEnabledStatus(Activity activity, UUID externalId, boolean isEnabled) {
     throwable.setValue(null);
     managerUserService.setEnabledStatus(activity, externalId, isEnabled)
+        .thenCompose((updated) -> managerUserService
+            .getManagerUser(activity, externalId)
+            // If refresh fails, keep the server-confirmed mutation response.
+            .exceptionally((ignored) -> updated))
         .whenComplete((user, throwable) -> {
           if (throwable == null) {
             this.user.postValue(user);
