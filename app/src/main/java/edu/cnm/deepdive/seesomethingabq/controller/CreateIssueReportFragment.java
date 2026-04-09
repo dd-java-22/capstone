@@ -99,7 +99,6 @@ public class CreateIssueReportFragment extends Fragment {
   private static final String TAG = CreateIssueReportFragment.class.getSimpleName();
   private static final int SEARCH_DEBOUNCE_MS = 500;
   private static final int MIN_QUERY_LENGTH = 3;
-  private static final String USER_REPORTS_REFRESH_REQUIRED = "user_reports_refresh_required";
 
   private FragmentCreateIssueReportBinding binding;
   private IssueTypeViewModel issueTypeViewModel;
@@ -650,7 +649,8 @@ public class CreateIssueReportFragment extends Fragment {
       NavController navController = Navigation.findNavController(binding.getRoot());
       NavBackStackEntry previousEntry = navController.getPreviousBackStackEntry();
       if (previousEntry != null) {
-        previousEntry.getSavedStateHandle().set(USER_REPORTS_REFRESH_REQUIRED, true);
+        previousEntry.getSavedStateHandle()
+            .set(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, true);
       }
       navController.popBackStack();
     }

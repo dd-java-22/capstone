@@ -40,8 +40,6 @@ import kotlin.Unit;
  */
 public class UserDashboardFragment extends Fragment {
 
-  private static final String USER_REPORTS_REFRESH_REQUIRED = "user_reports_refresh_required";
-
   private FragmentUserDashboardBinding binding;
   private UserViewModel userViewModel;
   private IssueReportViewModel issueReportViewModel;
@@ -91,11 +89,12 @@ public class UserDashboardFragment extends Fragment {
     NavBackStackEntry currentEntry = navController.getCurrentBackStackEntry();
     if (currentEntry != null) {
       currentEntry.getSavedStateHandle()
-          .<Boolean>getLiveData(USER_REPORTS_REFRESH_REQUIRED, false)
+          .<Boolean>getLiveData(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, false)
           .observe(getViewLifecycleOwner(), refreshRequired -> {
             if (Boolean.TRUE.equals(refreshRequired)) {
-              currentEntry.getSavedStateHandle().set(USER_REPORTS_REFRESH_REQUIRED, false);
-              adapter.refresh();
+              currentEntry.getSavedStateHandle()
+                  .set(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, false);
+              refreshMyReports();
             }
           });
     }
@@ -107,6 +106,12 @@ public class UserDashboardFragment extends Fragment {
             pagingData ->
                 adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData)
         );
+  }
+
+  private void refreshMyReports() {
+    if (adapter != null) {
+      adapter.refresh();
+    }
   }
 
   @Override

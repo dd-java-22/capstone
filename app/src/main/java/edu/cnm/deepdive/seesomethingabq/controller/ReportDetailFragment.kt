@@ -23,10 +23,6 @@ import com.google.android.material.chip.ChipDrawable
 @AndroidEntryPoint
 class ReportDetailFragment : Fragment() {
 
-    companion object {
-        private const val USER_REPORTS_REFRESH_REQUIRED = "user_reports_refresh_required"
-    }
-
     private var _binding: FragmentReportDetailBinding? = null
     private val binding: FragmentReportDetailBinding
         get() = _binding!!
@@ -169,7 +165,7 @@ class ReportDetailFragment : Fragment() {
                     setEditing(false)
                     Snackbar.make(binding.root, "Saved", Snackbar.LENGTH_SHORT).show()
                     findNavController().previousBackStackEntry?.savedStateHandle
-                        ?.set(USER_REPORTS_REFRESH_REQUIRED, true)
+                        ?.set(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, true)
                 }
             }
             .exceptionally { thrown ->
