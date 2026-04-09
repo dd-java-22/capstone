@@ -12,7 +12,9 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
-class IssueReportAdapter :
+class IssueReportAdapter(
+  private val onClick: (IssueReportSummary) -> Unit = {}
+) :
   PagingDataAdapter<IssueReportSummary, IssueReportAdapter.ViewHolder>(DIFF_CALLBACK) {
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
@@ -21,7 +23,7 @@ class IssueReportAdapter :
       parent,
       false
     )
-    return ViewHolder(binding)
+    return ViewHolder(binding, onClick)
   }
 
   override fun onBindViewHolder(holder: ViewHolder, position: Int) {
@@ -29,7 +31,10 @@ class IssueReportAdapter :
     item?.let { holder.bind(it) }
   }
 
-  class ViewHolder(private val binding: ItemIssueReportBinding) :
+  class ViewHolder(
+    private val binding: ItemIssueReportBinding,
+    private val onClick: (IssueReportSummary) -> Unit
+  ) :
     RecyclerView.ViewHolder(binding.root) {
 
     private val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
@@ -40,6 +45,7 @@ class IssueReportAdapter :
       binding.acceptedState.text = issueReport.acceptedState
       binding.timeFirstReported.text = dateTimeFormatter.format(issueReport.timeFirstReported)
       binding.timeLastModified.text = dateTimeFormatter.format(issueReport.timeLastModified)
+      binding.root.setOnClickListener { onClick(issueReport) }
     }
   }
 
