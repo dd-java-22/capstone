@@ -21,6 +21,7 @@ import retrofit2.http.Query
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.PUT
 
 import java.util.UUID
 
@@ -205,5 +206,20 @@ interface SeeSomethingWebService {
   suspend fun getIssueReport(
     @Header("Authorization") bearerToken: String,
     @Path("reportId") reportId: String
+  ): IssueReport
+
+  /**
+   * Updates an existing issue report.
+   *
+   * @param bearerToken Authorization header value.
+   * @param reportId External ID of the issue report (UUID string).
+   * @param request report request payload containing updated fields.
+   * @return updated issue report DTO.
+   */
+  @PUT("issue-reports/{reportId}")
+  suspend fun updateIssueReport(
+    @Header("Authorization") bearerToken: String,
+    @Path("reportId") reportId: String,
+    @Body request: IssueReportRequest
   ): IssueReport
 }

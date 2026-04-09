@@ -28,6 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
+import edu.cnm.deepdive.seesomethingabq.model.entity.ReportLocation;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import edu.cnm.deepdive.seesomethingabq.TestStorageConfig;
 import java.util.List;
@@ -82,6 +83,11 @@ class IssueReportControllerTest {
     IssueReport created = new IssueReport();
     UUID externalId = UUID.fromString("11111111-1111-1111-1111-111111111111");
     ReflectionTestUtils.setField(created, "externalId", externalId);
+    ReportLocation location = new ReportLocation();
+    location.setLatitude(35.0);
+    location.setLongitude(-106.0);
+    created.setReportLocation(location);
+    created.setTextDescription("Graffiti on wall");
     when(issueReportService.createReport(org.mockito.ArgumentMatchers.any(IssueReportRequest.class)))
         .thenReturn(created);
 
@@ -119,10 +125,17 @@ class IssueReportControllerTest {
   @WithMockUser(roles = "USER")
   void putBindsIssueTypesArrayAndDelegates() throws Exception {
     UUID externalId = UUID.fromString("22222222-2222-2222-2222-222222222222");
+    IssueReport updated = new IssueReport();
+    ReflectionTestUtils.setField(updated, "externalId", externalId);
+    ReportLocation location = new ReportLocation();
+    location.setLatitude(35.0);
+    location.setLongitude(-106.0);
+    updated.setReportLocation(location);
+    updated.setTextDescription("Updated");
     when(issueReportService.updateReport(
         org.mockito.ArgumentMatchers.eq(externalId),
         org.mockito.ArgumentMatchers.any(IssueReportRequest.class)
-    )).thenReturn(new IssueReport());
+    )).thenReturn(updated);
 
     mockMvc.perform(
             put("/issue-reports/{externalId}", externalId)
@@ -147,10 +160,17 @@ class IssueReportControllerTest {
   @WithMockUser(roles = "USER")
   void putWithEmptyIssueTypesArrayBindsAndDelegates() throws Exception {
     UUID externalId = UUID.fromString("33333333-3333-3333-3333-333333333333");
+    IssueReport updated = new IssueReport();
+    ReflectionTestUtils.setField(updated, "externalId", externalId);
+    ReportLocation location = new ReportLocation();
+    location.setLatitude(35.0);
+    location.setLongitude(-106.0);
+    updated.setReportLocation(location);
+    updated.setTextDescription("Updated");
     when(issueReportService.updateReport(
         org.mockito.ArgumentMatchers.eq(externalId),
         org.mockito.ArgumentMatchers.any(IssueReportRequest.class)
-    )).thenReturn(new IssueReport());
+    )).thenReturn(updated);
 
     mockMvc.perform(
             put("/issue-reports/{externalId}", externalId)
@@ -174,10 +194,17 @@ class IssueReportControllerTest {
   @WithMockUser(roles = "USER")
   void putWithoutLocationFieldsIsAcceptedAndDelegates() throws Exception {
     UUID externalId = UUID.fromString("44444444-4444-4444-4444-444444444444");
+    IssueReport updated = new IssueReport();
+    ReflectionTestUtils.setField(updated, "externalId", externalId);
+    ReportLocation location = new ReportLocation();
+    location.setLatitude(35.0);
+    location.setLongitude(-106.0);
+    updated.setReportLocation(location);
+    updated.setTextDescription("Only updating description");
     when(issueReportService.updateReport(
         org.mockito.ArgumentMatchers.eq(externalId),
         org.mockito.ArgumentMatchers.any(IssueReportRequest.class)
-    )).thenReturn(new IssueReport());
+    )).thenReturn(updated);
 
     mockMvc.perform(
             put("/issue-reports/{externalId}", externalId)

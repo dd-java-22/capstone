@@ -99,5 +99,10 @@ interface IssueReportService {
     reportId: String
   ): CompletableFuture<IssueReport>
 
+  fun updateReport(
+    activity: Activity,
+    reportId: String,
+    request: IssueReportRequest
+  ): CompletableFuture<IssueReport>
 
 }

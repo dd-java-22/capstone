@@ -117,6 +117,14 @@ public class IssueReportViewModel extends ViewModel {
     return issueReportService.getReport(activity, reportId);
   }
 
+  public CompletableFuture<IssueReport> updateReport(
+      Activity activity,
+      String reportId,
+      IssueReportRequest request
+  ) {
+    return issueReportService.updateReport(activity, reportId, request);
+  }
+
   public CompletableFuture<byte[]> downloadImage(
       Activity activity,
       String reportId,

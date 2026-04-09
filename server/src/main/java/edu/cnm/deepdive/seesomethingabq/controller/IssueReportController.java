@@ -114,11 +114,12 @@ public class IssueReportController {
    *
    * @param externalId report external ID.
    * @param request request payload describing updates to apply.
-   * @return updated issue report entity.
+   * @return updated issue report DTO.
    */
   @PutMapping("/{externalId}")
-  public IssueReport updateReport(@PathVariable UUID externalId, @RequestBody IssueReportRequest request) {
-    return issueReportService.updateReport(externalId, request);
+  public IssueReportDto updateReport(@PathVariable UUID externalId, @RequestBody IssueReportRequest request) {
+    IssueReport updated = issueReportService.updateReport(externalId, request);
+    return IssueReportDto.from(updated);
   }
 
   /**

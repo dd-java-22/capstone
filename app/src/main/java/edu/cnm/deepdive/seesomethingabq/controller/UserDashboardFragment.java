@@ -31,6 +31,7 @@ import edu.cnm.deepdive.seesomethingabq.controller.adapter.IssueReportAdapter;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserDashboardBinding;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
+import kotlin.Unit;
 
 @AndroidEntryPoint
 /**
@@ -74,7 +75,13 @@ public class UserDashboardFragment extends Fragment {
           }
         });
 
-    adapter = new IssueReportAdapter();
+    adapter = new IssueReportAdapter(issueReport -> {
+      Navigation.findNavController(view)
+          .navigate(UserDashboardFragmentDirections.navigateToReportDetailFragment(
+              issueReport.getExternalId().toString()
+          ));
+      return Unit.INSTANCE;
+    });
     binding.issueReportsRecycler.setAdapter(adapter);
     issueReportViewModel
         .getMyIssueReports(requireActivity())
