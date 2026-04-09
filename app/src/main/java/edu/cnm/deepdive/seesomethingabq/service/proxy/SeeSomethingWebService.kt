@@ -3,6 +3,7 @@ package edu.cnm.deepdive.seesomethingabq.service.proxy
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
 import retrofit2.http.Body
@@ -57,6 +58,21 @@ interface SeeSomethingWebService {
     @Query("pageNumber") page: Int = 0,
     @Query("pageSize") size: Int = 10
   ): PaginatedResponse<IssueReportSummary>
+
+  /**
+   * Retrieves a page of user profiles for manager views.
+   *
+   * @param bearerToken Authorization header value.
+   * @param page zero-based page number.
+   * @param size page size.
+   * @return paginated response of user profile summaries.
+   */
+  @GET("manager/users")
+  suspend fun getManagerUsersPage(
+    @Header("Authorization") bearerToken: String,
+    @Query("pageNumber") page: Int = 0,
+    @Query("pageSize") size: Int = 10
+  ): PaginatedResponse<UserProfileSummary>
 
   /**
    * Submits a new issue report.
