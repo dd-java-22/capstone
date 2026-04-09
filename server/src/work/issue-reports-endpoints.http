@@ -13,8 +13,7 @@ Authorization: Bearer {{bearerToken}}
 }
 
 ###
-GET http://localhost:8080/see-something/issue-reports/mine?
-    sort={{$random.alphanumeric(8)}}
+GET http://localhost:8080/see-something/issue-reports/mine
 Authorization: Bearer {{bearerToken}}
 
 ###

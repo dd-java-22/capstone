@@ -50,18 +50,6 @@ public class IssueReportController {
   @Transactional(readOnly = true)
   public Page<IssueReportSummary> getMyReports(
       @RequestParam(defaultValue = "" + DEFAULT_PAGE_SIZE) int pageSize,
-      @RequestParam(defaultValue = "" + DEFAULT_PAGE_NUMBER) int pageNumber,
-      @RequestParam(defaultValue = "last_modified") String sort) {
-    PageRequest pageable = PageRequest.of(
-        pageNumber,
-        pageSize,
-        Sort.by(Direction.DESC, sort)
-    );
-    return issueReportService.getReportsForCurrentUser(pageable).map(IssueReportSummary::fromIssueReport);
-  }
-
-  public Page<IssueReportSummary> getAll(
-      @RequestParam(defaultValue = "" + DEFAULT_PAGE_SIZE) int pageSize,
       @RequestParam(defaultValue = "" + DEFAULT_PAGE_NUMBER) int pageNumber
   ) {
     PageRequest pageable = PageRequest.of(
@@ -69,7 +57,7 @@ public class IssueReportController {
         pageSize,
         Sort.by(Direction.DESC, "timeLastModified")
     );
-    return issueReportService.getAll(pageable).map(IssueReportSummary::fromIssueReport);
+    return issueReportService.getReportsForCurrentUser(pageable).map(IssueReportSummary::fromIssueReport);
   }
 
   @PostMapping(

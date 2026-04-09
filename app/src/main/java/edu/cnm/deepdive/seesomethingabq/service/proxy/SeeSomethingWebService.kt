@@ -26,7 +26,7 @@ interface SeeSomethingWebService {
   suspend fun getMyIssueReportsPage(
     @Header("Authorization") bearerToken: String,
     @Query("pageNumber") page: Int = 0,
-    @Query("pageSize") size: Int = 10
+    @Query("pageSize") size: Int = 10,
   ): PaginatedResponse<IssueReportSummary>
 
   @GET("manager/issue-reports")
