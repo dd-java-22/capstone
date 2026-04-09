@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavBackStackEntry;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
@@ -83,6 +84,21 @@ public class UserDashboardFragment extends Fragment {
       return Unit.INSTANCE;
     });
     binding.issueReportsRecycler.setAdapter(adapter);
+
+    NavController navController = Navigation.findNavController(view);
+    NavBackStackEntry currentEntry = navController.getCurrentBackStackEntry();
+    if (currentEntry != null) {
+      currentEntry.getSavedStateHandle()
+          .<Boolean>getLiveData(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, false)
+          .observe(getViewLifecycleOwner(), refreshRequired -> {
+            if (Boolean.TRUE.equals(refreshRequired)) {
+              currentEntry.getSavedStateHandle()
+                  .set(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, false);
+              refreshMyReports();
+            }
+          });
+    }
+
     issueReportViewModel
         .getMyIssueReports(requireActivity())
         .observe(
@@ -90,6 +106,12 @@ public class UserDashboardFragment extends Fragment {
             pagingData ->
                 adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData)
         );
+  }
+
+  private void refreshMyReports() {
+    if (adapter != null) {
+      adapter.refresh();
+    }
   }
 
   @Override
