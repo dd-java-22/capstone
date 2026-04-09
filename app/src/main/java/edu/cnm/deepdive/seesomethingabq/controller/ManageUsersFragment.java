@@ -68,7 +68,7 @@ public class ManageUsersFragment extends Fragment {
               user.getUserEnabled()
           )
       );
-      Navigation.findNavController(binding.getRoot())
+      Navigation.findNavController(view)
           .navigate(ManageUsersFragmentDirections
               .navigateToManagerUserDetailFragment(user.getExternalId()));
     });

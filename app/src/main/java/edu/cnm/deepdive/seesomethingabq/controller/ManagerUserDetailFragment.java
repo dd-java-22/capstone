@@ -86,9 +86,9 @@ public class ManagerUserDetailFragment extends Fragment {
 
   private void bindPlaceholders(UUID externalId) {
     binding.displayName.setText("Loading...");
-    binding.email.setText("");
-    binding.authority.setText("");
-    binding.created.setText("");
+    binding.email.setText("Loading...");
+    binding.authority.setText("Loading...");
+    binding.created.setText("Created: Loading...");
     binding.disabledMessage.setVisibility(View.GONE);
     binding.managerAuthButton.setText("Authorize as Manager");
     binding.accountActivationButton.setText("Deactivate Account");
@@ -99,10 +99,12 @@ public class ManagerUserDetailFragment extends Fragment {
     if (user == null || binding == null) {
       return;
     }
-    binding.displayName.setText(user.getDisplayName());
-    binding.email.setText(user.getEmail());
+    String displayName = user.getDisplayName();
+    binding.displayName.setText((displayName != null && !displayName.isBlank()) ? displayName : "(No name)");
+    String email = user.getEmail();
+    binding.email.setText((email != null && !email.isBlank()) ? email : "(No email)");
     binding.authority.setText(user.getManager() ? "Manager" : "User");
-    binding.created.setText(dateTimeFormatter.format(user.getTimeCreated()));
+    binding.created.setText("Created: " + dateTimeFormatter.format(user.getTimeCreated()));
     binding.disabledMessage.setVisibility(user.getUserEnabled() ? View.GONE : View.VISIBLE);
     binding.managerAuthButton.setText(
         user.getManager() ? "Revoke Manager Authorization" : "Authorize as Manager");
