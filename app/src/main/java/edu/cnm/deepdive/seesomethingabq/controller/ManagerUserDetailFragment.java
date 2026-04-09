@@ -93,6 +93,7 @@ public class ManagerUserDetailFragment extends Fragment {
         } else {
           Snackbar.make(binding.getRoot(), "Failed to load user details", Snackbar.LENGTH_SHORT)
               .show();
+          setButtonsEnabled(false);
         }
       }
     });
@@ -114,6 +115,7 @@ public class ManagerUserDetailFragment extends Fragment {
     binding.managerAuthButton.setText("Authorize as Manager");
     binding.accountActivationButton.setText("Deactivate Account");
     binding.externalIdValue.setText(String.valueOf(externalId));
+    setButtonsEnabled(false);
   }
 
   private void bindUser(UserProfileSummary user) {
