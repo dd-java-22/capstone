@@ -132,15 +132,7 @@ class IssueReportServiceImpl @Inject constructor(
     mimeType: String?
   ): CompletableFuture<File> =
     scope.future {
-      val ext = when (mimeType?.lowercase()) {
-        "image/jpeg", "image/jpg" -> "jpg"
-        "image/png" -> "png"
-        "image/webp" -> "webp"
-        else -> "img"
-      }
-
-      val cacheDir = File(activity.cacheDir, "report_images").apply { mkdirs() }
-      val outFile = File(cacheDir, "report_${reportId}_image_${imageId}.$ext")
+      val outFile = ReportImageCache.cacheFile(activity.cacheDir, reportId, imageId, mimeType)
 
       if (outFile.exists() && outFile.length() > 0) {
         return@future outFile

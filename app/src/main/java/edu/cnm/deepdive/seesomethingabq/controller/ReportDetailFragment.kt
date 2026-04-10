@@ -175,12 +175,13 @@ class ReportDetailFragment : Fragment() {
                     populateIssueTypeChips()
                     setEditing(false)
 
-                    val adapter = ReportImageAdapter(
+                    val adapter = ReportImageThumbnailAdapter(
                         requireActivity(),
-                        images,
-                        viewModel,
-                        report.externalId
-                    )
+                        report.externalId,
+                        images
+                    ) { reportId, imageId, mimeType ->
+                        viewModel.downloadImageToCache(requireActivity(), reportId, imageId, mimeType)
+                    }
 
                     if (images.isEmpty()) {
                         binding.imageList.visibility = View.GONE

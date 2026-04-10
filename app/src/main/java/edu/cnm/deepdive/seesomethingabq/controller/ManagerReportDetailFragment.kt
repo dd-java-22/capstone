@@ -129,12 +129,16 @@ class ManagerReportDetailFragment : Fragment() {
           binding.locationInput.setText(bestLocationText(report))
           populateIssueTypeChips()
 
-          val adapter = ReportImageAdapter(
+          val images = (report.reportImages ?: emptyList())
+            .sortedBy { it.albumOrder }
+
+          val adapter = ReportImageThumbnailAdapter(
             requireActivity(),
-            report.reportImages ?: emptyList(),
-            viewModel,
-            report.externalId
-          )
+            report.externalId,
+            images
+          ) { reportId, imageId, mimeType ->
+            viewModel.downloadImageToCache(requireActivity(), reportId, imageId, mimeType)
+          }
           binding.imageList.layoutManager = GridLayoutManager(requireContext(), 3)
           binding.imageList.adapter = adapter
         }
