@@ -63,6 +63,7 @@ import java.io.IOException
 import java.util.Locale
 import java.util.Objects
 import com.google.android.material.chip.ChipGroup
+import java.util.concurrent.CompletableFuture
 
 @AndroidEntryPoint
 class ReportDetailFragment : Fragment() {
@@ -85,6 +86,7 @@ class ReportDetailFragment : Fragment() {
     private var loadedReport: IssueReport? = null
     private var originalReport: IssueReport? = null
     private var editing: Boolean = false
+    private var mutationInProgress: Boolean = false
     private val selectedIssueTypeTags: MutableSet<String> = linkedSetOf()
     private var availableIssueTypes: List<IssueType> = emptyList()
 
@@ -736,6 +738,9 @@ class ReportDetailFragment : Fragment() {
     }
 
     private fun cancelEdits() {
+        if (mutationInProgress) {
+            return
+        }
         val original = originalReport ?: return
         val binding = _binding ?: return
 
@@ -777,6 +782,9 @@ class ReportDetailFragment : Fragment() {
     }
 
     private fun save() {
+        if (mutationInProgress) {
+            return
+        }
         val current = loadedReport ?: return
 
         val description = binding.descriptionInput.text?.toString()?.trim().orEmpty()
@@ -806,40 +814,107 @@ class ReportDetailFragment : Fragment() {
             issueTypes = issueTypes
         )
 
+        val stagedState = imageEditViewModel.state.value
+        val stagedDeleteIds = stagedState?.serverImageIdsStagedForDeletion?.toList().orEmpty()
+        val stagedUploadUris = stagedState?.localUrisStagedForUpload.orEmpty()
+
+        mutationInProgress = true
+        binding.editButton.isEnabled = false
+        binding.saveButton.isEnabled = false
+        binding.cancelButton.isEnabled = false
+
         viewModel.updateReport(requireActivity(), current.externalId, request)
-            .thenAccept { saved ->
+            .thenCompose { saved ->
+                val reportId = saved.externalId
+                deleteStagedImages(reportId, stagedDeleteIds)
+                    .thenCompose {
+                        if (stagedUploadUris.isEmpty()) {
+                            CompletableFuture.completedFuture(null)
+                        } else {
+                            viewModel.uploadImages(requireActivity(), reportId, stagedUploadUris)
+                        }
+                    }
+                    .thenCompose {
+                        viewModel.getReport(requireActivity(), reportId)
+                    }
+            }
+            .thenAccept { reloaded ->
                 requireActivity().runOnUiThread {
                     val binding = _binding ?: return@runOnUiThread
-                    loadedReport = saved
-                    originalReport = saved
+                    loadedReport = reloaded
+                    originalReport = reloaded
 
-                    binding.descriptionInput.setText(saved.description.orEmpty())
-                    binding.acceptedStateValue.text = saved.acceptedState ?: "Unknown"
-                    binding.locationInput.setText(bestLocationText(saved))
-                    seedConfirmedLocation(saved)
+                    cleanupStagedLocalImages()
+                    imageEditViewModel.seedFromReport(reloaded.reportImages ?: emptyList())
+
+                    binding.descriptionInput.setText(reloaded.description.orEmpty())
+                    binding.acceptedStateValue.text = reloaded.acceptedState ?: "Unknown"
+                    binding.locationInput.setText(bestLocationText(reloaded))
+                    seedConfirmedLocation(reloaded)
 
                     selectedIssueTypeTags.clear()
-                    selectedIssueTypeTags.addAll(saved.issueTypes)
+                    selectedIssueTypeTags.addAll(reloaded.issueTypes)
                     populateIssueTypeChips()
                     setEditing(false)
 
                     Snackbar.make(binding.root, "Saved", Snackbar.LENGTH_SHORT).show()
                     findNavController().previousBackStackEntry?.savedStateHandle
                         ?.set(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, true)
+                    mutationInProgress = false
                     findNavController().popBackStack()
                 }
             }
             .exceptionally { thrown ->
-                requireActivity().runOnUiThread {
-                    val binding = _binding ?: return@runOnUiThread
-                    Snackbar.make(
-                        binding.root,
-                        thrown?.message ?: "Save failed",
-                        Snackbar.LENGTH_LONG
-                    ).show()
-                }
+                // If we got here, either base save failed OR an image mutation failed.
+                // We keep the user on the edit screen and reload for a consistent server view.
+                viewModel.getReport(requireActivity(), current.externalId)
+                    .thenAccept { reloaded ->
+                        requireActivity().runOnUiThread {
+                            val binding = _binding ?: return@runOnUiThread
+                            loadedReport = reloaded
+                            originalReport = reloaded
+                            imageEditViewModel.seedFromReport(reloaded.reportImages ?: emptyList())
+                            renderImageEmptyState((reloaded.reportImages ?: emptyList()).isEmpty())
+                            Snackbar.make(
+                                binding.root,
+                                thrown?.message ?: "Save failed",
+                                Snackbar.LENGTH_LONG
+                            ).show()
+                            mutationInProgress = false
+                            binding.saveButton.isEnabled = true
+                            binding.cancelButton.isEnabled = true
+                            binding.editButton.isEnabled = true
+                            setEditing(true)
+                        }
+                    }
+                    .exceptionally {
+                        requireActivity().runOnUiThread {
+                            val binding = _binding ?: return@runOnUiThread
+                            Snackbar.make(
+                                binding.root,
+                                thrown?.message ?: "Save failed",
+                                Snackbar.LENGTH_LONG
+                            ).show()
+                            mutationInProgress = false
+                            binding.saveButton.isEnabled = true
+                            binding.cancelButton.isEnabled = true
+                            binding.editButton.isEnabled = true
+                        }
+                        null
+                    }
                 null
             }
+    }
+
+    private fun deleteStagedImages(reportId: String, imageIds: List<String>): CompletableFuture<Void?> {
+        if (imageIds.isEmpty()) {
+            return CompletableFuture.completedFuture(null)
+        }
+        var chain: CompletableFuture<Void?> = CompletableFuture.completedFuture(null)
+        for (imageId in imageIds) {
+            chain = chain.thenCompose { viewModel.deleteImage(requireActivity(), reportId, imageId) }
+        }
+        return chain
     }
 
     private fun seedConfirmedLocation(report: IssueReport) {

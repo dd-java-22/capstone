@@ -111,6 +111,20 @@ class IssueReportServiceImpl @Inject constructor(
       null
     }
 
+  override fun deleteImage(
+    activity: Activity,
+    reportId: String,
+    imageId: String
+  ): CompletableFuture<Void?> =
+    scope.future {
+      val credential = getCredential(activity)
+      webService.deleteImage(
+        "Bearer ${credential.idToken}",
+        reportId,
+        imageId
+      ).use { null }
+    }
+
     override fun downloadImageFile(
     activity: Activity,
     reportId: String,
