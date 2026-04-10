@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,9 +18,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -54,6 +57,8 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel
+import edu.cnm.deepdive.seesomethingabq.viewmodel.ReportDetailImageEditViewModel
+import java.io.File
 import java.io.IOException
 import java.util.Locale
 import java.util.Objects
@@ -74,6 +79,7 @@ class ReportDetailFragment : Fragment() {
 
     private val viewModel: IssueReportViewModel by viewModels()
     private val issueTypeViewModel: IssueTypeViewModel by viewModels()
+    private val imageEditViewModel: ReportDetailImageEditViewModel by viewModels()
     private val args: ReportDetailFragmentArgs by navArgs()
 
     private var loadedReport: IssueReport? = null
@@ -95,6 +101,13 @@ class ReportDetailFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
 
+    private lateinit var takePhotoLauncher: ActivityResultLauncher<Uri>
+    private lateinit var pickGalleryImageLauncher: ActivityResultLauncher<PickVisualMediaRequest>
+    private var pendingCaptureUri: Uri? = null
+    private var pendingCaptureFile: File? = null
+
+    private var editableImagesAdapter: ReportDetailImageEditAdapter? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -113,6 +126,9 @@ class ReportDetailFragment : Fragment() {
         binding.cancelButton.setOnClickListener {
             cancelEdits()
         }
+
+        initializeImagePickers()
+        setupImagesSection()
 
         return binding.root
     }
@@ -153,10 +169,24 @@ class ReportDetailFragment : Fragment() {
             }
         }
         issueTypeViewModel.refresh(requireActivity())
+
+        imageEditViewModel.state.observe(viewLifecycleOwner) { state ->
+            if (!editing) {
+                return@observe
+            }
+            val adapter = editableImagesAdapter ?: return@observe
+            adapter.submitList(state.visibleItems)
+            renderImageEmptyState(state.visibleItems.isEmpty())
+        }
     }
 
     override fun onResume() {
         super.onResume()
+
+        // Returning from camera/gallery would otherwise reload and blow away the edit-session UI state.
+        if (editing) {
+            return
+        }
 
         val reportId = args.reportId
         viewModel.getReport(requireActivity(), reportId)
@@ -178,6 +208,8 @@ class ReportDetailFragment : Fragment() {
                     val images = (report.reportImages ?: emptyList())
                         .sortedBy { it.albumOrder }
 
+                    imageEditViewModel.seedFromReport(images)
+
                     val adapter = ReportImageThumbnailAdapter(
                         requireActivity(),
                         report.externalId,
@@ -197,6 +229,79 @@ class ReportDetailFragment : Fragment() {
                     }
                 }
             }
+    }
+
+    private fun setupImagesSection() {
+        binding.takePhotoButton.setOnClickListener {
+            if (editing) {
+                launchCamera()
+            }
+        }
+        binding.attachGalleryImageButton.setOnClickListener {
+            if (editing) {
+                pickGalleryImageLauncher.launch(
+                    PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        .build()
+                )
+            }
+        }
+        binding.imageList.layoutManager = GridLayoutManager(requireContext(), 3)
+    }
+
+    private fun initializeImagePickers() {
+        pickGalleryImageLauncher = registerForActivityResult(
+            ActivityResultContracts.PickMultipleVisualMedia(5)
+        ) { uris ->
+            if (uris != null && uris.isNotEmpty()) {
+                imageEditViewModel.stageAddLocalUris(uris)
+            }
+        }
+
+        takePhotoLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success == true) {
+                pendingCaptureUri?.let { imageEditViewModel.stageAddLocalUris(listOf(it)) }
+            } else {
+                pendingCaptureUri?.let { safeDeleteIfOwnedAttachment(it) }
+            }
+            pendingCaptureUri = null
+            pendingCaptureFile = null
+        }
+    }
+
+    private fun launchCamera() {
+        try {
+            pendingCaptureFile = createTempCameraFile()
+            pendingCaptureUri = FileProvider.getUriForFile(
+                requireContext(),
+                requireContext().packageName + ".fileprovider",
+                pendingCaptureFile!!
+            )
+            pendingCaptureUri?.let { takePhotoLauncher.launch(it) }
+        } catch (e: IOException) {
+            Log.e(TAG, "Unable to create temp camera file", e)
+            pendingCaptureUri = null
+            pendingCaptureFile = null
+            Snackbar.make(binding.root, R.string.take_photo_failure, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun createTempCameraFile(): File {
+        val cacheDir = requireContext().cacheDir
+        val cameraDir = File(cacheDir, "camera")
+        cameraDir.mkdirs()
+        return File.createTempFile("issue_report_", ".jpg", cameraDir)
+    }
+
+    private fun renderImageEmptyState(isEmpty: Boolean) {
+        val binding = _binding ?: return
+        if (isEmpty) {
+            binding.imageList.visibility = View.GONE
+            binding.noImagesPlaceholder.visibility = View.VISIBLE
+        } else {
+            binding.noImagesPlaceholder.visibility = View.GONE
+            binding.imageList.visibility = View.VISIBLE
+        }
     }
 
     private fun initializePlaces() {
@@ -570,6 +675,9 @@ class ReportDetailFragment : Fragment() {
         binding.locationInput.isFocusableInTouchMode = editing
         binding.useCurrentLocationButton.isEnabled = editing
 
+        binding.takePhotoButton.isEnabled = editing
+        binding.attachGalleryImageButton.isEnabled = editing
+
         populateIssueTypeChips()
 
         if (!editing) {
@@ -581,6 +689,50 @@ class ReportDetailFragment : Fragment() {
         binding.saveButton.visibility = if (editing) View.VISIBLE else View.GONE
         binding.cancelButton.visibility = if (editing) View.VISIBLE else View.GONE
         binding.editButton.visibility = if (editing) View.GONE else View.VISIBLE
+
+        val report = loadedReport ?: originalReport
+        if (editing && report != null) {
+            ensureEditableImagesAdapter(report.externalId)
+            editableImagesAdapter?.editing = true
+            binding.imageList.adapter = editableImagesAdapter
+            val state = imageEditViewModel.state.value
+            if (state != null) {
+                editableImagesAdapter?.submitList(state.visibleItems)
+                renderImageEmptyState(state.visibleItems.isEmpty())
+            }
+        } else if (report != null) {
+            editableImagesAdapter?.editing = false
+            val images = (report.reportImages ?: emptyList()).sortedBy { it.albumOrder }
+            val adapter = ReportImageThumbnailAdapter(
+                requireActivity(),
+                report.externalId,
+                images
+            ) { reportId, imageId, mimeType ->
+                viewModel.downloadImageToCache(requireActivity(), reportId, imageId, mimeType)
+            }
+            binding.imageList.adapter = adapter
+            renderImageEmptyState(images.isEmpty())
+        }
+    }
+
+    private fun ensureEditableImagesAdapter(reportId: String) {
+        if (editableImagesAdapter != null) {
+            return
+        }
+        editableImagesAdapter = ReportDetailImageEditAdapter(
+            requireActivity(),
+            reportId,
+            { rId, imageId, mimeType ->
+                viewModel.downloadImageToCache(requireActivity(), rId, imageId, mimeType)
+            },
+            onRemoveServerImage = { imageId ->
+                imageEditViewModel.stageRemoveServerImage(imageId)
+            },
+            onRemoveLocalImage = { uri ->
+                imageEditViewModel.stageRemoveLocalUri(uri)
+                safeDeleteIfOwnedAttachment(uri)
+            }
+        ).apply { editing = true }
     }
 
     private fun cancelEdits() {
@@ -600,8 +752,28 @@ class ReportDetailFragment : Fragment() {
         binding.locationLayout.helperText = null
         hideLocationResults()
 
+        cleanupStagedLocalImages()
+        imageEditViewModel.resetToOriginal()
+
         populateIssueTypeChips()
         setEditing(false)
+    }
+
+    private fun cleanupStagedLocalImages() {
+        val state = imageEditViewModel.state.value ?: return
+        state.localUrisStagedForUpload.forEach { safeDeleteIfOwnedAttachment(it) }
+    }
+
+    private fun safeDeleteIfOwnedAttachment(uri: Uri) {
+        val authority = requireContext().packageName + ".fileprovider"
+        if (uri.authority != authority) {
+            return
+        }
+        try {
+            requireContext().contentResolver.delete(uri, null, null)
+        } catch (e: RuntimeException) {
+            Log.w(TAG, "Unable to delete temp attachment $uri", e)
+        }
     }
 
     private fun save() {
@@ -793,6 +965,9 @@ class ReportDetailFragment : Fragment() {
         }
         currentLocationCancellationTokenSource?.cancel()
         currentLocationCancellationTokenSource = null
+        if (activity?.isChangingConfigurations != true) {
+            cleanupStagedLocalImages()
+        }
         _binding = null
         super.onDestroyView()
     }
