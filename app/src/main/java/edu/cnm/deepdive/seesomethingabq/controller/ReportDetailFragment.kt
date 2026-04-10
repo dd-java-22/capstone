@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Address
 import android.location.Geocoder
 import android.location.Location
+import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -17,9 +18,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -54,10 +57,13 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel
+import edu.cnm.deepdive.seesomethingabq.viewmodel.ReportDetailImageEditViewModel
+import java.io.File
 import java.io.IOException
 import java.util.Locale
 import java.util.Objects
 import com.google.android.material.chip.ChipGroup
+import java.util.concurrent.CompletableFuture
 
 @AndroidEntryPoint
 class ReportDetailFragment : Fragment() {
@@ -68,17 +74,24 @@ class ReportDetailFragment : Fragment() {
         private const val MIN_QUERY_LENGTH = 3
     }
 
+    private sealed interface SaveResult {
+        data class Success(val report: IssueReport) : SaveResult
+        data class ImageFailure(val reportId: String, val error: Throwable?) : SaveResult
+    }
+
     private var _binding: FragmentReportDetailBinding? = null
     private val binding: FragmentReportDetailBinding
         get() = _binding!!
 
     private val viewModel: IssueReportViewModel by viewModels()
     private val issueTypeViewModel: IssueTypeViewModel by viewModels()
+    private val imageEditViewModel: ReportDetailImageEditViewModel by viewModels()
     private val args: ReportDetailFragmentArgs by navArgs()
 
     private var loadedReport: IssueReport? = null
     private var originalReport: IssueReport? = null
     private var editing: Boolean = false
+    private var mutationInProgress: Boolean = false
     private val selectedIssueTypeTags: MutableSet<String> = linkedSetOf()
     private var availableIssueTypes: List<IssueType> = emptyList()
 
@@ -94,6 +107,13 @@ class ReportDetailFragment : Fragment() {
     private lateinit var sessionToken: AutocompleteSessionToken
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationPermissionLauncher: ActivityResultLauncher<String>
+
+    private lateinit var takePhotoLauncher: ActivityResultLauncher<Uri>
+    private lateinit var pickGalleryImageLauncher: ActivityResultLauncher<PickVisualMediaRequest>
+    private var pendingCaptureUri: Uri? = null
+    private var pendingCaptureFile: File? = null
+
+    private var editableImagesAdapter: ReportDetailImageEditAdapter? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -113,6 +133,9 @@ class ReportDetailFragment : Fragment() {
         binding.cancelButton.setOnClickListener {
             cancelEdits()
         }
+
+        initializeImagePickers()
+        setupImagesSection()
 
         return binding.root
     }
@@ -153,10 +176,24 @@ class ReportDetailFragment : Fragment() {
             }
         }
         issueTypeViewModel.refresh(requireActivity())
+
+        imageEditViewModel.state.observe(viewLifecycleOwner) { state ->
+            if (!editing) {
+                return@observe
+            }
+            val adapter = editableImagesAdapter ?: return@observe
+            adapter.submitList(state.visibleItems)
+            renderImageEmptyState(state.visibleItems.isEmpty())
+        }
     }
 
     override fun onResume() {
         super.onResume()
+
+        // Returning from camera/gallery would otherwise reload and blow away the edit-session UI state.
+        if (editing) {
+            return
+        }
 
         val reportId = args.reportId
         viewModel.getReport(requireActivity(), reportId)
@@ -178,6 +215,8 @@ class ReportDetailFragment : Fragment() {
                     val images = (report.reportImages ?: emptyList())
                         .sortedBy { it.albumOrder }
 
+                    imageEditViewModel.seedFromReport(images)
+
                     val adapter = ReportImageThumbnailAdapter(
                         requireActivity(),
                         report.externalId,
@@ -197,6 +236,79 @@ class ReportDetailFragment : Fragment() {
                     }
                 }
             }
+    }
+
+    private fun setupImagesSection() {
+        binding.takePhotoButton.setOnClickListener {
+            if (editing) {
+                launchCamera()
+            }
+        }
+        binding.attachGalleryImageButton.setOnClickListener {
+            if (editing) {
+                pickGalleryImageLauncher.launch(
+                    PickVisualMediaRequest.Builder()
+                        .setMediaType(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                        .build()
+                )
+            }
+        }
+        binding.imageList.layoutManager = GridLayoutManager(requireContext(), 3)
+    }
+
+    private fun initializeImagePickers() {
+        pickGalleryImageLauncher = registerForActivityResult(
+            ActivityResultContracts.PickMultipleVisualMedia(5)
+        ) { uris ->
+            if (uris != null && uris.isNotEmpty()) {
+                imageEditViewModel.stageAddLocalUris(uris)
+            }
+        }
+
+        takePhotoLauncher = registerForActivityResult(ActivityResultContracts.TakePicture()) { success ->
+            if (success == true) {
+                pendingCaptureUri?.let { imageEditViewModel.stageAddLocalUris(listOf(it)) }
+            } else {
+                pendingCaptureUri?.let { safeDeleteIfOwnedAttachment(it) }
+            }
+            pendingCaptureUri = null
+            pendingCaptureFile = null
+        }
+    }
+
+    private fun launchCamera() {
+        try {
+            pendingCaptureFile = createTempCameraFile()
+            pendingCaptureUri = FileProvider.getUriForFile(
+                requireContext(),
+                requireContext().packageName + ".fileprovider",
+                pendingCaptureFile!!
+            )
+            pendingCaptureUri?.let { takePhotoLauncher.launch(it) }
+        } catch (e: IOException) {
+            Log.e(TAG, "Unable to create temp camera file", e)
+            pendingCaptureUri = null
+            pendingCaptureFile = null
+            Snackbar.make(binding.root, R.string.take_photo_failure, Snackbar.LENGTH_SHORT).show()
+        }
+    }
+
+    private fun createTempCameraFile(): File {
+        val cacheDir = requireContext().cacheDir
+        val cameraDir = File(cacheDir, "camera")
+        cameraDir.mkdirs()
+        return File.createTempFile("issue_report_", ".jpg", cameraDir)
+    }
+
+    private fun renderImageEmptyState(isEmpty: Boolean) {
+        val binding = _binding ?: return
+        if (isEmpty) {
+            binding.imageList.visibility = View.GONE
+            binding.noImagesPlaceholder.visibility = View.VISIBLE
+        } else {
+            binding.noImagesPlaceholder.visibility = View.GONE
+            binding.imageList.visibility = View.VISIBLE
+        }
     }
 
     private fun initializePlaces() {
@@ -570,6 +682,9 @@ class ReportDetailFragment : Fragment() {
         binding.locationInput.isFocusableInTouchMode = editing
         binding.useCurrentLocationButton.isEnabled = editing
 
+        binding.takePhotoButton.isEnabled = editing
+        binding.attachGalleryImageButton.isEnabled = editing
+
         populateIssueTypeChips()
 
         if (!editing) {
@@ -581,9 +696,56 @@ class ReportDetailFragment : Fragment() {
         binding.saveButton.visibility = if (editing) View.VISIBLE else View.GONE
         binding.cancelButton.visibility = if (editing) View.VISIBLE else View.GONE
         binding.editButton.visibility = if (editing) View.GONE else View.VISIBLE
+
+        val report = loadedReport ?: originalReport
+        if (editing && report != null) {
+            ensureEditableImagesAdapter(report.externalId)
+            editableImagesAdapter?.editing = true
+            binding.imageList.adapter = editableImagesAdapter
+            val state = imageEditViewModel.state.value
+            if (state != null) {
+                editableImagesAdapter?.submitList(state.visibleItems)
+                renderImageEmptyState(state.visibleItems.isEmpty())
+            }
+        } else if (report != null) {
+            editableImagesAdapter?.editing = false
+            val images = (report.reportImages ?: emptyList()).sortedBy { it.albumOrder }
+            val adapter = ReportImageThumbnailAdapter(
+                requireActivity(),
+                report.externalId,
+                images
+            ) { reportId, imageId, mimeType ->
+                viewModel.downloadImageToCache(requireActivity(), reportId, imageId, mimeType)
+            }
+            binding.imageList.adapter = adapter
+            renderImageEmptyState(images.isEmpty())
+        }
+    }
+
+    private fun ensureEditableImagesAdapter(reportId: String) {
+        if (editableImagesAdapter != null) {
+            return
+        }
+        editableImagesAdapter = ReportDetailImageEditAdapter(
+            requireActivity(),
+            reportId,
+            { rId, imageId, mimeType ->
+                viewModel.downloadImageToCache(requireActivity(), rId, imageId, mimeType)
+            },
+            onRemoveServerImage = { imageId ->
+                imageEditViewModel.stageRemoveServerImage(imageId)
+            },
+            onRemoveLocalImage = { uri ->
+                imageEditViewModel.stageRemoveLocalUri(uri)
+                safeDeleteIfOwnedAttachment(uri)
+            }
+        ).apply { editing = true }
     }
 
     private fun cancelEdits() {
+        if (mutationInProgress) {
+            return
+        }
         val original = originalReport ?: return
         val binding = _binding ?: return
 
@@ -600,11 +762,64 @@ class ReportDetailFragment : Fragment() {
         binding.locationLayout.helperText = null
         hideLocationResults()
 
+        cleanupStagedLocalImages()
+        imageEditViewModel.resetToOriginal()
+
         populateIssueTypeChips()
         setEditing(false)
     }
 
+    private fun cleanupStagedLocalImages() {
+        val state = imageEditViewModel.state.value ?: return
+        state.localUrisStagedForUpload.forEach { safeDeleteIfOwnedAttachment(it) }
+    }
+
+    private fun cleanupStagedLocalImages(uris: List<Uri>) {
+        uris.forEach { safeDeleteIfOwnedAttachment(it) }
+    }
+
+    private fun resetUiFromServer(report: IssueReport) {
+        val binding = _binding ?: return
+
+        resetLocationPickerTransientState()
+
+        loadedReport = report
+        originalReport = report
+
+        binding.descriptionInput.setText(report.description.orEmpty())
+        binding.acceptedStateValue.text = report.acceptedState ?: "Unknown"
+        binding.locationInput.setText(bestLocationText(report))
+
+        selectedIssueTypeTags.clear()
+        selectedIssueTypeTags.addAll(report.issueTypes)
+
+        seedConfirmedLocation(report)
+        binding.locationLayout.error = null
+        binding.locationLayout.helperText = null
+        hideLocationResults()
+
+        populateIssueTypeChips()
+
+        // Fresh reseed clears any prior staged deletes/uploads.
+        imageEditViewModel.seedFromReport(report.reportImages ?: emptyList())
+    }
+
+    private fun safeDeleteIfOwnedAttachment(uri: Uri) {
+        val authority = requireContext().packageName + ".fileprovider"
+        if (uri.authority != authority) {
+            return
+        }
+        try {
+            requireContext().contentResolver.delete(uri, null, null)
+        } catch (e: RuntimeException) {
+            Log.w(TAG, "Unable to delete temp attachment $uri", e)
+        }
+    }
+
     private fun save() {
+        if (mutationInProgress) {
+            return
+        }
         val current = loadedReport ?: return
 
         val description = binding.descriptionInput.text?.toString()?.trim().orEmpty()
@@ -634,30 +849,73 @@ class ReportDetailFragment : Fragment() {
             issueTypes = issueTypes
         )
 
+        val stagedState = imageEditViewModel.state.value
+        val stagedDeleteIds = stagedState?.serverImageIdsStagedForDeletion?.toList().orEmpty()
+        val stagedUploadUris = stagedState?.localUrisStagedForUpload.orEmpty()
+
+        mutationInProgress = true
+        binding.editButton.isEnabled = false
+        binding.saveButton.isEnabled = false
+        binding.cancelButton.isEnabled = false
+
         viewModel.updateReport(requireActivity(), current.externalId, request)
-            .thenAccept { saved ->
-                requireActivity().runOnUiThread {
-                    val binding = _binding ?: return@runOnUiThread
-                    loadedReport = saved
-                    originalReport = saved
+            .thenCompose { saved ->
+                val reportId = saved.externalId
+                deleteStagedImages(reportId, stagedDeleteIds)
+                    .thenCompose {
+                        if (stagedUploadUris.isEmpty()) {
+                            CompletableFuture.completedFuture(null)
+                        } else {
+                            viewModel.uploadImages(requireActivity(), reportId, stagedUploadUris)
+                        }
+                    }
+                    .thenCompose { viewModel.getReport(requireActivity(), reportId) }
+                    .thenApply<SaveResult> { reloaded -> SaveResult.Success(reloaded) }
+                    .exceptionally { thrown ->
+                        // Base report update already succeeded; image work failed.
+                        SaveResult.ImageFailure(reportId, thrown)
+                    }
+            }
+            .thenAccept { result ->
+                when (result) {
+                    is SaveResult.Success -> {
+                        requireActivity().runOnUiThread {
+                            val binding = _binding ?: return@runOnUiThread
+                            cleanupStagedLocalImages(stagedUploadUris)
+                            resetUiFromServer(result.report)
+                            setEditing(false)
+                            Snackbar.make(binding.root, "Saved", Snackbar.LENGTH_SHORT).show()
+                            findNavController().previousBackStackEntry?.savedStateHandle
+                                ?.set(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, true)
+                            mutationInProgress = false
+                            findNavController().popBackStack()
+                        }
+                    }
 
-                    binding.descriptionInput.setText(saved.description.orEmpty())
-                    binding.acceptedStateValue.text = saved.acceptedState ?: "Unknown"
-                    binding.locationInput.setText(bestLocationText(saved))
-                    seedConfirmedLocation(saved)
-
-                    selectedIssueTypeTags.clear()
-                    selectedIssueTypeTags.addAll(saved.issueTypes)
-                    populateIssueTypeChips()
-                    setEditing(false)
-
-                    Snackbar.make(binding.root, "Saved", Snackbar.LENGTH_SHORT).show()
-                    findNavController().previousBackStackEntry?.savedStateHandle
-                        ?.set(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, true)
-                    findNavController().popBackStack()
+                    is SaveResult.ImageFailure -> {
+                        cleanupStagedLocalImages(stagedUploadUris)
+                        viewModel.getReport(requireActivity(), result.reportId)
+                            .thenAccept { reloaded ->
+                                requireActivity().runOnUiThread {
+                                    val binding = _binding ?: return@runOnUiThread
+                                    resetUiFromServer(reloaded)
+                                    Snackbar.make(
+                                        binding.root,
+                                        result.error?.message ?: "Image update failed",
+                                        Snackbar.LENGTH_LONG
+                                    ).show()
+                                    mutationInProgress = false
+                                    binding.saveButton.isEnabled = true
+                                    binding.cancelButton.isEnabled = true
+                                    binding.editButton.isEnabled = true
+                                    setEditing(true)
+                                }
+                            }
+                    }
                 }
             }
             .exceptionally { thrown ->
+                // Base save failure should not discard staged state or edits.
                 requireActivity().runOnUiThread {
                     val binding = _binding ?: return@runOnUiThread
                     Snackbar.make(
@@ -665,9 +923,24 @@ class ReportDetailFragment : Fragment() {
                         thrown?.message ?: "Save failed",
                         Snackbar.LENGTH_LONG
                     ).show()
+                    mutationInProgress = false
+                    binding.saveButton.isEnabled = true
+                    binding.cancelButton.isEnabled = true
+                    binding.editButton.isEnabled = true
                 }
                 null
             }
+    }
+
+    private fun deleteStagedImages(reportId: String, imageIds: List<String>): CompletableFuture<Void?> {
+        if (imageIds.isEmpty()) {
+            return CompletableFuture.completedFuture(null)
+        }
+        var chain: CompletableFuture<Void?> = CompletableFuture.completedFuture(null)
+        for (imageId in imageIds) {
+            chain = chain.thenCompose { viewModel.deleteImage(requireActivity(), reportId, imageId) }
+        }
+        return chain
     }
 
     private fun seedConfirmedLocation(report: IssueReport) {
@@ -793,6 +1066,9 @@ class ReportDetailFragment : Fragment() {
         }
         currentLocationCancellationTokenSource?.cancel()
         currentLocationCancellationTokenSource = null
+        if (activity?.isChangingConfigurations != true) {
+            cleanupStagedLocalImages()
+        }
         _binding = null
         super.onDestroyView()
     }

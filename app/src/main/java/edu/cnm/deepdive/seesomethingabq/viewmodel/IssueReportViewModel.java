@@ -172,6 +172,10 @@ public class IssueReportViewModel extends ViewModel {
     return issueReportService.uploadImages(activity, reportId, uris);
   }
 
+  public CompletableFuture<Void> deleteImage(Activity activity, String reportId, String imageId) {
+    return issueReportService.deleteImage(activity, reportId, imageId);
+  }
+
 
   /**
    * Submits a new issue report.

@@ -10,6 +10,5 @@ data class ReportImageDto(
     val externalId: String,
     val filename: String,
     val mimeType: String,
-    val imageLocator: String,
     val albumOrder: Int
 )
