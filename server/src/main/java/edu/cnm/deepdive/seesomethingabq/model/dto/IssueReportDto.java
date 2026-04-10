@@ -8,6 +8,7 @@ import java.util.UUID;
 public record IssueReportDto(
     UUID externalId,
     String textDescription,
+    String acceptedState,
     double latitude,
     double longitude,
     String streetCoordinate,
@@ -31,9 +32,13 @@ public record IssueReportDto(
       streetCoordinate = entity.getReportLocation().getStreetCoordinate();
       locationDescription = entity.getReportLocation().getLocationDescription();
     }
+    String acceptedState = (entity.getAcceptedState() != null)
+        ? entity.getAcceptedState().getStatusTag()
+        : null;
     return new IssueReportDto(
         entity.getExternalId(),
         entity.getTextDescription(),
+        acceptedState,
         latitude,
         longitude,
         streetCoordinate,

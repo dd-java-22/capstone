@@ -92,6 +92,7 @@ class ReportDetailFragment : Fragment() {
 
                     // Populate form fields.
                     binding.descriptionInput.setText(report.description.orEmpty())
+                    binding.acceptedStateValue.text = report.acceptedState ?: "Unknown"
                     binding.locationInput.setText(bestLocationText(report))
                     populateIssueTypeChips()
 
@@ -158,6 +159,7 @@ class ReportDetailFragment : Fragment() {
                     loadedReport = saved
                     originalReport = saved
                     binding.descriptionInput.setText(saved.description.orEmpty())
+                    binding.acceptedStateValue.text = saved.acceptedState ?: "Unknown"
                     binding.locationInput.setText(bestLocationText(saved))
                     selectedIssueTypeTags.clear()
                     selectedIssueTypeTags.addAll(saved.issueTypes)

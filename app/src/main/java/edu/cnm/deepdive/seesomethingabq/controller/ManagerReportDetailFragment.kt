@@ -72,6 +72,7 @@ class ManagerReportDetailFragment : Fragment() {
           selectedIssueTypeTags.addAll(report.issueTypes)
 
           binding.descriptionInput.setText(report.description.orEmpty())
+          binding.acceptedStateValue.text = report.acceptedState ?: "Unknown"
           binding.locationInput.setText(bestLocationText(report))
           populateIssueTypeChips()
 
@@ -124,4 +125,3 @@ class ManagerReportDetailFragment : Fragment() {
   }
 
 }
-

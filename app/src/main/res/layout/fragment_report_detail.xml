@@ -63,6 +63,24 @@
 
     </com.google.android.material.textfield.TextInputLayout>
 
+    <!-- Accepted State -->
+
+    <TextView
+      android:id="@+id/accepted_state_label"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="Status"
+      android:textAppearance="?attr/textAppearanceTitleMedium"
+      android:layout_marginBottom="@dimen/half_dynamic_spacing"/>
+
+    <TextView
+      android:id="@+id/accepted_state_value"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:textAppearance="?attr/textAppearanceBodyMedium"
+      android:layout_marginBottom="@dimen/full_dynamic_spacing"
+      tools:text="Submitted"/>
+
     <!-- Issue Type -->
 
     <TextView
@@ -235,4 +253,3 @@
   </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
-
