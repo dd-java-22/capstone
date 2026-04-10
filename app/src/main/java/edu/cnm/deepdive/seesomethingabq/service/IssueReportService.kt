@@ -5,7 +5,9 @@ import android.net.Uri
 import androidx.paging.Pager
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReport
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportStatusUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
 import java.util.concurrent.CompletableFuture
 import okhttp3.ResponseBody
@@ -104,5 +106,23 @@ interface IssueReportService {
     reportId: String,
     request: IssueReportRequest
   ): CompletableFuture<IssueReport>
+
+  /**
+   * Updates accepted-state/status for a report (manager-only).
+   */
+  fun updateManagerReportStatus(
+    activity: Activity,
+    reportId: String,
+    request: IssueReportStatusUpdateRequest
+  ): CompletableFuture<Void?>
+
+  /**
+   * Replaces issue types for a report (manager-only).
+   */
+  fun replaceManagerReportIssueTypes(
+    activity: Activity,
+    reportId: String,
+    request: IssueReportTypesUpdateRequest
+  ): CompletableFuture<Void?>
 
 }

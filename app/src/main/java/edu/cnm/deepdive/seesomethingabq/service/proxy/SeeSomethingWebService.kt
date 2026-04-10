@@ -1,6 +1,8 @@
 package edu.cnm.deepdive.seesomethingabq.service.proxy
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReport
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportStatusUpdateRequest
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
 import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest
@@ -125,6 +127,36 @@ interface SeeSomethingWebService {
   suspend fun getAcceptedStates(
     @Header("Authorization") bearerToken: String
   ): List<AcceptedState>
+
+  /**
+   * Updates the accepted-state/status of an issue report (manager-only).
+   *
+   * Endpoint: PUT /manager/issue-reports/{externalId}/status
+   *
+   * Response body is an IssueReport entity; we intentionally treat it as raw bytes and
+   * then reload via the normal full-report endpoint to normalize the UI.
+   */
+  @PUT("manager/issue-reports/{externalId}/status")
+  suspend fun updateManagerIssueReportStatus(
+    @Header("Authorization") bearerToken: String,
+    @Path("externalId") externalId: String,
+    @Body request: IssueReportStatusUpdateRequest
+  ): ResponseBody
+
+  /**
+   * Replaces issue types on an issue report (manager-only).
+   *
+   * Endpoint: PUT /manager/issue-reports/{externalId}/issue-types
+   *
+   * Response body is an IssueReport entity; we intentionally treat it as raw bytes and
+   * then reload via the normal full-report endpoint to normalize the UI.
+   */
+  @PUT("manager/issue-reports/{externalId}/issue-types")
+  suspend fun replaceManagerIssueReportIssueTypes(
+    @Header("Authorization") bearerToken: String,
+    @Path("externalId") externalId: String,
+    @Body request: IssueReportTypesUpdateRequest
+  ): ResponseBody
 
   /**
    * Sets manager authorization status for a user.

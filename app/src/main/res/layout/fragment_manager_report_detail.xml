@@ -141,6 +141,44 @@
       android:nestedScrollingEnabled="false"
       tools:listitem="@layout/item_report_image"/>
 
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal"
+      android:gravity="start"
+      android:layout_marginBottom="@dimen/half_dynamic_spacing">
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/edit_button"
+        style="@style/Widget.Material3.Button.TonalButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Edit"/>
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/save_button"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/half_dynamic_spacing"
+        android:layout_weight="1"
+        android:text="Save"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+      <com.google.android.material.button.MaterialButton
+        android:id="@+id/cancel_button"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/half_dynamic_spacing"
+        android:layout_weight="1"
+        android:text="Cancel"
+        android:visibility="gone"
+        tools:visibility="visible"/>
+
+    </LinearLayout>
+
   </LinearLayout>
 
 </androidx.core.widget.NestedScrollView>
