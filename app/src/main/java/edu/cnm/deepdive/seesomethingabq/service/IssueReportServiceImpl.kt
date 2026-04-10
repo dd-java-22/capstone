@@ -122,7 +122,8 @@ class IssueReportServiceImpl @Inject constructor(
         "Bearer ${credential.idToken}",
         reportId,
         imageId
-      ).use { null }
+      )
+      null
     }
 
     override fun downloadImageFile(

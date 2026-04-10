@@ -243,7 +243,7 @@ interface SeeSomethingWebService {
     @Header("Authorization") bearerToken: String,
     @Path("reportId") reportId: String,
     @Path("imageId") imageId: String
-  ): ResponseBody
+  ): Unit
 
   /**
    * Retrieves a full issue report including metadata and image list.
