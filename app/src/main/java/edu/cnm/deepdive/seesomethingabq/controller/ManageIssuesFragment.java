@@ -23,6 +23,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavBackStackEntry;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.controller.adapter.IssueReportAdapter;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManageIssuesBinding;
@@ -34,6 +37,9 @@ import kotlin.Unit;
  * Fragment displaying a paged list of issue reports for manager review.
  */
 public class ManageIssuesFragment extends Fragment {
+
+  private static final String MANAGER_ISSUE_REPORTS_REFRESH_REQUIRED =
+      "manager_issue_reports_refresh_required";
 
   private FragmentManageIssuesBinding binding;
   private IssueReportViewModel issueReportViewModel;
@@ -51,12 +57,30 @@ public class ManageIssuesFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
-    adapter = new IssueReportAdapter(issueReport -> Unit.INSTANCE);
+    adapter = new IssueReportAdapter(issueReport -> {
+      Navigation.findNavController(view)
+          .navigate(ManageIssuesFragmentDirections
+              .navigateToManagerReportDetailFragment(String.valueOf(issueReport.getExternalId())));
+      return Unit.INSTANCE;
+    });
     binding.issueReportsRecycler.setAdapter(adapter);
     issueReportViewModel
         .getIssueReports(requireActivity())
         .observe(getViewLifecycleOwner(), pagingData ->
             adapter.submitData(getViewLifecycleOwner().getLifecycle(), pagingData));
+
+    NavController navController = Navigation.findNavController(view);
+    NavBackStackEntry currentEntry = navController.getCurrentBackStackEntry();
+    if (currentEntry != null) {
+      currentEntry.getSavedStateHandle()
+          .<Boolean>getLiveData(MANAGER_ISSUE_REPORTS_REFRESH_REQUIRED, false)
+          .observe(getViewLifecycleOwner(), refreshRequired -> {
+            if (Boolean.TRUE.equals(refreshRequired)) {
+              currentEntry.getSavedStateHandle().set(MANAGER_ISSUE_REPORTS_REFRESH_REQUIRED, false);
+              adapter.refresh();
+            }
+          });
+    }
   }
 
   @Override

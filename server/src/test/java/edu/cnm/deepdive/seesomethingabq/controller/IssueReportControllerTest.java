@@ -23,10 +23,12 @@ import static org.springframework.security.test.web.servlet.request.SecurityMock
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
+import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState;
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.entity.ReportLocation;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
@@ -88,6 +90,10 @@ class IssueReportControllerTest {
     location.setLongitude(-106.0);
     created.setReportLocation(location);
     created.setTextDescription("Graffiti on wall");
+    AcceptedState acceptedState = new AcceptedState();
+    acceptedState.setStatusTag("Submitted");
+    acceptedState.setStatusTagDescription("Awaiting review");
+    created.setAcceptedState(acceptedState);
     when(issueReportService.createReport(org.mockito.ArgumentMatchers.any(IssueReportRequest.class)))
         .thenReturn(created);
 
@@ -107,6 +113,7 @@ class IssueReportControllerTest {
                     """)
         )
         .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.acceptedState").value("Submitted"))
         .andExpect(header().string("Location",
             endsWith("/issue-reports/" + externalId)));
 
@@ -132,6 +139,10 @@ class IssueReportControllerTest {
     location.setLongitude(-106.0);
     updated.setReportLocation(location);
     updated.setTextDescription("Updated");
+    AcceptedState acceptedState = new AcceptedState();
+    acceptedState.setStatusTag("Under Review");
+    acceptedState.setStatusTagDescription("Being reviewed");
+    updated.setAcceptedState(acceptedState);
     when(issueReportService.updateReport(
         org.mockito.ArgumentMatchers.eq(externalId),
         org.mockito.ArgumentMatchers.any(IssueReportRequest.class)
@@ -148,7 +159,8 @@ class IssueReportControllerTest {
                     }
                     """)
         )
-        .andExpect(status().isOk());
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.acceptedState").value("Under Review"));
 
     ArgumentCaptor<IssueReportRequest> captor = ArgumentCaptor.forClass(IssueReportRequest.class);
     verify(issueReportService).updateReport(org.mockito.ArgumentMatchers.eq(externalId), captor.capture());

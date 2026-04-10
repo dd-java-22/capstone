@@ -34,4 +34,14 @@ class DaoModule {
   @Singleton
   fun provideIssueTypeDao(database: SeeSomethingDatabase) = database.getIssueTypeDao()
 
+  /**
+   * Provides the [AcceptedStateDao] instance.
+   *
+   * @param database Room database.
+   * @return accepted state DAO.
+   */
+  @Provides
+  @Singleton
+  fun provideAcceptedStateDao(database: SeeSomethingDatabase) = database.getAcceptedStateDao()
+
 }

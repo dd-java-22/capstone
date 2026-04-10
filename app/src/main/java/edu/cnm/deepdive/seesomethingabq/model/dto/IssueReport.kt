@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 data class IssueReport(
     @SerializedName("externalId") val externalId: String,
     @SerializedName("textDescription") val description: String?,
+    @SerializedName("acceptedState") val acceptedState: String?,
     @SerializedName("latitude") val latitude: Double,
     @SerializedName("longitude") val longitude: Double,
     @SerializedName("streetCoordinate") val streetCoordinate: String?,

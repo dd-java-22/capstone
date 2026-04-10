@@ -7,7 +7,9 @@ import androidx.paging.PagingConfig
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReport
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportStatusUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
 import edu.cnm.deepdive.seesomethingabq.service.paging.IssueReportPagingSource
 import edu.cnm.deepdive.seesomethingabq.service.proxy.SeeSomethingWebService
@@ -172,6 +174,34 @@ class IssueReportServiceImpl @Inject constructor(
         reportId,
         request
       )
+    }
+
+  override fun updateManagerReportStatus(
+    activity: Activity,
+    reportId: String,
+    request: IssueReportStatusUpdateRequest
+  ): CompletableFuture<Void?> =
+    scope.future {
+      val credential = getCredential(activity)
+      webService.updateManagerIssueReportStatus(
+        "Bearer ${credential.idToken}",
+        reportId,
+        request
+      ).use { null }
+    }
+
+  override fun replaceManagerReportIssueTypes(
+    activity: Activity,
+    reportId: String,
+    request: IssueReportTypesUpdateRequest
+  ): CompletableFuture<Void?> =
+    scope.future {
+      val credential = getCredential(activity)
+      webService.replaceManagerIssueReportIssueTypes(
+        "Bearer ${credential.idToken}",
+        reportId,
+        request
+      ).use { null }
     }
 
     private suspend fun getCredential(activity: Activity): GoogleIdTokenCredential =

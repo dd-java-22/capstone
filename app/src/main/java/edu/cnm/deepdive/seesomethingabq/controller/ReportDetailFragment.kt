@@ -169,6 +169,7 @@ class ReportDetailFragment : Fragment() {
                     selectedIssueTypeTags.addAll(report.issueTypes)
 
                     binding.descriptionInput.setText(report.description.orEmpty())
+                    binding.acceptedStateValue.text = report.acceptedState ?: "Unknown"
                     binding.locationInput.setText(bestLocationText(report))
                     seedConfirmedLocation(report)
                     populateIssueTypeChips()
@@ -630,6 +631,7 @@ class ReportDetailFragment : Fragment() {
                     originalReport = saved
 
                     binding.descriptionInput.setText(saved.description.orEmpty())
+                    binding.acceptedStateValue.text = saved.acceptedState ?: "Unknown"
                     binding.locationInput.setText(bestLocationText(saved))
                     seedConfirmedLocation(saved)
 

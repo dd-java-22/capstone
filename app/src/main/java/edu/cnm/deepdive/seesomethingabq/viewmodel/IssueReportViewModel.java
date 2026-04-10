@@ -11,7 +11,9 @@ import androidx.paging.PagingLiveData;
 import dagger.hilt.android.lifecycle.HiltViewModel;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReport;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportStatusUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary;
+import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -123,6 +125,22 @@ public class IssueReportViewModel extends ViewModel {
       IssueReportRequest request
   ) {
     return issueReportService.updateReport(activity, reportId, request);
+  }
+
+  public CompletableFuture<Void> updateManagerReportStatus(
+      Activity activity,
+      String reportId,
+      IssueReportStatusUpdateRequest request
+  ) {
+    return issueReportService.updateManagerReportStatus(activity, reportId, request);
+  }
+
+  public CompletableFuture<Void> replaceManagerReportIssueTypes(
+      Activity activity,
+      String reportId,
+      IssueReportTypesUpdateRequest request
+  ) {
+    return issueReportService.replaceManagerReportIssueTypes(activity, reportId, request);
   }
 
   public CompletableFuture<byte[]> downloadImage(

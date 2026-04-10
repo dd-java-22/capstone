@@ -39,7 +39,25 @@
     android:id="@+id/manage_issues_fragment"
     android:name="edu.cnm.deepdive.seesomethingabq.controller.ManageIssuesFragment"
     android:label="Manage Issues"
-    tools:layout="@layout/fragment_manage_issues"/>
+    tools:layout="@layout/fragment_manage_issues">
+
+    <action
+      android:id="@+id/navigate_to_manager_report_detail_fragment"
+      app:destination="@id/manager_report_detail_fragment"/>
+
+  </fragment>
+
+  <fragment
+    android:id="@+id/manager_report_detail_fragment"
+    android:name="edu.cnm.deepdive.seesomethingabq.controller.ManagerReportDetailFragment"
+    android:label="Report Detail"
+    tools:layout="@layout/fragment_manager_report_detail">
+
+    <argument
+      android:name="reportId"
+      app:argType="string"/>
+
+  </fragment>
 
   <fragment
     android:id="@+id/manage_users_fragment"
