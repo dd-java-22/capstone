@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.Navigation;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.controller.adapter.IssueReportAdapter;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManageIssuesBinding;
@@ -51,7 +52,12 @@ public class ManageIssuesFragment extends Fragment {
   public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
     super.onViewCreated(view, savedInstanceState);
     issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
-    adapter = new IssueReportAdapter(issueReport -> Unit.INSTANCE);
+    adapter = new IssueReportAdapter(issueReport -> {
+      Navigation.findNavController(view)
+          .navigate(ManageIssuesFragmentDirections
+              .navigateToManagerReportDetailFragment(String.valueOf(issueReport.getExternalId())));
+      return Unit.INSTANCE;
+    });
     binding.issueReportsRecycler.setAdapter(adapter);
     issueReportViewModel
         .getIssueReports(requireActivity())
