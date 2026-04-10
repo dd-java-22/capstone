@@ -74,6 +74,11 @@ class ReportDetailFragment : Fragment() {
         private const val MIN_QUERY_LENGTH = 3
     }
 
+    private sealed interface SaveResult {
+        data class Success(val report: IssueReport) : SaveResult
+        data class ImageFailure(val reportId: String, val error: Throwable?) : SaveResult
+    }
+
     private var _binding: FragmentReportDetailBinding? = null
     private val binding: FragmentReportDetailBinding
         get() = _binding!!
@@ -769,6 +774,36 @@ class ReportDetailFragment : Fragment() {
         state.localUrisStagedForUpload.forEach { safeDeleteIfOwnedAttachment(it) }
     }
 
+    private fun cleanupStagedLocalImages(uris: List<Uri>) {
+        uris.forEach { safeDeleteIfOwnedAttachment(it) }
+    }
+
+    private fun resetUiFromServer(report: IssueReport) {
+        val binding = _binding ?: return
+
+        resetLocationPickerTransientState()
+
+        loadedReport = report
+        originalReport = report
+
+        binding.descriptionInput.setText(report.description.orEmpty())
+        binding.acceptedStateValue.text = report.acceptedState ?: "Unknown"
+        binding.locationInput.setText(bestLocationText(report))
+
+        selectedIssueTypeTags.clear()
+        selectedIssueTypeTags.addAll(report.issueTypes)
+
+        seedConfirmedLocation(report)
+        binding.locationLayout.error = null
+        binding.locationLayout.helperText = null
+        hideLocationResults()
+
+        populateIssueTypeChips()
+
+        // Fresh reseed clears any prior staged deletes/uploads.
+        imageEditViewModel.seedFromReport(report.reportImages ?: emptyList())
+    }
+
     private fun safeDeleteIfOwnedAttachment(uri: Uri) {
         val authority = requireContext().packageName + ".fileprovider"
         if (uri.authority != authority) {
@@ -834,74 +869,65 @@ class ReportDetailFragment : Fragment() {
                             viewModel.uploadImages(requireActivity(), reportId, stagedUploadUris)
                         }
                     }
-                    .thenCompose {
-                        viewModel.getReport(requireActivity(), reportId)
+                    .thenCompose { viewModel.getReport(requireActivity(), reportId) }
+                    .thenApply<SaveResult> { reloaded -> SaveResult.Success(reloaded) }
+                    .exceptionally { thrown ->
+                        // Base report update already succeeded; image work failed.
+                        SaveResult.ImageFailure(reportId, thrown)
                     }
             }
-            .thenAccept { reloaded ->
-                requireActivity().runOnUiThread {
-                    val binding = _binding ?: return@runOnUiThread
-                    loadedReport = reloaded
-                    originalReport = reloaded
+            .thenAccept { result ->
+                when (result) {
+                    is SaveResult.Success -> {
+                        requireActivity().runOnUiThread {
+                            val binding = _binding ?: return@runOnUiThread
+                            cleanupStagedLocalImages(stagedUploadUris)
+                            resetUiFromServer(result.report)
+                            setEditing(false)
+                            Snackbar.make(binding.root, "Saved", Snackbar.LENGTH_SHORT).show()
+                            findNavController().previousBackStackEntry?.savedStateHandle
+                                ?.set(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, true)
+                            mutationInProgress = false
+                            findNavController().popBackStack()
+                        }
+                    }
 
-                    cleanupStagedLocalImages()
-                    imageEditViewModel.seedFromReport(reloaded.reportImages ?: emptyList())
-
-                    binding.descriptionInput.setText(reloaded.description.orEmpty())
-                    binding.acceptedStateValue.text = reloaded.acceptedState ?: "Unknown"
-                    binding.locationInput.setText(bestLocationText(reloaded))
-                    seedConfirmedLocation(reloaded)
-
-                    selectedIssueTypeTags.clear()
-                    selectedIssueTypeTags.addAll(reloaded.issueTypes)
-                    populateIssueTypeChips()
-                    setEditing(false)
-
-                    Snackbar.make(binding.root, "Saved", Snackbar.LENGTH_SHORT).show()
-                    findNavController().previousBackStackEntry?.savedStateHandle
-                        ?.set(UserDashboardRefresh.USER_REPORTS_REFRESH_REQUIRED, true)
-                    mutationInProgress = false
-                    findNavController().popBackStack()
+                    is SaveResult.ImageFailure -> {
+                        cleanupStagedLocalImages(stagedUploadUris)
+                        viewModel.getReport(requireActivity(), result.reportId)
+                            .thenAccept { reloaded ->
+                                requireActivity().runOnUiThread {
+                                    val binding = _binding ?: return@runOnUiThread
+                                    resetUiFromServer(reloaded)
+                                    Snackbar.make(
+                                        binding.root,
+                                        result.error?.message ?: "Image update failed",
+                                        Snackbar.LENGTH_LONG
+                                    ).show()
+                                    mutationInProgress = false
+                                    binding.saveButton.isEnabled = true
+                                    binding.cancelButton.isEnabled = true
+                                    binding.editButton.isEnabled = true
+                                    setEditing(true)
+                                }
+                            }
+                    }
                 }
             }
             .exceptionally { thrown ->
-                // If we got here, either base save failed OR an image mutation failed.
-                // We keep the user on the edit screen and reload for a consistent server view.
-                viewModel.getReport(requireActivity(), current.externalId)
-                    .thenAccept { reloaded ->
-                        requireActivity().runOnUiThread {
-                            val binding = _binding ?: return@runOnUiThread
-                            loadedReport = reloaded
-                            originalReport = reloaded
-                            imageEditViewModel.seedFromReport(reloaded.reportImages ?: emptyList())
-                            renderImageEmptyState((reloaded.reportImages ?: emptyList()).isEmpty())
-                            Snackbar.make(
-                                binding.root,
-                                thrown?.message ?: "Save failed",
-                                Snackbar.LENGTH_LONG
-                            ).show()
-                            mutationInProgress = false
-                            binding.saveButton.isEnabled = true
-                            binding.cancelButton.isEnabled = true
-                            binding.editButton.isEnabled = true
-                            setEditing(true)
-                        }
-                    }
-                    .exceptionally {
-                        requireActivity().runOnUiThread {
-                            val binding = _binding ?: return@runOnUiThread
-                            Snackbar.make(
-                                binding.root,
-                                thrown?.message ?: "Save failed",
-                                Snackbar.LENGTH_LONG
-                            ).show()
-                            mutationInProgress = false
-                            binding.saveButton.isEnabled = true
-                            binding.cancelButton.isEnabled = true
-                            binding.editButton.isEnabled = true
-                        }
-                        null
-                    }
+                // Base save failure should not discard staged state or edits.
+                requireActivity().runOnUiThread {
+                    val binding = _binding ?: return@runOnUiThread
+                    Snackbar.make(
+                        binding.root,
+                        thrown?.message ?: "Save failed",
+                        Snackbar.LENGTH_LONG
+                    ).show()
+                    mutationInProgress = false
+                    binding.saveButton.isEnabled = true
+                    binding.cancelButton.isEnabled = true
+                    binding.editButton.isEnabled = true
+                }
                 null
             }
     }
