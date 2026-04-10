@@ -175,6 +175,9 @@ class ReportDetailFragment : Fragment() {
                     populateIssueTypeChips()
                     setEditing(false)
 
+                    val images = (report.reportImages ?: emptyList())
+                        .sortedBy { it.albumOrder }
+
                     val adapter = ReportImageThumbnailAdapter(
                         requireActivity(),
                         report.externalId,
