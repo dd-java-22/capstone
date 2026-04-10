@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
@@ -14,6 +15,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentManagerReportDetailBinding
 import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReport
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
+import edu.cnm.deepdive.seesomethingabq.viewmodel.AcceptedStateViewModel
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel
 
@@ -26,6 +28,7 @@ class ManagerReportDetailFragment : Fragment() {
 
   private val viewModel: IssueReportViewModel by viewModels()
   private val issueTypeViewModel: IssueTypeViewModel by viewModels()
+  private val acceptedStateViewModel: AcceptedStateViewModel by viewModels()
   private val args: ManagerReportDetailFragmentArgs by navArgs()
 
   private var loadedReport: IssueReport? = null
@@ -43,6 +46,10 @@ class ManagerReportDetailFragment : Fragment() {
     binding.descriptionInput.isFocusable = false
     binding.locationInput.isEnabled = false
     binding.locationInput.isFocusable = false
+    binding.acceptedStateLayout.isEnabled = false
+    binding.acceptedStateValue.isEnabled = false
+    binding.acceptedStateValue.isFocusable = false
+    binding.acceptedStateValue.isClickable = false
 
     return binding.root
   }
@@ -56,6 +63,17 @@ class ManagerReportDetailFragment : Fragment() {
       }
     }
     issueTypeViewModel.refresh(requireActivity())
+
+    acceptedStateViewModel.acceptedStates.observe(viewLifecycleOwner) { acceptedStates ->
+      val binding = _binding ?: return@observe
+      if (acceptedStates != null) {
+        val tags = acceptedStates.map { it.statusTag }
+        binding.acceptedStateValue.setAdapter(
+          ArrayAdapter(requireContext(), android.R.layout.simple_list_item_1, tags)
+        )
+      }
+    }
+    acceptedStateViewModel.refresh(requireActivity())
   }
 
   override fun onResume() {
@@ -72,7 +90,7 @@ class ManagerReportDetailFragment : Fragment() {
           selectedIssueTypeTags.addAll(report.issueTypes)
 
           binding.descriptionInput.setText(report.description.orEmpty())
-          binding.acceptedStateValue.text = report.acceptedState ?: "Unknown"
+          binding.acceptedStateValue.setText(report.acceptedState ?: "Unknown", false)
           binding.locationInput.setText(bestLocationText(report))
           populateIssueTypeChips()
 

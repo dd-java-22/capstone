@@ -8,6 +8,7 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.ReportImageDto
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary
+import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
 import okhttp3.MultipartBody
@@ -114,6 +115,16 @@ interface SeeSomethingWebService {
     @Header("Authorization") bearerToken: String,
     @Path("externalId") externalId: UUID
   ): UserProfileSummary
+
+  /**
+   * Retrieves accepted states for manager workflows.
+   *
+   * Endpoint: GET /manager/accepted-states
+   */
+  @GET("manager/accepted-states")
+  suspend fun getAcceptedStates(
+    @Header("Authorization") bearerToken: String
+  ): List<AcceptedState>
 
   /**
    * Sets manager authorization status for a user.

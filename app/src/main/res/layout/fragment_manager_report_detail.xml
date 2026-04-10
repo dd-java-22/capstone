@@ -67,13 +67,22 @@
       android:text="Status"
       android:textAppearance="?attr/textAppearanceTitleMedium"/>
 
-    <TextView
-      android:id="@+id/accepted_state_value"
+    <com.google.android.material.textfield.TextInputLayout
+      android:id="@+id/accepted_state_layout"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginBottom="@dimen/full_dynamic_spacing"
-      android:textAppearance="?attr/textAppearanceBodyMedium"
-      tools:text="Under Review"/>
+      app:endIconMode="dropdown_menu">
+
+      <com.google.android.material.textfield.MaterialAutoCompleteTextView
+        android:id="@+id/accepted_state_value"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:focusable="false"
+        tools:text="Under Review"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <TextView
       android:layout_width="wrap_content"

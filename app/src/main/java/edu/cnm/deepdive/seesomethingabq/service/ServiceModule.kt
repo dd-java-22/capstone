@@ -53,4 +53,14 @@ interface ServiceModule {
   @Singleton
   fun bindManagerUserService(implementation: ManagerUserServiceImpl): ManagerUserService
 
+  /**
+   * Binds the accepted state service implementation.
+   *
+   * @param implementation implementation instance.
+   * @return bound interface type.
+   */
+  @Binds
+  @Singleton
+  fun bindAcceptedStateService(implementation: AcceptedStateServiceImpl): AcceptedStateService
+
 }

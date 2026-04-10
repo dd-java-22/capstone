@@ -6,8 +6,10 @@ import androidx.room.TypeConverter
 import androidx.room.TypeConverters
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
+import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState
 import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
+import edu.cnm.deepdive.seesomethingabq.service.dao.AcceptedStateDao
 import edu.cnm.deepdive.seesomethingabq.service.dao.IssueTypeDao
 import edu.cnm.deepdive.seesomethingabq.service.dao.UserDao
 import java.net.URI
@@ -15,7 +17,7 @@ import java.net.URL
 import java.time.Instant
 import java.util.UUID
 
-@Database(entities = [UserProfile::class, IssueType::class], version = SeeSomethingDatabase.VERSION)
+@Database(entities = [UserProfile::class, IssueType::class, AcceptedState::class], version = SeeSomethingDatabase.VERSION)
 @TypeConverters(Converters::class)
 /**
  * Room database for the Android app's cached server data.
@@ -36,11 +38,18 @@ abstract class SeeSomethingDatabase: RoomDatabase() {
    */
   abstract fun getIssueTypeDao(): IssueTypeDao
 
+  /**
+   * Returns the [AcceptedStateDao].
+   *
+   * @return accepted state DAO.
+   */
+  abstract fun getAcceptedStateDao(): AcceptedStateDao
+
   companion object {
     /** Database file name. */
     const val NAME = "seesomething-db"
     /** Current schema version. */
-    const val VERSION = 2
+    const val VERSION = 3
 
     /**
      * Migration from schema version 1 to 2.
@@ -60,6 +69,29 @@ abstract class SeeSomethingDatabase: RoomDatabase() {
           """
           CREATE UNIQUE INDEX IF NOT EXISTS index_issueType_issue_type_tag
           ON issueType (issue_type_tag)
+          """.trimIndent()
+        )
+      }
+    }
+
+    /**
+     * Migration from schema version 2 to 3.
+     */
+    val MIGRATION_2_3: Migration = object : Migration(2, 3) {
+      override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+          """
+          CREATE TABLE IF NOT EXISTS acceptedState (
+            accepted_state_id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
+            status_tag TEXT NOT NULL,
+            status_tag_description TEXT NOT NULL
+          )
+          """.trimIndent()
+        )
+        db.execSQL(
+          """
+          CREATE UNIQUE INDEX IF NOT EXISTS index_acceptedState_status_tag
+          ON acceptedState (status_tag)
           """.trimIndent()
         )
       }
