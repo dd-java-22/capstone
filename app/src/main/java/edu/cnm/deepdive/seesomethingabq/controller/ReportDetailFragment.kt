@@ -177,13 +177,20 @@ class ReportDetailFragment : Fragment() {
 
                     val adapter = ReportImageAdapter(
                         requireActivity(),
-                        report.reportImages ?: emptyList(),
+                        images,
                         viewModel,
                         report.externalId
                     )
 
-                    binding.imageList.layoutManager = GridLayoutManager(requireContext(), 3)
-                    binding.imageList.adapter = adapter
+                    if (images.isEmpty()) {
+                        binding.imageList.visibility = View.GONE
+                        binding.noImagesPlaceholder.visibility = View.VISIBLE
+                    } else {
+                        binding.noImagesPlaceholder.visibility = View.GONE
+                        binding.imageList.visibility = View.VISIBLE
+                        binding.imageList.layoutManager = GridLayoutManager(requireContext(), 3)
+                        binding.imageList.adapter = adapter
+                    }
                 }
             }
     }
