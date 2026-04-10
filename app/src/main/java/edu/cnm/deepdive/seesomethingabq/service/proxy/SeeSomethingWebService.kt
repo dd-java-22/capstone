@@ -16,6 +16,7 @@ import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.PATCH
@@ -25,6 +26,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.PUT
+import retrofit2.http.Streaming
 
 import java.util.UUID
 
@@ -221,22 +223,23 @@ interface SeeSomethingWebService {
   ): ReportImageDto
 
   /**
-   * Retrieves metadata for a specific image belonging to an issue report.
-   */
-  @GET("issue-reports/{reportId}/images/{imageId}") // ⭐ FIXED
-  suspend fun getImageMetadata(
-    @Header("Authorization") bearerToken: String,
-    @Path("reportId") reportId: String,
-    @Path("imageId") imageId: String
-  ): ReportImageDto
-
-  /**
-   * Downloads the raw image file associated with a specific image.
+   * Downloads the raw image bytes for a specific image.
    *
    * @return The image file as a streaming response body.
    */
-  @GET("issue-reports/{reportId}/images/{imageId}/file") // ⭐ FIXED
+  @Streaming
+  @GET("issue-reports/{reportId}/images/{imageId}")
   suspend fun downloadImageFile(
+    @Header("Authorization") bearerToken: String,
+    @Path("reportId") reportId: String,
+    @Path("imageId") imageId: String
+  ): ResponseBody
+
+  /**
+   * Deletes an attached image for a specific issue report.
+   */
+  @DELETE("issue-reports/{reportId}/images/{imageId}")
+  suspend fun deleteImage(
     @Header("Authorization") bearerToken: String,
     @Path("reportId") reportId: String,
     @Path("imageId") imageId: String
