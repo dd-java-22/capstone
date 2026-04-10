@@ -129,14 +129,26 @@ class ManagerReportDetailFragment : Fragment() {
           binding.locationInput.setText(bestLocationText(report))
           populateIssueTypeChips()
 
-          val adapter = ReportImageAdapter(
+          val images = (report.reportImages ?: emptyList())
+            .sortedBy { it.albumOrder }
+
+          val adapter = ReportImageThumbnailAdapter(
             requireActivity(),
-            report.reportImages ?: emptyList(),
-            viewModel,
-            report.externalId
-          )
-          binding.imageList.layoutManager = GridLayoutManager(requireContext(), 3)
-          binding.imageList.adapter = adapter
+            report.externalId,
+            images
+          ) { reportId, imageId, mimeType ->
+            viewModel.downloadImageToCache(requireActivity(), reportId, imageId, mimeType)
+          }
+
+          if (images.isEmpty()) {
+            binding.imageList.visibility = View.GONE
+            binding.noImagesPlaceholder.visibility = View.VISIBLE
+          } else {
+            binding.noImagesPlaceholder.visibility = View.GONE
+            binding.imageList.visibility = View.VISIBLE
+            binding.imageList.layoutManager = GridLayoutManager(requireContext(), 3)
+            binding.imageList.adapter = adapter
+          }
         }
       }
   }

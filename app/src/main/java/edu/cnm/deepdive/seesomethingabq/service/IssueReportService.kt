@@ -11,6 +11,7 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest
 import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
 import java.util.concurrent.CompletableFuture
 import okhttp3.ResponseBody
+import java.io.File
 
 /**
  * Defines high-level operations for working with issue reports on the client side.
@@ -49,6 +50,18 @@ interface IssueReportService {
         reportId: String,
         imageId: String
     ): CompletableFuture<ResponseBody>
+
+    /**
+     * Downloads an image and writes it to the app cache directory with a stable name.
+     *
+     * The returned future completes with the cached file (which may already exist).
+     */
+    fun downloadImageToCache(
+        activity: Activity,
+        reportId: String,
+        imageId: String,
+        mimeType: String? = null
+    ): CompletableFuture<File>
 
   /**
    * Retrieves a single paginated page of issue report summaries.

@@ -25,6 +25,7 @@ import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import okhttp3.ResponseBody
+import java.io.File
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -122,6 +123,31 @@ class IssueReportServiceImpl @Inject constructor(
         reportId,
         imageId
       )
+    }
+
+  override fun downloadImageToCache(
+    activity: Activity,
+    reportId: String,
+    imageId: String,
+    mimeType: String?
+  ): CompletableFuture<File> =
+    scope.future {
+      val outFile = ReportImageCache.cacheFile(activity.cacheDir, reportId, imageId, mimeType)
+
+      if (outFile.exists() && outFile.length() > 0) {
+        return@future outFile
+      }
+
+      val credential = getCredential(activity)
+      webService.downloadImageFile("Bearer ${credential.idToken}", reportId, imageId).use { body ->
+        outFile.outputStream().use { out ->
+          body.byteStream().use { input ->
+            input.copyTo(out)
+          }
+        }
+      }
+
+      outFile
     }
 
   override fun getAllIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary> {

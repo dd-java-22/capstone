@@ -141,6 +141,16 @@
       android:nestedScrollingEnabled="false"
       tools:listitem="@layout/item_report_image"/>
 
+    <TextView
+      android:id="@+id/no_images_placeholder"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginBottom="@dimen/full_dynamic_spacing"
+      android:text="No images attached"
+      android:textAppearance="?attr/textAppearanceBodyMedium"
+      android:visibility="gone"
+      tools:visibility="visible" />
+
     <LinearLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"

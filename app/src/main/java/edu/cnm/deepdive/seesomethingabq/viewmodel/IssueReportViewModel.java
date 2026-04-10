@@ -18,6 +18,7 @@ import edu.cnm.deepdive.seesomethingabq.service.IssueReportService;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import jakarta.inject.Inject;
@@ -156,6 +157,15 @@ public class IssueReportViewModel extends ViewModel {
             throw new RuntimeException(e);
           }
         });
+  }
+
+  public CompletableFuture<File> downloadImageToCache(
+      Activity activity,
+      String reportId,
+      String imageId,
+      String mimeType
+  ) {
+    return issueReportService.downloadImageToCache(activity, reportId, imageId, mimeType);
   }
 
   public CompletableFuture<Void> uploadImages(Activity activity, String reportId, List<Uri> uris) {

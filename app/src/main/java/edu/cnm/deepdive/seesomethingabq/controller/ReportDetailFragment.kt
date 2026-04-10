@@ -175,15 +175,26 @@ class ReportDetailFragment : Fragment() {
                     populateIssueTypeChips()
                     setEditing(false)
 
-                    val adapter = ReportImageAdapter(
-                        requireActivity(),
-                        report.reportImages ?: emptyList(),
-                        viewModel,
-                        report.externalId
-                    )
+                    val images = (report.reportImages ?: emptyList())
+                        .sortedBy { it.albumOrder }
 
-                    binding.imageList.layoutManager = GridLayoutManager(requireContext(), 3)
-                    binding.imageList.adapter = adapter
+                    val adapter = ReportImageThumbnailAdapter(
+                        requireActivity(),
+                        report.externalId,
+                        images
+                    ) { reportId, imageId, mimeType ->
+                        viewModel.downloadImageToCache(requireActivity(), reportId, imageId, mimeType)
+                    }
+
+                    if (images.isEmpty()) {
+                        binding.imageList.visibility = View.GONE
+                        binding.noImagesPlaceholder.visibility = View.VISIBLE
+                    } else {
+                        binding.noImagesPlaceholder.visibility = View.GONE
+                        binding.imageList.visibility = View.VISIBLE
+                        binding.imageList.layoutManager = GridLayoutManager(requireContext(), 3)
+                        binding.imageList.adapter = adapter
+                    }
                 }
             }
     }
