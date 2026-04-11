@@ -1,6 +1,8 @@
 package edu.cnm.deepdive.seesomethingabq.service
 
 import android.app.Activity
+import android.net.Uri
+import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateUserRequest
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
 import edu.cnm.deepdive.seesomethingabq.service.dao.UserDao
 import edu.cnm.deepdive.seesomethingabq.service.proxy.SeeSomethingWebService
@@ -12,6 +14,9 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.future.future
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.util.concurrent.CompletableFuture
 
 @Singleton
@@ -44,4 +49,45 @@ class UserServiceImpl @Inject constructor(
     }
 
   override fun signOut(): CompletableFuture<Void?> = authRepository.signOut()
+
+  override fun updateProfile(
+    activity: Activity,
+    displayName: String?,
+    email: String?
+  ): CompletableFuture<UserProfile> =
+    scope.future {
+      val credential = authRepository.getCredential(activity).await()
+      val request = UpdateUserRequest(displayName, email)
+
+      val updatedUser = webService
+        .updateUserProfile("Bearer ${credential.idToken}", request)
+        .copy(oauthKey = credential.id)
+
+      userDao.update(updatedUser)
+      updatedUser
+    }
+
+  override fun uploadAvatar(
+    activity: Activity,
+    uri: Uri
+  ): CompletableFuture<UserProfile> =
+    scope.future {
+      val credential = authRepository.getCredential(activity).await()
+
+      val inputStream = activity.contentResolver.openInputStream(uri)
+        ?: throw IllegalArgumentException("Cannot open input stream for URI: $uri")
+
+      inputStream.use { input ->
+        val bytes = input.readBytes()
+        val requestBody = bytes.toRequestBody("image/*".toMediaType())
+        val part = MultipartBody.Part.createFormData("file", "avatar.jpg", requestBody)
+
+        val updatedUser = webService
+          .uploadUserAvatar("Bearer ${credential.idToken}", part)
+          .copy(oauthKey = credential.id)
+
+        userDao.update(updatedUser)
+        updatedUser
+      }
+    }
 }

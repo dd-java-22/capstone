@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import androidx.activity.result.ActivityResultLauncher;
@@ -34,14 +35,17 @@ public class UserProfileFragment extends Fragment {
 
     binding = FragmentUserProfileBinding.inflate(inflater, container, false);
 
-    binding.changeAvatarButton.setOnClickListener(v ->
+    binding.editAvatarButton.setOnClickListener(v ->
         pickAvatarLauncher.launch("image/*")
     );
 
     binding.saveProfileButton.setOnClickListener(v -> {
-      String name = binding.displayNameInput.getText().toString();
-      String email = binding.emailInput.getText().toString();
-      userViewModel.updateProfile(name, email);
+      String displayName = binding.displayNameInput.getText().toString().trim();
+      String email = binding.emailInput.getText().toString().trim();
+
+      if (!displayName.isEmpty() && !email.isEmpty()) {
+        userViewModel.updateProfile(displayName, email);
+      }
     });
 
     return binding.getRoot();
@@ -57,6 +61,9 @@ public class UserProfileFragment extends Fragment {
       if (user != null) {
         binding.displayNameInput.setText(user.getDisplayName());
         binding.emailInput.setText(user.getEmail());
+        binding.usernameValue.setText(user.getDisplayName());
+        binding.emailValue.setText(user.getEmail());
+        // TODO: Load avatar image from user.getAvatar()
       }
     });
   }

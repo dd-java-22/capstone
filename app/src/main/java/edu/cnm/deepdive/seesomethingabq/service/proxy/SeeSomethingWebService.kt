@@ -49,6 +49,33 @@ interface SeeSomethingWebService {
   ): UserProfile
 
   /**
+   * Updates the current user's profile (display name and/or email).
+   *
+   * @param bearerToken Authorization header value.
+   * @param request request body containing updated user fields.
+   * @return updated user profile.
+   */
+  @PATCH("users/me")
+  suspend fun updateUserProfile(
+    @Header("Authorization") bearerToken: String,
+    @Body request: edu.cnm.deepdive.seesomethingabq.model.dto.UpdateUserRequest
+  ): UserProfile
+
+  /**
+   * Uploads a new avatar image for the current user.
+   *
+   * @param bearerToken Authorization header value.
+   * @param file Multipart file part containing the avatar image.
+   * @return updated user profile with new avatar URL.
+   */
+  @Multipart
+  @POST("users/me/avatar")
+  suspend fun uploadUserAvatar(
+    @Header("Authorization") bearerToken: String,
+    @Part file: MultipartBody.Part
+  ): UserProfile
+
+  /**
    * Retrieves all issue types from the server.
    *
    * @param bearerToken Authorization header value.

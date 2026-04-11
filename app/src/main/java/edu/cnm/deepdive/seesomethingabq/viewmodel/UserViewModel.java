@@ -3,7 +3,6 @@ package edu.cnm.deepdive.seesomethingabq.viewmodel;
 import android.app.Activity;
 import android.net.Uri;
 import android.util.Log;
-import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -11,8 +10,6 @@ import dagger.hilt.android.lifecycle.HiltViewModel;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
 import jakarta.inject.Inject;
-import java.util.function.BiConsumer;
-import org.jetbrains.annotations.NotNull;
 
 /**
  * ViewModel coordinating user sign-in/sign-out and exposing user and error state.
@@ -89,14 +86,31 @@ public class UserViewModel extends ViewModel {
   }
 
 
-  public void updateProfile(String displayName, String email) {
-    repository.updateUser(displayName, email)
-        .thenAccept(updated -> user.postValue(updated));
+  /**
+   * Updates the current user's profile information.
+   *
+   * @param activity activity used for authentication flows.
+   * @param displayName new display name.
+   * @param email new email address.
+   */
+  public void updateProfile(Activity activity, String displayName, String email) {
+    throwable.setValue(null);
+
+    userService.updateProfile(activity, displayName, email)
+        .whenComplete(this::handleResult);
   }
 
+  /**
+   * Uploads a new avatar image for the current user.
+   *
+   * @param activity activity used for authentication flows.
+   * @param uri URI of the image to upload.
+   */
   public void updateAvatar(Activity activity, Uri uri) {
-    repository.uploadAvatar(activity, uri)
-        .thenAccept(updated -> user.postValue(updated));
+    throwable.setValue(null);
+
+    userService.uploadAvatar(activity, uri)
+        .whenComplete(this::handleResult);
   }
 
 

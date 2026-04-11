@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
   xmlns:app="http://schemas.android.com/apk/res-auto"
   android:layout_width="match_parent"
-  android:layout_height="match_parent"
+  android:layout_height="match_parent">
+
+<androidx.constraintlayout.widget.ConstraintLayout
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
   android:padding="24dp">
 
   <!-- ========================= -->
@@ -15,10 +19,11 @@
     android:layout_marginTop="24dp"
     android:src="@drawable/ic_default_avatar"
     android:scaleType="centerCrop"
-    android:background="@android:color/transparent"
+    android:background="@drawable/avatar_circle_background"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent" />
+    app:layout_constraintEnd_toEndOf="parent"
+    android:contentDescription="@string/user_avatar" />
 
   <!-- Edit avatar button (pencil) -->
   <ImageButton
@@ -27,112 +32,134 @@
     android:layout_height="36dp"
     android:src="@drawable/ic_edit"
     android:background="@android:color/transparent"
-    android:contentDescription="Edit Profile Picture"
+    android:contentDescription="@string/edit_profile_picture"
     app:layout_constraintBottom_toBottomOf="@id/avatarImage"
     app:layout_constraintEnd_toEndOf="@id/avatarImage"
     android:padding="4dp" />
 
   <!-- ========================= -->
-  <!--        USERNAME           -->
+  <!--     DISPLAY NAME          -->
   <!-- ========================= -->
   <TextView
-    android:id="@+id/usernameLabel"
-    android:layout_width="wrap_content"
+    android:id="@+id/displayNameLabel"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:text="Username"
-    android:textSize="18sp"
+    android:text="@string/display_name_label"
+    android:textSize="14sp"
     android:textStyle="bold"
     app:layout_constraintTop_toBottomOf="@id/avatarImage"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="16dp" />
+    android:layout_marginTop="32dp" />
 
-  <ImageButton
-    android:id="@+id/editUsernameButton"
-    android:layout_width="28dp"
-    android:layout_height="28dp"
-    android:src="@drawable/ic_edit"
-    android:background="@android:color/transparent"
-    android:contentDescription="Edit Username"
-    app:layout_constraintStart_toEndOf="@id/usernameLabel"
-    app:layout_constraintBottom_toBottomOf="@id/usernameLabel"
-    android:layout_marginStart="8dp" />
-
-  <!-- Username value -->
-  <TextView
-    android:id="@+id/usernameValue"
-    android:layout_width="wrap_content"
+  <EditText
+    android:id="@+id/displayNameInput"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:text="User123"
+    android:hint="@string/display_name_hint"
+    android:inputType="textPersonName"
     android:textSize="16sp"
-    app:layout_constraintTop_toBottomOf="@id/usernameLabel"
+    app:layout_constraintTop_toBottomOf="@id/displayNameLabel"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="4dp" />
+    android:layout_marginTop="8dp"
+    android:autofillHints="name" />
 
   <!-- ========================= -->
   <!--          EMAIL            -->
   <!-- ========================= -->
-  <LinearLayout
-    android:id="@+id/emailLabelRow"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    app:layout_constraintTop_toBottomOf="@id/usernameValue"
-    app:layout_constraintStart_toStartOf="parent"
-    android:layout_marginTop="24dp">
-
-    <TextView
-      android:id="@+id/emailLabel"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      android:text="Email"
-      android:textSize="16sp"
-      android:textStyle="bold" />
-
-    <ImageButton
-      android:id="@+id/editEmailButton"
-      android:layout_width="28dp"
-      android:layout_height="28dp"
-      android:src="@drawable/ic_edit"
-      android:background="@android:color/transparent"
-      android:contentDescription="Edit Email"
-      android:layout_marginStart="8dp" />
-  </LinearLayout>
-
-  <!-- Email value -->
   <TextView
-    android:id="@+id/emailValue"
-    android:layout_width="wrap_content"
+    android:id="@+id/emailLabel"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:text="user@example.com"
-    android:textSize="16sp"
-    app:layout_constraintTop_toBottomOf="@id/emailLabelRow"
-    app:layout_constraintStart_toStartOf="parent"
-    android:layout_marginTop="4dp" />
-
-  <!-- ========================= -->
-  <!--     AUTHORITY LEVEL       -->
-  <!-- ========================= -->
-  <TextView
-    android:id="@+id/authorityLabel"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:text="Authority Level:"
-    android:textSize="16sp"
+    android:text="@string/email_label"
+    android:textSize="14sp"
     android:textStyle="bold"
-    app:layout_constraintTop_toBottomOf="@id/emailValue"
+    app:layout_constraintTop_toBottomOf="@id/displayNameInput"
     app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="24dp" />
+
+  <EditText
+    android:id="@+id/emailInput"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:hint="@string/email_hint"
+    android:inputType="textEmailAddress"
+    android:textSize="16sp"
+    app:layout_constraintTop_toBottomOf="@id/emailLabel"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="8dp"
+    android:autofillHints="emailAddress" />
+
+  <!-- ========================= -->
+  <!--     USERNAME (Display)    -->
+  <!-- ========================= -->
+  <TextView
+    android:id="@+id/usernameLabel"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="@string/username_label"
+    android:textSize="14sp"
+    android:textStyle="bold"
+    app:layout_constraintTop_toBottomOf="@id/emailInput"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
     android:layout_marginTop="24dp" />
 
   <TextView
-    android:id="@+id/authorityValue"
-    android:layout_width="wrap_content"
+    android:id="@+id/usernameValue"
+    android:layout_width="0dp"
     android:layout_height="wrap_content"
-    android:text="User"
+    android:text="@string/username_placeholder"
     android:textSize="16sp"
-    app:layout_constraintTop_toBottomOf="@id/authorityLabel"
+    app:layout_constraintTop_toBottomOf="@id/usernameLabel"
     app:layout_constraintStart_toStartOf="parent"
-    android:layout_marginTop="4dp" />
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="8dp"
+    android:textColor="?android:attr/textColorSecondary" />
+
+  <!-- ========================= -->
+  <!--     EMAIL (Display)       -->
+  <!-- ========================= -->
+  <TextView
+    android:id="@+id/emailDisplayLabel"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="@string/email_current_label"
+    android:textSize="14sp"
+    android:textStyle="bold"
+    app:layout_constraintTop_toBottomOf="@id/usernameValue"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="24dp" />
+
+  <TextView
+    android:id="@+id/emailValue"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="@string/email_placeholder"
+    android:textSize="16sp"
+    app:layout_constraintTop_toBottomOf="@id/emailDisplayLabel"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="8dp"
+    android:textColor="?android:attr/textColorSecondary" />
+
+  <!-- ========================= -->
+  <!--      SAVE BUTTON          -->
+  <!-- ========================= -->
+  <Button
+    android:id="@+id/saveProfileButton"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:text="@string/save_profile"
+    android:textSize="16sp"
+    app:layout_constraintTop_toBottomOf="@id/emailValue"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginTop="32dp" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
+</ScrollView>

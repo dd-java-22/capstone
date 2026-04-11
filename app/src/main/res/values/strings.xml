@@ -40,4 +40,16 @@
   <string name="attached_image_preview">Attached image preview</string>
   <string name="remove_attached_image">Remove attached image</string>
   <string name="profile_settings">settings</string>
+  <!-- UserProfileFragment -->
+  <string name="user_avatar">User Avatar</string>
+  <string name="edit_profile_picture">Edit Profile Picture</string>
+  <string name="display_name_label">Display Name</string>
+  <string name="display_name_hint">Enter your display name</string>
+  <string name="email_label">Email</string>
+  <string name="email_hint">Enter your email address</string>
+  <string name="username_label">Username (Read-only)</string>
+  <string name="username_placeholder">Loading…</string>
+  <string name="email_current_label">Current Email</string>
+  <string name="email_placeholder">Loading…</string>
+  <string name="save_profile">Save Profile</string>
 </resources>
