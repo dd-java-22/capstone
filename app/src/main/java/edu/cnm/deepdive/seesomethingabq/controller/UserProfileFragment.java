@@ -44,7 +44,7 @@ public class UserProfileFragment extends Fragment {
       String email = binding.emailInput.getText().toString().trim();
 
       if (!displayName.isEmpty() && !email.isEmpty()) {
-        userViewModel.updateProfile(displayName, email);
+        userViewModel.updateProfile(requireActivity(), displayName, email);
       }
     });
 
