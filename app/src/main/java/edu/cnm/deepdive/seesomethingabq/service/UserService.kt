@@ -7,31 +7,40 @@ import java.util.concurrent.CompletableFuture
 
 /**
  * Service providing sign-in, sign-out, and profile update operations for the Android app.
+ *
+ * This interface defines all user‑related operations exposed to the ViewModel layer,
+ * including authentication, profile updates, and avatar uploads. Implementations of
+ * this service are responsible for communicating with backend APIs (via Retrofit)
+ * and returning results asynchronously using {@link CompletableFuture}.
  */
 interface UserService {
 
   /**
    * Performs an interactive sign-in and returns the resolved user profile.
    *
-   * @param activity activity used to launch sign-in flows.
-   * @return future completing with the signed-in user's profile.
+   * @param activity Activity used to launch sign-in flows.
+   * @return Future completing with the signed-in user's profile.
    */
   fun signIn(activity: Activity): CompletableFuture<UserProfile>
 
   /**
    * Signs out of the current session.
    *
-   * @return future that completes when sign-out is done.
+   * @return Future that completes when sign-out is done.
    */
   fun signOut(): CompletableFuture<Void?>
 
   /**
    * Updates the current user's profile information.
    *
-   * @param activity activity used for authentication flows.
-   * @param displayName new display name (optional).
-   * @param email new email address (optional).
-   * @return future completing with the updated user profile.
+   * Implementations should send the updated fields to the backend and return the
+   * updated {@link UserProfile}. Fields may be optional, but implementations must
+   * ensure that null values are handled appropriately by the backend.
+   *
+   * @param activity Activity used for authentication flows.
+   * @param displayName New display name (nullable if unchanged).
+   * @param email New email address (nullable if unchanged).
+   * @return Future completing with the updated user profile.
    */
   fun updateProfile(
     activity: Activity,
@@ -42,13 +51,16 @@ interface UserService {
   /**
    * Uploads a new avatar image for the current user.
    *
-   * @param activity activity used for authentication flows.
+   * Implementations should read the image content from the provided URI, upload it
+   * to the backend as multipart form data, and return the updated {@link UserProfile}
+   * containing the new avatar URL.
+   *
+   * @param activity Activity used for authentication flows.
    * @param uri URI of the image to upload.
-   * @return future completing with the updated user profile.
+   * @return Future completing with the updated user profile.
    */
   fun uploadAvatar(
     activity: Activity,
     uri: Uri
   ): CompletableFuture<UserProfile>
-
 }

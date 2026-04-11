@@ -19,7 +19,6 @@
     android:layout_marginTop="24dp"
     android:src="@drawable/ic_default_avatar"
     android:scaleType="centerCrop"
-    android:background="@drawable/avatar_circle_background"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"

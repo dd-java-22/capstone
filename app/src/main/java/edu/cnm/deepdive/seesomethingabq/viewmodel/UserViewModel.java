@@ -13,6 +13,10 @@ import jakarta.inject.Inject;
 
 /**
  * ViewModel coordinating user sign-in/sign-out and exposing user and error state.
+ * <p>
+ * This ViewModel also manages profile updates, including display name, email,
+ * and avatar image uploads. All operations delegate to {@link UserService},
+ * and results are published to LiveData streams for UI observation.
  */
 @HiltViewModel
 public class UserViewModel extends ViewModel {
@@ -85,13 +89,13 @@ public class UserViewModel extends ViewModel {
         });
   }
 
-
   /**
-   * Updates the current user's profile information.
+   * Updates the current user's profile information, including display name
+   * and email address. The updated profile is published to observers.
    *
-   * @param activity activity used for authentication flows.
+   * @param activity    activity used for authentication flows.
    * @param displayName new display name.
-   * @param email new email address.
+   * @param email       new email address.
    */
   public void updateProfile(Activity activity, String displayName, String email) {
     throwable.setValue(null);
@@ -101,10 +105,11 @@ public class UserViewModel extends ViewModel {
   }
 
   /**
-   * Uploads a new avatar image for the current user.
+   * Uploads a new avatar image for the current user. The updated profile
+   * (including the new avatar URL) is published to observers.
    *
    * @param activity activity used for authentication flows.
-   * @param uri URI of the image to upload.
+   * @param uri      URI of the image to upload.
    */
   public void updateAvatar(Activity activity, Uri uri) {
     throwable.setValue(null);
@@ -113,15 +118,27 @@ public class UserViewModel extends ViewModel {
         .whenComplete(this::handleResult);
   }
 
-
+  /**
+   * Handles the result of any user-related asynchronous operation.
+   * If successful, publishes the updated user profile; otherwise,
+   * publishes the encountered error.
+   *
+   * @param user       updated user profile.
+   * @param throwable  error thrown during the operation, if any.
+   */
   private void handleResult(UserProfile user, Throwable throwable) {
-      if (throwable == null) {
-        this.user.postValue(user);
-      } else {
-        postThrowable(throwable);
-      }
+    if (throwable == null) {
+      this.user.postValue(user);
+    } else {
+      postThrowable(throwable);
     }
+  }
 
+  /**
+   * Logs and publishes the provided error.
+   *
+   * @param throwable error to publish.
+   */
   private void postThrowable(Throwable throwable) {
     Log.e(TAG, throwable.getMessage(), throwable);
     this.throwable.postValue(throwable);
