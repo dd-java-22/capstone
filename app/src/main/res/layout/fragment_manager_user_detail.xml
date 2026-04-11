@@ -93,6 +93,21 @@
           tools:text="Created: Jan 1, 2026 12:00 PM"/>
 
         <TextView
+          android:id="@+id/report_count_label"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="8dp"
+          android:text="Total Reports"
+          android:textAppearance="?attr/textAppearanceBodySmall"/>
+
+        <TextView
+          android:id="@+id/report_count_value"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:textAppearance="?attr/textAppearanceBodySmall"
+          tools:text="12"/>
+
+        <TextView
           android:layout_width="wrap_content"
           android:layout_height="wrap_content"
           android:layout_marginTop="16dp"

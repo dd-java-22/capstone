@@ -115,6 +115,8 @@ public class ManagerUserDetailFragment extends Fragment {
     binding.managerAuthButton.setText("Authorize as Manager");
     binding.accountActivationButton.setText("Deactivate Account");
     binding.externalIdValue.setText(String.valueOf(externalId));
+    binding.reportCountLabel.setText("Total Reports");
+    binding.reportCountValue.setText("Loading...");
     setButtonsEnabled(false);
   }
 
@@ -133,6 +135,10 @@ public class ManagerUserDetailFragment extends Fragment {
         user.getManager() ? "Revoke Manager Authorization" : "Authorize as Manager");
     binding.accountActivationButton.setText(
         user.getUserEnabled() ? "Deactivate Account" : "Reactivate Account");
+
+    long reportCount = user.getReportCount();
+    binding.reportCountLabel.setText("Total Reports");
+    binding.reportCountValue.setText(String.valueOf(reportCount));
 
     if (mutationInProgress) {
       showMutationSuccess();
