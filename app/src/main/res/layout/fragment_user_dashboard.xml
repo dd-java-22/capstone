@@ -63,7 +63,7 @@
     android:layout_height="wrap_content"
     android:text="User Dashboard"
     android:textSize="24sp"
-    app:layout_constraintBottom_toTopOf="@+id/recyclerView"
+    app:layout_constraintBottom_toTopOf="@+id/issueReportsRecycler"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toBottomOf="@id/external_key"
@@ -90,7 +90,7 @@
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@+id/recyclerView"/>
+    app:layout_constraintTop_toBottomOf="@+id/issueReportsRecycler"/>
 
   <ImageButton
     android:id="@+id/profileButton"

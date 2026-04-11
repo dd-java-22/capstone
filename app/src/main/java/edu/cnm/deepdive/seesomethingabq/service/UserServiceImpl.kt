@@ -56,7 +56,7 @@ class UserServiceImpl @Inject constructor(
     email: String?
   ): CompletableFuture<UserProfile> =
     scope.future {
-      val credential = authRepository.getCredential(activity).await()
+      val credential = authRepository.getValidCredential(activity).await()
       val request = UpdateUserRequest(displayName, email)
 
       val updatedUser = webService
@@ -72,7 +72,7 @@ class UserServiceImpl @Inject constructor(
     uri: Uri
   ): CompletableFuture<UserProfile> =
     scope.future {
-      val credential = authRepository.getCredential(activity).await()
+      val credential = authRepository.getValidCredential(activity).await()
 
       val inputStream = activity.contentResolver.openInputStream(uri)
         ?: throw IllegalArgumentException("Cannot open input stream for URI: $uri")
