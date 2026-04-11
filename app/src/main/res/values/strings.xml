@@ -39,4 +39,5 @@
   <string name="location_unavailable">Location unavailable</string>
   <string name="attached_image_preview">Attached image preview</string>
   <string name="remove_attached_image">Remove attached image</string>
+  <string name="profile_settings">settings</string>
 </resources>

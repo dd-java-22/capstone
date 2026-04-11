@@ -58,6 +58,12 @@ public class UserDashboardFragment extends Fragment {
       NavController navController = Navigation.findNavController(v);
       navController.navigate(R.id.navigate_to_create_issue_report_fragment);
     });
+
+    binding.profileButton.setOnClickListener(v -> {
+      NavController navController = Navigation.findNavController(v);
+      navController.navigate(R.id.navigate_to_user_profile);
+    });
+
     return binding.getRoot();
   }
 

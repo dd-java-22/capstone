@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.seesomethingabq.viewmodel;
 
 import android.app.Activity;
+import android.net.Uri;
 import android.util.Log;
 import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
@@ -86,6 +87,18 @@ public class UserViewModel extends ViewModel {
           user.postValue(null);
         });
   }
+
+
+  public void updateProfile(String displayName, String email) {
+    repository.updateUser(displayName, email)
+        .thenAccept(updated -> user.postValue(updated));
+  }
+
+  public void updateAvatar(Activity activity, Uri uri) {
+    repository.uploadAvatar(activity, uri)
+        .thenAccept(updated -> user.postValue(updated));
+  }
+
 
   private void handleResult(UserProfile user, Throwable throwable) {
       if (throwable == null) {
