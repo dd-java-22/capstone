@@ -48,5 +48,9 @@ data class UserProfileSummary(
   @Expose
   @SerializedName("userEnabled")
   val userEnabled: Boolean,
+
+  @Expose
+  @SerializedName("reportCount")
+  val reportCount: Long,
 )
 

@@ -16,7 +16,9 @@
 package edu.cnm.deepdive.seesomethingabq.service;
 
 import edu.cnm.deepdive.seesomethingabq.exception.UserNotFoundException;
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileResponse;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
+import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;
 import java.net.URL;
 import java.util.List;
@@ -40,15 +42,19 @@ public class UserServiceImpl implements UserService {
   private static final String OAUTH_NAME_CLAIM = "name";
 
   private final UserProfileRepository repository;
+  private final IssueReportRepository issueReportRepository;
 
   /**
-   * Constructs an instance of {@code AbstractUserService} with the specified repository.
+   * Constructs an instance of {@code UserServiceImpl} with the specified repositories.
    *
-   * @param repository User profile repository for persistence operations.
+   * @param repository user profile repository for persistence operations.
+   * @param issueReportRepository issue report repository for report count lookups.
    */
   @Autowired
-  public UserServiceImpl(UserProfileRepository repository) {
+  public UserServiceImpl(UserProfileRepository repository,
+      IssueReportRepository issueReportRepository) {
     this.repository = repository;
+    this.issueReportRepository = issueReportRepository;
   }
 
   @Override
@@ -144,6 +150,27 @@ public class UserServiceImpl implements UserService {
         .orElseThrow(() -> new UserNotFoundException("User not found: " + externalId));
     user.setUserEnabled(enabled);
     return repository.save(user);
+  }
+
+  /**
+   * Maps a {@link UserProfile} entity to a {@link UserProfileResponse}, including total report count.
+   *
+   * @param userProfile source entity.
+   * @return DTO enriched with report count.
+   */
+  @Override
+  public UserProfileResponse getUserProfileResponse(UserProfile userProfile) {
+    long reportCount = issueReportRepository.countByUserProfile(userProfile);
+    return new UserProfileResponse(
+        userProfile.getExternalId(),
+        userProfile.getDisplayName(),
+        userProfile.getEmail(),
+        userProfile.getAvatar(),
+        userProfile.isManager(),
+        userProfile.getTimeCreated(),
+        userProfile.getUserEnabled(),
+        reportCount
+    );
   }
 
 }
