@@ -24,6 +24,7 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateDisplayNameRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateEmailRequest;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
+import edu.cnm.deepdive.seesomethingabq.service.storage.StorageService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -39,12 +40,15 @@ class UserControllerTest {
   @Mock
   private UserService userService;
 
+  @Mock
+  private StorageService storageService;
+
   private UserController controller;
   private UserProfile testUser;
 
   @BeforeEach
   void setUp() {
-    controller = new UserController(userService);
+    controller = new UserController(userService, storageService);
 
     testUser = new UserProfile();
     testUser.setOauthKey("test-oauth-key");
