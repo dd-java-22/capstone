@@ -115,6 +115,24 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
+  public UserProfile updateAvatarKey(Long id, String storageKey) {
+    return repository
+        .findById(id)
+        .map(user -> {
+          try {
+            // Convert storage key to full URL
+            // Assuming storage keys can be accessed via /api/files/{key} or similar
+            URL avatarUrl = new URL("https://example.com/api/files/" + storageKey);
+            user.setAvatar(avatarUrl);
+            return repository.save(user);
+          } catch (Exception e) {
+            throw new RuntimeException("Failed to create avatar URL from storage key", e);
+          }
+        })
+        .orElseThrow(NoSuchElementException::new);
+  }
+
+  @Override
   public List<UserProfile> getAll() {
     return repository.findAll();
   }

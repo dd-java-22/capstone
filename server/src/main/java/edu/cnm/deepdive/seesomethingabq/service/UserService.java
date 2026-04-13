@@ -85,6 +85,16 @@ public interface UserService {
   UserProfile updateAvatar(Long id, URL avatar);
 
   /**
+   * Updates the avatar for the specified user profile using a storage key.
+   * The storage key is converted to a URL using the configured base URL.
+   *
+   * @param id User profile ID.
+   * @param storageKey Storage key for the uploaded avatar image.
+   * @return Updated user profile.
+   */
+  UserProfile updateAvatarKey(Long id, String storageKey);
+
+  /**
    * Returns all user profiles.
    *
    * @return list of user profiles.

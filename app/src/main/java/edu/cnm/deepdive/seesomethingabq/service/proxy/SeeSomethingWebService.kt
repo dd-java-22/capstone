@@ -1,47 +1,37 @@
 package edu.cnm.deepdive.seesomethingabq.service.proxy
 
-import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReport
-import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportStatusUpdateRequest
-import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportTypesUpdateRequest
-import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportRequest
-import edu.cnm.deepdive.seesomethingabq.model.dto.IssueReportSummary
-import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest
-import edu.cnm.deepdive.seesomethingabq.model.dto.PaginatedResponse
-import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest
-import edu.cnm.deepdive.seesomethingabq.model.dto.ReportImageDto
-import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileSummary
-import edu.cnm.deepdive.seesomethingabq.model.entity.AcceptedState
-import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType
-import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
+import edu.cnm.deepdive.seesomethingabq.model.dto.*
+import edu.cnm.deepdive.seesomethingabq.model.entity.*
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
-import retrofit2.http.Body
-import retrofit2.http.DELETE
-import retrofit2.http.GET
-import retrofit2.http.Header
-import retrofit2.http.PATCH
-import retrofit2.http.Path
-import retrofit2.http.Query
-import retrofit2.http.Multipart
-import retrofit2.http.POST
-import retrofit2.http.Part
-import retrofit2.http.PUT
-import retrofit2.http.Streaming
-
+import retrofit2.http.*
 import java.util.UUID
 
 /**
  * Defines the Retrofit HTTP API for interacting with the SeeSomethingABQ backend service.
  *
  * All methods require a valid Google ID token passed as a Bearer token in the Authorization header.
+ * This interface includes:
+ * - User profile operations (get, update, avatar upload)
+ * - Issue report CRUD operations
+ * - Manager‑only administrative endpoints
+ * - Image upload/download for reports
+ *
+ * All suspend functions are intended to be called from a coroutine context.
  */
 interface SeeSomethingWebService {
 
+  // ---------------------------------------------------------------------------
+  //  USER PROFILE ENDPOINTS
+  // ---------------------------------------------------------------------------
+
   /**
-   * Retrieves the current user's profile from the server.
+   * Retrieves the current authenticated user's profile.
    *
-   * @param bearerToken Authorization header value.
-   * @return user profile.
+   * Endpoint: **GET /users/me**
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @return The full [UserProfile] for the authenticated user.
    */
   @GET("users/me")
   suspend fun getMe(
@@ -49,10 +39,51 @@ interface SeeSomethingWebService {
   ): UserProfile
 
   /**
-   * Retrieves all issue types from the server.
+   * Updates the current user's profile fields (display name and/or email).
+   *
+   * Endpoint: **PATCH /users/me**
+   *
+   * Only the fields provided in [UpdateUserRequest] will be updated.
    *
    * @param bearerToken Authorization header value.
-   * @return list of issue types.
+   * @param request Request body containing updated user fields.
+   * @return The updated [UserProfile].
+   */
+  @PATCH("users/me")
+  suspend fun updateUserProfile(
+    @Header("Authorization") bearerToken: String,
+    @Body request: UpdateUserRequest
+  ): UserProfile
+
+  /**
+   * Uploads a new avatar image for the current user.
+   *
+   * Endpoint: **POST /users/me/avatar**
+   *
+   * The backend expects a multipart form field named `"avatar"`.
+   *
+   * @param bearerToken Authorization header value.
+   * @param avatar Multipart file part containing the avatar image.
+   * @return The updated [UserProfile] including the new avatar URL.
+   */
+  @Multipart
+  @POST("users/me/avatar")
+  suspend fun uploadUserAvatar(
+    @Header("Authorization") bearerToken: String,
+    @Part("avatar") avatar: MultipartBody.Part
+  ): UserProfile
+
+  // ---------------------------------------------------------------------------
+  //  ISSUE TYPE & REPORT ENDPOINTS
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Retrieves all available issue types.
+   *
+   * Endpoint: **GET /issue-types**
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @return A list of all [IssueType] objects available in the system.
    */
   @GET("issue-types")
   suspend fun getIssueTypes(
@@ -60,16 +91,28 @@ interface SeeSomethingWebService {
   ): List<IssueType>
 
   /**
-   * Retrieves the current user's issue report summaries.
+   * Retrieves all issue reports created by the current authenticated user.
    *
-   * @param bearerToken Authorization header value.
-   * @return list of report summaries.
+   * Endpoint: **GET /issue-reports/mine**
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @return A list of [IssueReportSummary] objects created by the user.
    */
   @GET("issue-reports/mine")
   suspend fun getMyReports(
     @Header("Authorization") bearerToken: String
   ): List<IssueReportSummary>
 
+  /**
+   * Retrieves a paginated list of issue reports created by the current authenticated user.
+   *
+   * Endpoint: **GET /issue-reports/mine**
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param page The page number to retrieve (0-indexed). Defaults to 0.
+   * @param size The number of items per page. Defaults to 10.
+   * @return A [PaginatedResponse] containing [IssueReportSummary] objects.
+   */
   @GET("issue-reports/mine")
   suspend fun getMyIssueReportsPage(
     @Header("Authorization") bearerToken: String,
@@ -78,12 +121,16 @@ interface SeeSomethingWebService {
   ): PaginatedResponse<IssueReportSummary>
 
   /**
-   * Retrieves a page of issue report summaries for manager views.
+   * Retrieves a paginated list of all issue reports in the system.
    *
-   * @param bearerToken Authorization header value.
-   * @param page zero-based page number.
-   * @param size page size.
-   * @return paginated response of report summaries.
+   * Endpoint: **GET /manager/issue-reports**
+   *
+   * This is a manager-only endpoint.
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param page The page number to retrieve (0-indexed). Defaults to 0.
+   * @param size The number of items per page. Defaults to 10.
+   * @return A [PaginatedResponse] containing [IssueReportSummary] objects.
    */
   @GET("manager/issue-reports")
   suspend fun getAllIssueReportsPage(
@@ -93,12 +140,16 @@ interface SeeSomethingWebService {
   ): PaginatedResponse<IssueReportSummary>
 
   /**
-   * Retrieves a page of user profiles for manager views.
+   * Retrieves a paginated list of all user profiles in the system.
    *
-   * @param bearerToken Authorization header value.
-   * @param page zero-based page number.
-   * @param size page size.
-   * @return paginated response of user profile summaries.
+   * Endpoint: **GET /manager/users**
+   *
+   * This is a manager-only endpoint.
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param page The page number to retrieve (0-indexed). Defaults to 0.
+   * @param size The number of items per page. Defaults to 10.
+   * @return A [PaginatedResponse] containing [UserProfileSummary] objects.
    */
   @GET("manager/users")
   suspend fun getManagerUsersPage(
@@ -108,11 +159,15 @@ interface SeeSomethingWebService {
   ): PaginatedResponse<UserProfileSummary>
 
   /**
-   * Retrieves a single manager-visible user profile by external ID.
+   * Retrieves a specific user profile by their external ID.
    *
-   * @param bearerToken Authorization header value.
-   * @param externalId user external ID (UUID).
-   * @return user profile summary.
+   * Endpoint: **GET /manager/users/{externalId}**
+   *
+   * This is a manager-only endpoint.
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param externalId The unique external identifier of the user.
+   * @return The [UserProfileSummary] for the specified user.
    */
   @GET("manager/users/{externalId}")
   suspend fun getManagerUser(
@@ -121,9 +176,14 @@ interface SeeSomethingWebService {
   ): UserProfileSummary
 
   /**
-   * Retrieves accepted states for manager workflows.
+   * Retrieves all available accepted states for issue reports.
    *
-   * Endpoint: GET /manager/accepted-states
+   * Endpoint: **GET /manager/accepted-states**
+   *
+   * This is a manager-only endpoint.
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @return A list of all [AcceptedState] objects available in the system.
    */
   @GET("manager/accepted-states")
   suspend fun getAcceptedStates(
@@ -131,12 +191,16 @@ interface SeeSomethingWebService {
   ): List<AcceptedState>
 
   /**
-   * Updates the accepted-state/status of an issue report (manager-only).
+   * Updates the status of a specific issue report.
    *
-   * Endpoint: PUT /manager/issue-reports/{externalId}/status
+   * Endpoint: **PUT /manager/issue-reports/{externalId}/status**
    *
-   * Response body is an IssueReport entity; we intentionally treat it as raw bytes and
-   * then reload via the normal full-report endpoint to normalize the UI.
+   * This is a manager-only endpoint.
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param externalId The unique external identifier of the issue report.
+   * @param request Request body containing the updated status information.
+   * @return A [ResponseBody] indicating success or failure.
    */
   @PUT("manager/issue-reports/{externalId}/status")
   suspend fun updateManagerIssueReportStatus(
@@ -146,12 +210,16 @@ interface SeeSomethingWebService {
   ): ResponseBody
 
   /**
-   * Replaces issue types on an issue report (manager-only).
+   * Replaces the issue types for a specific issue report.
    *
-   * Endpoint: PUT /manager/issue-reports/{externalId}/issue-types
+   * Endpoint: **PUT /manager/issue-reports/{externalId}/issue-types**
    *
-   * Response body is an IssueReport entity; we intentionally treat it as raw bytes and
-   * then reload via the normal full-report endpoint to normalize the UI.
+   * This is a manager-only endpoint.
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param externalId The unique external identifier of the issue report.
+   * @param request Request body containing the new list of issue types.
+   * @return A [ResponseBody] indicating success or failure.
    */
   @PUT("manager/issue-reports/{externalId}/issue-types")
   suspend fun replaceManagerIssueReportIssueTypes(
@@ -161,14 +229,16 @@ interface SeeSomethingWebService {
   ): ResponseBody
 
   /**
-   * Sets manager authorization status for a user.
+   * Updates the manager status of a specific user.
    *
-   * Endpoint: PATCH /manager/users/{externalId}/manager-status
+   * Endpoint: **PATCH /manager/users/{externalId}/manager-status**
    *
-   * @param bearerToken Authorization header value.
-   * @param externalId user external ID (UUID).
-   * @param request request body containing the desired manager status.
-   * @return updated user profile summary.
+   * This is a manager-only endpoint.
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param externalId The unique external identifier of the user.
+   * @param request Request body containing the new manager status.
+   * @return The updated [UserProfileSummary] for the user.
    */
   @PATCH("manager/users/{externalId}/manager-status")
   suspend fun setManagerStatus(
@@ -178,14 +248,16 @@ interface SeeSomethingWebService {
   ): UserProfileSummary
 
   /**
-   * Sets enabled/active status for a user.
+   * Updates the enabled status of a specific user.
    *
-   * Endpoint: PATCH /manager/users/{externalId}/enabled
+   * Endpoint: **PATCH /manager/users/{externalId}/enabled**
    *
-   * @param bearerToken Authorization header value.
-   * @param externalId user external ID (UUID).
-   * @param request request body containing the desired enabled status.
-   * @return updated user profile summary.
+   * This is a manager-only endpoint.
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param externalId The unique external identifier of the user.
+   * @param request Request body containing the new enabled status.
+   * @return The updated [UserProfileSummary] for the user.
    */
   @PATCH("manager/users/{externalId}/enabled")
   suspend fun setEnabledStatus(
@@ -197,8 +269,11 @@ interface SeeSomethingWebService {
   /**
    * Submits a new issue report.
    *
-   * @param bearerToken Authorization header value.
-   * @param request report request payload.
+   * Endpoint: **POST /issue-reports**
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param request Request body containing the issue report details.
+   * @return The newly created [IssueReport].
    */
   @POST("issue-reports")
   suspend fun submitIssueReport(
@@ -207,12 +282,14 @@ interface SeeSomethingWebService {
   ): IssueReport
 
   /**
-   * Uploads an image file associated with an existing issue report.
+   * Uploads an image to a specific issue report.
    *
-   * @param bearerToken Google ID token in the form `"Bearer <token>"`.
-   * @param reportId External ID of the issue report.
-   * @param file Multipart file part containing the image data.
-   * @return The created image metadata.
+   * Endpoint: **POST /issue-reports/{reportId}/images**
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param reportId The unique identifier of the issue report.
+   * @param file Multipart file part containing the image.
+   * @return The [ReportImageDto] containing information about the uploaded image.
    */
   @Multipart
   @POST("issue-reports/{reportId}/images")
@@ -223,9 +300,14 @@ interface SeeSomethingWebService {
   ): ReportImageDto
 
   /**
-   * Downloads the raw image bytes for a specific image.
+   * Downloads an image file from a specific issue report.
    *
-   * @return The image file as a streaming response body.
+   * Endpoint: **GET /issue-reports/{reportId}/images/{imageId}**
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param reportId The unique identifier of the issue report.
+   * @param imageId The unique identifier of the image.
+   * @return A [ResponseBody] containing the image file data.
    */
   @Streaming
   @GET("issue-reports/{reportId}/images/{imageId}")
@@ -236,7 +318,14 @@ interface SeeSomethingWebService {
   ): ResponseBody
 
   /**
-   * Deletes an attached image for a specific issue report.
+   * Deletes an image from a specific issue report.
+   *
+   * Endpoint: **DELETE /issue-reports/{reportId}/images/{imageId}**
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param reportId The unique identifier of the issue report.
+   * @param imageId The unique identifier of the image to delete.
+   * @return A [ResponseBody] indicating success or failure.
    */
   @DELETE("issue-reports/{reportId}/images/{imageId}")
   suspend fun deleteImage(
@@ -246,7 +335,13 @@ interface SeeSomethingWebService {
   ): Unit
 
   /**
-   * Retrieves a full issue report including metadata and image list.
+   * Retrieves a specific issue report by its ID.
+   *
+   * Endpoint: **GET /issue-reports/{reportId}**
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param reportId The unique identifier of the issue report.
+   * @return The full [IssueReport] for the specified report.
    */
   @GET("issue-reports/{reportId}")
   suspend fun getIssueReport(
@@ -257,10 +352,12 @@ interface SeeSomethingWebService {
   /**
    * Updates an existing issue report.
    *
-   * @param bearerToken Authorization header value.
-   * @param reportId External ID of the issue report (UUID string).
-   * @param request report request payload containing updated fields.
-   * @return updated issue report DTO.
+   * Endpoint: **PUT /issue-reports/{reportId}**
+   *
+   * @param bearerToken Authorization header value in the form `"Bearer <token>"`.
+   * @param reportId The unique identifier of the issue report to update.
+   * @param request Request body containing the updated issue report details.
+   * @return The updated [IssueReport].
    */
   @PUT("issue-reports/{reportId}")
   suspend fun updateIssueReport(

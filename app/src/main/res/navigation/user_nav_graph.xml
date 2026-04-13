@@ -49,6 +49,9 @@
       android:id="@+id/navigate_to_report_detail_fragment"
       app:destination="@id/report_detail_fragment" />
 
+    <action
+      android:id="@+id/navigate_to_user_profile"
+      app:destination="@id/user_profile_fragment" />
 
   </fragment>
 
@@ -77,5 +80,11 @@
       android:name="reportId"
       app:argType="string" />
   </fragment>
+
+  <fragment
+    android:id="@+id/user_profile_fragment"
+    android:name="edu.cnm.deepdive.seesomethingabq.controller.UserProfileFragment"
+    android:label="Profile"
+    tools:layout="@layout/fragment_user_profile" />
 
 </navigation>
