@@ -127,8 +127,8 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns a report by external identifier.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a><wbr>&lt;<a href="../model/dto/IssueReportSummary.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">IssueReportSummary</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getReportsForCurrentUser(java.lang.String)" class="member-name-link">getReportsForCurrentUser</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;sortParam)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html" title="class or interface in org.springframework.data.domain" class="external-link">Page</a><wbr>&lt;<a href="../model/entity/IssueReport.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">IssueReport</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getReportsForCurrentUser(org.springframework.data.domain.Pageable)" class="member-name-link">getReportsForCurrentUser</a><wbr>(<a href="https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Pageable.html" title="class or interface in org.springframework.data.domain" class="external-link">Pageable</a>&nbsp;pageable)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns summaries of reports owned by the currently authenticated user.</div>
 </div>
@@ -165,15 +165,15 @@ loadScripts(document, 'script');</script>
 <h2>Method Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="getReportsForCurrentUser(java.lang.String)">
+<section class="detail" id="getReportsForCurrentUser(org.springframework.data.domain.Pageable)">
 <h3>getReportsForCurrentUser</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../model/dto/IssueReportSummary.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">IssueReportSummary</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/IssueReportService.html#line-23">getReportsForCurrentUser</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;sortParam)</span></div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html" title="class or interface in org.springframework.data.domain" class="external-link">Page</a>&lt;<a href="../model/entity/IssueReport.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">IssueReport</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/IssueReportService.html#line-23">getReportsForCurrentUser</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Pageable.html" title="class or interface in org.springframework.data.domain" class="external-link">Pageable</a>&nbsp;pageable)</span></div>
 <div class="block">Returns summaries of reports owned by the currently authenticated user.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
-<dd><code>sortParam</code> - sort key/direction string as provided by the controller.</dd>
+<dd><code>pageable</code> - page number, size, and sort, defined by caller.</dd>
 <dt>Returns:</dt>
-<dd>list of report summaries.</dd>
+<dd>page of report summaries.</dd>
 </dl>
 </section>
 </li>

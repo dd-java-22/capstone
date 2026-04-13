@@ -90,7 +90,7 @@ loadScripts(document, 'script');</script>
 <dd><code><a href="UserServiceImpl.html" title="class in edu.cnm.deepdive.seesomethingabq.service">UserServiceImpl</a></code></dd>
 </dl>
 <hr>
-<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-29">UserService</a></span></div>
+<div class="type-signature"><span class="modifiers">public interface </span><span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-32">UserService</a></span></div>
 <div class="block">Service interface for user profile business logic operations. Implementations of this interface
  provide methods for retrieving and managing user profiles, including OAuth2-based user
  identification.</div>
@@ -118,27 +118,37 @@ loadScripts(document, 'script');</script>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns all user profiles.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&gt;</code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getByExternalId(java.util.UUID)" class="member-name-link">getByExternalId</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId)</code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html" title="class or interface in org.springframework.data.domain" class="external-link">Page</a><wbr>&lt;<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&gt;</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getAll(org.springframework.data.domain.Pageable)" class="member-name-link">getAll</a><wbr>(<a href="https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Pageable.html" title="class or interface in org.springframework.data.domain" class="external-link">Pageable</a>&nbsp;pageable)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Returns a page of user profiles.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a><wbr>&lt;<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getByExternalId(java.util.UUID)" class="member-name-link">getByExternalId</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Finds a user profile by external identifier.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getCurrentUser()" class="member-name-link">getCurrentUser</a>()</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getCurrentUser()" class="member-name-link">getCurrentUser</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns the user profile associated with the current authenticated request.</div>
 </div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getMe()" class="member-name-link">getMe</a>()</code></div>
-<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getMe()" class="member-name-link">getMe</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns the user profile for the currently authenticated user, creating one if needed.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getOrCreate(java.lang.String,edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile)" class="member-name-link">getOrCreate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;oauthKey,
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getOrCreate(java.lang.String,edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile)" class="member-name-link">getOrCreate</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;oauthKey,
  <a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&nbsp;userProfile)</code></div>
-<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Returns the user profile for the specified OAuth2 key, creating a new profile if one does not
  already exist.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/dto/UserProfileResponse.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UserProfileResponse</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#getUserProfileResponse(edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile)" class="member-name-link">getUserProfileResponse</a><wbr>(<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&nbsp;userProfile)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Converts a user profile entity to a response DTO enriched with report count.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#setEnabled(java.util.UUID,boolean)" class="member-name-link">setEnabled</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId,
@@ -159,15 +169,22 @@ loadScripts(document, 'script');</script>
 <div class="block">Updates the avatar URL for the specified user profile.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#updateDisplayName(java.lang.Long,java.lang.String)" class="member-name-link">updateDisplayName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;displayName)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#updateAvatarKey(java.lang.Long,java.lang.String,java.lang.String)" class="member-name-link">updateAvatarKey</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;storageKey,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;contentType)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
-<div class="block">Updates the display name for the specified user profile.</div>
+<div class="block">Updates the avatar for the specified user profile using a storage key.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#updateEmail(java.lang.Long,java.lang.String)" class="member-name-link">updateEmail</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
- <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;email)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#updateDisplayName(java.lang.Long,java.lang.String)" class="member-name-link">updateDisplayName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;displayName)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
+<div class="block">Updates the display name for the specified user profile.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3"><code><a href="#updateEmail(java.lang.Long,java.lang.String)" class="member-name-link">updateEmail</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;email)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab3">
 <div class="block">Updates the email address for the specified user profile.</div>
 </div>
 </div>
@@ -187,7 +204,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getCurrentUser()">
 <h3>getCurrentUser</h3>
-<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-37">getCurrentUser</a></span>()</div>
+<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-40">getCurrentUser</a></span>()</div>
 <div class="block">Returns the user profile associated with the current authenticated request. If the user does
  not already exist in the system, a new user profile will be created.</div>
 <dl class="notes">
@@ -199,7 +216,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="get(java.lang.Long)">
 <h3>get</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-45">get</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id)</span></div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-48">get</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id)</span></div>
 <div class="block">Returns the user profile with the specified ID, if it exists.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -212,7 +229,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getOrCreate(java.lang.String,edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile)">
 <h3>getOrCreate</h3>
-<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-55">getOrCreate</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;oauthKey,
+<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-58">getOrCreate</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;oauthKey,
  <a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&nbsp;userProfile)</span></div>
 <div class="block">Returns the user profile for the specified OAuth2 key, creating a new profile if one does not
  already exist.</div>
@@ -228,7 +245,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="updateDisplayName(java.lang.Long,java.lang.String)">
 <h3>updateDisplayName</h3>
-<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-64">updateDisplayName</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
+<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-67">updateDisplayName</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;displayName)</span></div>
 <div class="block">Updates the display name for the specified user profile.</div>
 <dl class="notes">
@@ -243,7 +260,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="updateEmail(java.lang.Long,java.lang.String)">
 <h3>updateEmail</h3>
-<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-73">updateEmail</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
+<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-76">updateEmail</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;email)</span></div>
 <div class="block">Updates the email address for the specified user profile.</div>
 <dl class="notes">
@@ -258,7 +275,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="updateAvatar(java.lang.Long,java.net.URL)">
 <h3>updateAvatar</h3>
-<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-82">updateAvatar</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
+<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-85">updateAvatar</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
  <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/URL.html" title="class or interface in java.net" class="external-link">URL</a>&nbsp;avatar)</span></div>
 <div class="block">Updates the avatar URL for the specified user profile.</div>
 <dl class="notes">
@@ -271,9 +288,28 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="updateAvatarKey(java.lang.Long,java.lang.String,java.lang.String)">
+<h3>updateAvatarKey</h3>
+<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-97">updateAvatarKey</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a>&nbsp;id,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;storageKey,
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;contentType)</span></div>
+<div class="block">Updates the avatar for the specified user profile using a storage key.
+ The storage key is stored for later retrieval, and the user's avatar URL is updated to point
+ to a dedicated backend-served avatar endpoint.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>id</code> - User profile ID.</dd>
+<dd><code>storageKey</code> - Storage key for the uploaded avatar image.</dd>
+<dd><code>contentType</code> - MIME type for the uploaded avatar image.</dd>
+<dt>Returns:</dt>
+<dd>Updated user profile.</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getAll()">
 <h3>getAll</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-89">getAll</a></span>()</div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-104">getAll</a></span>()</div>
 <div class="block">Returns all user profiles.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -282,9 +318,22 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="getAll(org.springframework.data.domain.Pageable)">
+<h3>getAll</h3>
+<div class="member-signature"><span class="return-type"><a href="https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Page.html" title="class or interface in org.springframework.data.domain" class="external-link">Page</a>&lt;<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-112">getAll</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-data/commons/docs/current/api/org/springframework/data/domain/Pageable.html" title="class or interface in org.springframework.data.domain" class="external-link">Pageable</a>&nbsp;pageable)</span></div>
+<div class="block">Returns a page of user profiles.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>pageable</code> - paging information.</dd>
+<dt>Returns:</dt>
+<dd>page of user profiles.</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getMe()">
 <h3>getMe</h3>
-<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-96">getMe</a></span>()</div>
+<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-119">getMe</a></span>()</div>
 <div class="block">Returns the user profile for the currently authenticated user, creating one if needed.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -295,7 +344,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getByExternalId(java.util.UUID)">
 <h3>getByExternalId</h3>
-<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-104">getByExternalId</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId)</span></div>
+<div class="member-signature"><span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/Optional.html" title="class or interface in java.util" class="external-link">Optional</a>&lt;<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-127">getByExternalId</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId)</span></div>
 <div class="block">Finds a user profile by external identifier.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -308,7 +357,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setManagerStatus(java.util.UUID,boolean)">
 <h3>setManagerStatus</h3>
-<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-113">setManagerStatus</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId,
+<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-136">setManagerStatus</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId,
  boolean&nbsp;manager)</span></div>
 <div class="block">Sets manager privilege for a user profile.</div>
 <dl class="notes">
@@ -323,7 +372,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setEnabled(java.util.UUID,boolean)">
 <h3>setEnabled</h3>
-<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-122">setEnabled</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId,
+<div class="member-signature"><span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-145">setEnabled</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId,
  boolean&nbsp;enabled)</span></div>
 <div class="block">Sets enabled/disabled status for a user profile.</div>
 <dl class="notes">
@@ -332,6 +381,19 @@ loadScripts(document, 'script');</script>
 <dd><code>enabled</code> - <code>true</code> to enable; <code>false</code> to disable.</dd>
 <dt>Returns:</dt>
 <dd>updated user profile.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getUserProfileResponse(edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile)">
+<h3>getUserProfileResponse</h3>
+<div class="member-signature"><span class="return-type"><a href="../model/dto/UserProfileResponse.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UserProfileResponse</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/service/UserService.html#line-153">getUserProfileResponse</a></span><wbr><span class="parameters">(<a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a>&nbsp;userProfile)</span></div>
+<div class="block">Converts a user profile entity to a response DTO enriched with report count.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>userProfile</code> - source user profile.</dd>
+<dt>Returns:</dt>
+<dd>enriched user profile response.</dd>
 </dl>
 </section>
 </li>

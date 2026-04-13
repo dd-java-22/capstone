@@ -107,7 +107,7 @@
   <div class="breadcrumbs"><a href="../../../index.html">SeeSomethingABQ Client</a><span class="delimiter">/</span><a href="../index.html">edu.cnm.deepdive.seesomethingabq.viewmodel</a><span class="delimiter">/</span><span class="current">IssueReportViewModel</span></div>
   <div class="cover ">
     <h1 class="cover"><span>Issue</span><wbr></wbr><span>Report</span><wbr></wbr><span>View</span><wbr></wbr><span><span>Model</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">IssueReportViewModel</a> : <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/ViewModel.html">ViewModel</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/dd-java-22/capstone/blob/main/app/src/main/java/edu/cnm/deepdive/seesomethingabq/viewmodel/IssueReportViewModel.java#L25">source</a>)</span></span></div><p class="paragraph">ViewModel providing issue report submission and paging data to the UI.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">IssueReportViewModel</a> : <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/ViewModel.html">ViewModel</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/dd-java-22/capstone/blob/main/app/src/main/java/edu/cnm/deepdive/seesomethingabq/viewmodel/IssueReportViewModel.java#L33">source</a>)</span></span></div><p class="paragraph">ViewModel for creating and listing issue reports. This ViewModel coordinates report submission, image attachment tracking, and paging of existing reports.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
@@ -189,6 +189,51 @@
               </div>
             </div>
           </div>
+<a data-name="80254896%2FFunctions%2F1606452474" anchor-label="deleteImage" id="80254896%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="delete-image.html"><span>delete</span><wbr></wbr><span><span>Image</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="80254896%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="delete-image.html"><span class="token function">deleteImage</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">reportId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">imageId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/Void.html">Void</a><span class="token operator">&gt;</span></div><div class="brief ">Deletes an image associated with a report.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2103084403%2FFunctions%2F1606452474" anchor-label="downloadImage" id="-2103084403%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="download-image.html"><span>download</span><wbr></wbr><span><span>Image</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2103084403%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="download-image.html"><span class="token function">downloadImage</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">reportId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">imageId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-array/index.html">Array</a><span class="token operator">&lt;</span><a href="https://kotlinlang.org/api/core/kotlin-stdlib/kotlin/-byte/index.html">Byte</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief ">Downloads a report image from the server.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1249588054%2FFunctions%2F1606452474" anchor-label="downloadImageToCache" id="-1249588054%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="download-image-to-cache.html"><span>download</span><wbr></wbr><span>Image</span><wbr></wbr><span>To</span><wbr></wbr><span><span>Cache</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1249588054%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="download-image-to-cache.html"><span class="token function">downloadImageToCache</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">reportId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">imageId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">mimeType<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/io/File.html">File</a><span class="token operator">&gt;</span></div><div class="brief ">Downloads a report image and stores it in the local cache.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="740905289%2FFunctions%2F1606452474" anchor-label="getAttachedImages" id="740905289%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
           <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
             <div class="main-subrow keyValue ">
@@ -234,6 +279,36 @@
               </div>
             </div>
           </div>
+<a data-name="-544809992%2FFunctions%2F1606452474" anchor-label="getMyIssueReports" id="-544809992%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-my-issue-reports.html"><span>get</span><wbr></wbr><span>My</span><wbr></wbr><span>Issue</span><wbr></wbr><span><span>Reports</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-544809992%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-my-issue-reports.html"><span class="token function">getMyIssueReports</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/androidx/paging/PagingData.html">PagingData</a><span class="token operator">&lt;</span><a href="../../edu.cnm.deepdive.seesomethingabq.model.dto/-issue-report-summary/index.html">IssueReportSummary</a><span class="token operator">&gt;</span><span class="token operator">&gt;</span></div><div class="brief ">Returns a paged stream of issue report summaries belonging to the current user.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1564110652%2FFunctions%2F1606452474" anchor-label="getReport" id="-1564110652%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-report.html"><span>get</span><wbr></wbr><span><span>Report</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1564110652%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-report.html"><span class="token function">getReport</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">reportId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="../../edu.cnm.deepdive.seesomethingabq.model.dto/-issue-report/index.html">IssueReport</a><span class="token operator">&gt;</span></div><div class="brief ">Loads a full issue report by identifier.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
 <a data-name="-528180518%2FFunctions%2F1606452474" anchor-label="getSubmitted" id="-528180518%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
           <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
             <div class="main-subrow keyValue ">
@@ -268,13 +343,13 @@
           <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="../-user-view-model/index.html#-1930136507%2FFunctions%2F1606452474"><span>on</span><wbr></wbr><span><span>Cleared</span></span></a></div>
+                  <div><a href="../-report-detail-image-edit-view-model/index.html#-1930136507%2FFunctions%2F1606452474"><span>on</span><wbr></wbr><span><span>Cleared</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1930136507%2FFunctions%2F1606452474"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">protected </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="../-user-view-model/index.html#-1930136507%2FFunctions%2F1606452474"><span class="token function">onCleared</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">protected </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="../-report-detail-image-edit-view-model/index.html#-1930136507%2FFunctions%2F1606452474"><span class="token function">onCleared</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
                 </div>
               </div>
             </div>
@@ -290,6 +365,21 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="remove-attached-image.html"><span class="token function">removeAttachedImage</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">uri<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/net/Uri.html">Uri</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Removes a single attached image URI.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-2011650107%2FFunctions%2F1606452474" anchor-label="replaceManagerReportIssueTypes" id="-2011650107%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="replace-manager-report-issue-types.html"><span>replace</span><wbr></wbr><span>Manager</span><wbr></wbr><span>Report</span><wbr></wbr><span>Issue</span><wbr></wbr><span><span>Types</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-2011650107%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="replace-manager-report-issue-types.html"><span class="token function">replaceManagerReportIssueTypes</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">reportId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">request<span class="token operator">: </span><a href="../../edu.cnm.deepdive.seesomethingabq.model.dto/-issue-report-types-update-request/index.html">IssueReportTypesUpdateRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/Void.html">Void</a><span class="token operator">&gt;</span></div><div class="brief ">Replaces the issue-type tags for a report as a manager-only operation.</div></div></div>
                 </div>
               </div>
             </div>
@@ -320,6 +410,51 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="submit.html"><span class="token function">submit</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">request<span class="token operator">: </span><a href="../../edu.cnm.deepdive.seesomethingabq.model.dto/-issue-report-request/index.html">IssueReportRequest</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Submits a new issue report.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1549536899%2FFunctions%2F1606452474" anchor-label="updateManagerReportStatus" id="-1549536899%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-manager-report-status.html"><span>update</span><wbr></wbr><span>Manager</span><wbr></wbr><span>Report</span><wbr></wbr><span><span>Status</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1549536899%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="update-manager-report-status.html"><span class="token function">updateManagerReportStatus</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">reportId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">request<span class="token operator">: </span><a href="../../edu.cnm.deepdive.seesomethingabq.model.dto/-issue-report-status-update-request/index.html">IssueReportStatusUpdateRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/Void.html">Void</a><span class="token operator">&gt;</span></div><div class="brief ">Updates an issue report's status as a manager-only operation.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1831685713%2FFunctions%2F1606452474" anchor-label="updateReport" id="1831685713%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-report.html"><span>update</span><wbr></wbr><span><span>Report</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1831685713%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="update-report.html"><span class="token function">updateReport</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">reportId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">request<span class="token operator">: </span><a href="../../edu.cnm.deepdive.seesomethingabq.model.dto/-issue-report-request/index.html">IssueReportRequest</a></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="../../edu.cnm.deepdive.seesomethingabq.model.dto/-issue-report/index.html">IssueReport</a><span class="token operator">&gt;</span></div><div class="brief ">Updates an existing issue report.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="649283058%2FFunctions%2F1606452474" anchor-label="uploadImages" id="649283058%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="upload-images.html"><span>upload</span><wbr></wbr><span><span>Images</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="649283058%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="upload-images.html"><span class="token function">uploadImages</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">reportId<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">uris<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/List.html">List</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/android/net/Uri.html">Uri</a><span class="token operator">&gt;</span></span></span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/util/concurrent/CompletableFuture.html">CompletableFuture</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/Void.html">Void</a><span class="token operator">&gt;</span></div><div class="brief ">Uploads one or more local images for an existing report.</div></div></div>
                 </div>
               </div>
             </div>
