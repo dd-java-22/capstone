@@ -15,6 +15,7 @@
  */
 package edu.cnm.deepdive.seesomethingabq.service;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileResponse;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import java.net.URL;
 import java.util.List;
@@ -140,5 +141,13 @@ public interface UserService {
    * @return updated user profile.
    */
   UserProfile setEnabled(UUID externalId, boolean enabled);
+
+  /**
+   * Converts a user profile entity to a response DTO enriched with report count.
+   *
+   * @param userProfile source user profile.
+   * @return enriched user profile response.
+   */
+  UserProfileResponse getUserProfileResponse(UserProfile userProfile);
 
 }

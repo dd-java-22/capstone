@@ -41,6 +41,15 @@ interface IssueReportService {
     ): CompletableFuture<Void?>
 
     /**
+     * Deletes a single server-side image attachment for a report.
+     */
+    fun deleteImage(
+        activity: Activity,
+        reportId: String,
+        imageId: String
+    ): CompletableFuture<Void?>
+
+    /**
      * Downloads the raw image file for the given report and image IDs.
      *
      * The caller is responsible for consuming and closing the [ResponseBody].

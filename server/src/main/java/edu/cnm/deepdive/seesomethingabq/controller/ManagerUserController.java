@@ -18,6 +18,7 @@ package edu.cnm.deepdive.seesomethingabq.controller;
 import edu.cnm.deepdive.seesomethingabq.exception.UserNotFoundException;
 import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileResponse;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
 import java.util.UUID;
@@ -77,56 +78,58 @@ public class ManagerUserController {
   }
 
   /**
-   * Returns a user profile by external identifier.
+   * Returns a manager-visible user profile response by external identifier.
    *
    * @param externalId user external ID.
-   * @return user profile.
+   * @return manager-visible user profile response.
    * @throws UserNotFoundException if no user exists with {@code externalId}.
    */
   @GetMapping(value = "/{externalId}", produces = MediaType.APPLICATION_JSON_VALUE)
-  public UserProfile get(@PathVariable UUID externalId) {
-    return service
+  public UserProfileResponse get(@PathVariable UUID externalId) {
+    UserProfile user = service
         .getByExternalId(externalId)
         .orElseThrow(() -> new UserNotFoundException("User not found: " + externalId));
+    return service.getUserProfileResponse(user);
   }
 
   /**
    * Sets manager status for a user profile.
    *
    * @param externalId user external ID.
-   * @param request    request payload containing desired manager flag.
-   * @return updated user profile.
+   * @param request request payload containing desired manager flag.
+   * @return updated manager-visible user profile response.
    */
   @PatchMapping(
       value = "/{externalId}/manager-status",
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public UserProfile updateManagerStatus(
+  public UserProfileResponse updateManagerStatus(
       @PathVariable UUID externalId,
       @RequestBody ManagerStatusUpdateRequest request
   ) {
-    return service.setManagerStatus(externalId, request.isManager());
+    UserProfile user = service.setManagerStatus(externalId, request.isManager());
+    return service.getUserProfileResponse(user);
   }
 
   /**
    * Sets enabled/disabled status for a user profile.
    *
    * @param externalId user external ID.
-   * @param request    request payload containing desired enabled flag.
-   * @return updated user profile.
+   * @param request request payload containing desired enabled flag.
+   * @return updated manager-visible user profile response.
    */
   @PatchMapping(
       value = "/{externalId}/enabled",
       consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE
   )
-  public UserProfile updateEnabled(
+  public UserProfileResponse updateEnabled(
       @PathVariable UUID externalId,
       @RequestBody UserEnabledUpdateRequest request
   ) {
-    return service.setEnabled(externalId, request.isEnabled());
+    UserProfile user = service.setEnabled(externalId, request.isEnabled());
+    return service.getUserProfileResponse(user);
   }
 
 }
-

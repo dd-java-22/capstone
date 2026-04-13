@@ -36,6 +36,14 @@ public interface IssueReportRepository extends JpaRepository<IssueReport, Long> 
   Page<IssueReport> findByUserProfile(UserProfile userProfile, Pageable pageable);
 
   /**
+   * Counts the number of issue reports owned by the specified user profile.
+   *
+   * @param userProfile report owner.
+   * @return total number of matching reports.
+   */
+  long countByUserProfile(UserProfile userProfile);
+
+  /**
    * Returns a user's reports ordered by first-reported time descending.
    *
    * @param userProfile report owner.

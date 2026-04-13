@@ -332,7 +332,7 @@ interface SeeSomethingWebService {
     @Header("Authorization") bearerToken: String,
     @Path("reportId") reportId: String,
     @Path("imageId") imageId: String
-  ): ResponseBody
+  ): Unit
 
   /**
    * Retrieves a specific issue report by its ID.
