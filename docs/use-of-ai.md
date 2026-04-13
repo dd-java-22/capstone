@@ -416,6 +416,21 @@ All AI-generated code and suggestions were reviewed and tested manually before b
 
 ---
 
+### AI Usage Summary - Mark - (Milestone 4)
+
+#### Summary of AI Assistance (Microsoft Copilot, Claude Agent)
+
+- Throughout the development of the SeeSomethingABQ project, Microsoft Copilot provided extensive support across both the Android client and Spring Boot backend, helping refine architecture, resolve implementation challenges, and produce documentation. Copilot assisted in designing and correcting ViewModels, services, Retrofit interfaces, and fragments on the Android side—particularly in implementing the full user profile workflow, including display name and email updates, avatar upload, Room caching, and Glide-based rendering. Copilot helped debug issues such as incorrect method usage (.thenRun()), missing getters, URL handling, multipart upload field mismatches, and LiveData/UI update timing. It also guided the restructuring of the UserProfileFragment, ensuring proper integration with the ViewModel, repository, and backend DTOs.
+
+
+- On the backend, Copilot contributed to clarifying DTO usage, aligning controller signatures with Android expectations, and ensuring consistency across service interfaces, implementations, and repositories. It helped reason through image upload handling, local filesystem storage, and the interaction between avatar metadata and the Android client. Copilot also assisted in reviewing and explaining entity relationships, exception handling patterns, and Spring Security configuration, ensuring the backend remained aligned with REST principles and Milestone 4 requirements.
+
+
+- Copilot played a major role in documentation as well—helping generate the updated Milestone 4 Current State Summary, refining the structure to match earlier milestones, and ensuring alignment with rubric requirements such as Javadoc generation, OpenAPI documentation, build instructions, licensing, and AI usage reporting. It also helped summarize project progress, consolidate work across sprints, and produce clear, submission‑ready narrative sections.
+
+
+- All AI‑generated content was reviewed, edited, and validated by the developer to ensure correctness, consistency, and adherence to project standards.
+
 <!--
 Use the following template for each AI-assisted task:
 
