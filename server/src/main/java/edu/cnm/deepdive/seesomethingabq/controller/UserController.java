@@ -123,7 +123,7 @@ public class UserController {
    */
   @PatchMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public UserProfile updateProfile(@RequestBody UpdateUserRequest request) {
+  public UserProfileResponse updateProfile(@RequestBody UpdateUserRequest request) {
     UserProfile current = service.getCurrentUser();
     UserProfile updated = current;
 
@@ -135,7 +135,7 @@ public class UserController {
       updated = service.updateEmail(updated.getId(), request.getEmail());
     }
 
-    return updated;
+    return service.getUserProfileResponse(updated);
   }
 
   /**
