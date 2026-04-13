@@ -20,6 +20,7 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileResponse;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;
 import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;
+import edu.cnm.deepdive.seesomethingabq.service.storage.StorageService;
 import java.net.URL;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -30,6 +31,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
  * Implementation of {@link UserService} providing business logic for user profile operations.
@@ -43,6 +45,7 @@ public class UserServiceImpl implements UserService {
 
   private final UserProfileRepository repository;
   private final IssueReportRepository issueReportRepository;
+  private final StorageService storageService;
 
   /**
    * Constructs an instance of {@code UserServiceImpl} with the specified repositories.
@@ -52,9 +55,10 @@ public class UserServiceImpl implements UserService {
    */
   @Autowired
   public UserServiceImpl(UserProfileRepository repository,
-      IssueReportRepository issueReportRepository) {
+      IssueReportRepository issueReportRepository, StorageService storageService) {
     this.repository = repository;
     this.issueReportRepository = issueReportRepository;
+    this.storageService = storageService;
   }
 
   @Override
@@ -115,19 +119,36 @@ public class UserServiceImpl implements UserService {
   }
 
   @Override
-  public UserProfile updateAvatarKey(Long id, String storageKey) {
+  public UserProfile updateAvatarKey(Long id, String storageKey, String contentType) {
     return repository
         .findById(id)
         .map(user -> {
-          try {
-            // Convert storage key to full URL
-            // Assuming storage keys can be accessed via /api/files/{key} or similar
-            URL avatarUrl = new URL("https://example.com/api/files/" + storageKey);
-            user.setAvatar(avatarUrl);
-            return repository.save(user);
-          } catch (Exception e) {
-            throw new RuntimeException("Failed to create avatar URL from storage key", e);
+          // Best-effort cleanup of prior custom avatar (if present).
+          String priorKey = user.getAvatarKey();
+          if (priorKey != null && !priorKey.isBlank() && !priorKey.equals(storageKey)) {
+            try {
+              storageService.delete(priorKey);
+            } catch (Exception e) {
+              // TODO: Consider asynchronous cleanup / orphan reaper. Avoid breaking avatar updates.
+            }
           }
+
+          user.setAvatarKey(storageKey);
+          user.setAvatarMimeType(contentType);
+
+          try {
+            URL avatarUrl = ServletUriComponentsBuilder
+                .fromCurrentContextPath()
+                .path("/users/{externalId}/avatar")
+                .buildAndExpand(user.getExternalId())
+                .toUri()
+                .toURL();
+            user.setAvatar(avatarUrl);
+          } catch (Exception e) {
+            throw new RuntimeException("Failed to create backend avatar URL", e);
+          }
+
+          return repository.save(user);
         })
         .orElseThrow(NoSuchElementException::new);
   }

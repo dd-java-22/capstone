@@ -26,6 +26,7 @@ import static org.mockito.Mockito.when;
 import edu.cnm.deepdive.seesomethingabq.exception.UserNotFoundException;
 import edu.cnm.deepdive.seesomethingabq.model.dto.ManagerStatusUpdateRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UserEnabledUpdateRequest;
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileResponse;
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
 import java.util.List;
@@ -83,11 +84,18 @@ class ManagerUserControllerUnitTest {
     user.setEmail("user@example.com");
     when(userService.getByExternalId(externalId)).thenReturn(Optional.of(user));
 
-    UserProfile result = controller.get(externalId);
+    UserProfileResponse response = new UserProfileResponse(
+        externalId, user.getDisplayName(), user.getEmail(), user.getAvatar(),
+        user.isManager(), user.getTimeCreated(), user.getUserEnabled(), 0
+    );
+    when(userService.getUserProfileResponse(user)).thenReturn(response);
+
+    UserProfileResponse result = controller.get(externalId);
 
     assertNotNull(result);
-    assertSame(user, result);
+    assertSame(response, result);
     verify(userService).getByExternalId(externalId);
+    verify(userService).getUserProfileResponse(user);
   }
 
   @Test
@@ -109,10 +117,17 @@ class ManagerUserControllerUnitTest {
     updated.setIsManager(true);
     when(userService.setManagerStatus(externalId, true)).thenReturn(updated);
 
-    UserProfile result = controller.updateManagerStatus(externalId, request);
+    UserProfileResponse response = new UserProfileResponse(
+        externalId, updated.getDisplayName(), updated.getEmail(), updated.getAvatar(),
+        updated.isManager(), updated.getTimeCreated(), updated.getUserEnabled(), 0
+    );
+    when(userService.getUserProfileResponse(updated)).thenReturn(response);
 
-    assertSame(updated, result);
+    UserProfileResponse result = controller.updateManagerStatus(externalId, request);
+
+    assertSame(response, result);
     verify(userService).setManagerStatus(externalId, true);
+    verify(userService).getUserProfileResponse(updated);
   }
 
   @Test
@@ -136,10 +151,17 @@ class ManagerUserControllerUnitTest {
     updated.setUserEnabled(false);
     when(userService.setEnabled(externalId, false)).thenReturn(updated);
 
-    UserProfile result = controller.updateEnabled(externalId, request);
+    UserProfileResponse response = new UserProfileResponse(
+        externalId, updated.getDisplayName(), updated.getEmail(), updated.getAvatar(),
+        updated.isManager(), updated.getTimeCreated(), updated.getUserEnabled(), 0
+    );
+    when(userService.getUserProfileResponse(updated)).thenReturn(response);
 
-    assertSame(updated, result);
+    UserProfileResponse result = controller.updateEnabled(externalId, request);
+
+    assertSame(response, result);
     verify(userService).setEnabled(externalId, false);
+    verify(userService).getUserProfileResponse(updated);
   }
 
   @Test

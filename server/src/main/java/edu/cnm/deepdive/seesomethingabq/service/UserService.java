@@ -86,13 +86,15 @@ public interface UserService {
 
   /**
    * Updates the avatar for the specified user profile using a storage key.
-   * The storage key is converted to a URL using the configured base URL.
+   * The storage key is stored for later retrieval, and the user's avatar URL is updated to point
+   * to a dedicated backend-served avatar endpoint.
    *
    * @param id User profile ID.
    * @param storageKey Storage key for the uploaded avatar image.
+   * @param contentType MIME type for the uploaded avatar image.
    * @return Updated user profile.
    */
-  UserProfile updateAvatarKey(Long id, String storageKey);
+  UserProfile updateAvatarKey(Long id, String storageKey, String contentType);
 
   /**
    * Returns all user profiles.

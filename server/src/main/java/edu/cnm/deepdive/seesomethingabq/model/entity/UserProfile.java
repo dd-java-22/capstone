@@ -73,6 +73,14 @@ public class UserProfile {
   @Column(nullable = true, updatable = true)
   private URL avatar;
 
+  @Column(name = "avatar_key")
+  @JsonIgnore
+  private String avatarKey;
+
+  @Column(name = "avatar_mime_type")
+  @JsonIgnore
+  private String avatarMimeType;
+
   @Column(nullable = false)
   private boolean isManager;
 
@@ -162,6 +170,42 @@ public class UserProfile {
    */
   public void setAvatar(URL avatar) {
     this.avatar = avatar;
+  }
+
+  /**
+   * Returns the storage key for a locally stored custom avatar, if set.
+   *
+   * @return avatar storage key (or {@code null}).
+   */
+  public String getAvatarKey() {
+    return avatarKey;
+  }
+
+  /**
+   * Sets the storage key for a locally stored custom avatar.
+   *
+   * @param avatarKey storage key.
+   */
+  public void setAvatarKey(String avatarKey) {
+    this.avatarKey = avatarKey;
+  }
+
+  /**
+   * Returns the MIME type for a locally stored custom avatar, if set.
+   *
+   * @return avatar MIME type (or {@code null}).
+   */
+  public String getAvatarMimeType() {
+    return avatarMimeType;
+  }
+
+  /**
+   * Sets the MIME type for a locally stored custom avatar.
+   *
+   * @param avatarMimeType avatar MIME type.
+   */
+  public void setAvatarMimeType(String avatarMimeType) {
+    this.avatarMimeType = avatarMimeType;
   }
 
   /**
