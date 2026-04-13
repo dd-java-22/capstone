@@ -83,6 +83,12 @@ public class UserProfileFragment extends Fragment {
         // Read-only fields
         binding.usernameValue.setText(user.getDisplayName());
         binding.emailValue.setText(user.getEmail());
+        binding.authorityLevelValue.setText(
+            String.format("Authority Level: %s", user.getManager() ? "Manager" : "User")
+        );
+        binding.issueReportCountValue.setText(
+            String.format("Issue Reports: %d", user.getReportCount())
+        );
 
         // Load avatar (URL → String)
         if (user.getAvatar() != null) {

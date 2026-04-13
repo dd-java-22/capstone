@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileResponse;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateAvatarRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateDisplayNameRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateEmailRequest;
@@ -60,11 +61,22 @@ class UserControllerTest {
   void testGetMe() {
     when(userService.getMe()).thenReturn(testUser);
 
-    UserProfile result = controller.get();
+    UserProfileResponse response = new UserProfileResponse(
+        testUser.getExternalId(),
+        testUser.getDisplayName(),
+        testUser.getEmail(),
+        testUser.getAvatar(),
+        testUser.isManager(),
+        testUser.getTimeCreated(),
+        testUser.getUserEnabled(),
+        0
+    );
+    when(userService.getUserProfileResponse(testUser)).thenReturn(response);
+
+    UserProfileResponse result = controller.get();
 
     assertNotNull(result);
-    assertEquals("test-oauth-key", result.getOauthKey());
-    assertEquals("Test User", result.getDisplayName());
+    assertEquals("Test User", result.displayName());
   }
 
   @Test

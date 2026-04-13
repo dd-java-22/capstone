@@ -15,6 +15,7 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileResponse;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateAvatarRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateDisplayNameRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateEmailRequest;
@@ -70,8 +71,9 @@ public class UserController {
    * @return User profile for the authenticated user.
    */
   @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
-  public UserProfile get() {
-    return service.getMe();
+  public UserProfileResponse get() {
+    UserProfile current = service.getMe();
+    return service.getUserProfileResponse(current);
   }
 
   /**

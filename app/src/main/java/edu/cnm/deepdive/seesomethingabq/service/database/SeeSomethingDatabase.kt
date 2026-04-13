@@ -49,7 +49,7 @@ abstract class SeeSomethingDatabase: RoomDatabase() {
     /** Database file name. */
     const val NAME = "seesomething-db"
     /** Current schema version. */
-    const val VERSION = 3
+    const val VERSION = 4
 
     /**
      * Migration from schema version 1 to 2.
@@ -92,6 +92,19 @@ abstract class SeeSomethingDatabase: RoomDatabase() {
           """
           CREATE UNIQUE INDEX IF NOT EXISTS index_acceptedState_status_tag
           ON acceptedState (status_tag)
+          """.trimIndent()
+        )
+      }
+    }
+
+    /**
+     * Migration from schema version 3 to 4.
+     */
+    val MIGRATION_3_4: Migration = object : Migration(3, 4) {
+      override fun migrate(db: SupportSQLiteDatabase) {
+        db.execSQL(
+          """
+          ALTER TABLE userProfile ADD COLUMN report_count INTEGER NOT NULL DEFAULT 0
           """.trimIndent()
         )
       }
