@@ -25,6 +25,12 @@ class ManageUsersViewModel @Inject constructor(
 
   private var users: LiveData<PagingData<UserProfileSummary>>? = null
 
+  /**
+   * Returns a cached paged list of manager-visible users.
+   *
+   * @param activity activity used for authentication flows.
+   * @return live data stream of paging data for users.
+   */
   fun getUsers(activity: Activity): LiveData<PagingData<UserProfileSummary>> {
     if (users == null) {
       users = managerUserService

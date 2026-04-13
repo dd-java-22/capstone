@@ -62,6 +62,8 @@ public class ManagerUserController {
   /**
    * Returns all user profiles.
    *
+   * @param pageSize maximum number of results to return per page.
+   * @param pageNumber zero-based page index to return.
    * @return list of user profiles.
    */
   @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)

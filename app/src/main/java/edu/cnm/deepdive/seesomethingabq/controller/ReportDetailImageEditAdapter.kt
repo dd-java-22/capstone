@@ -49,6 +49,11 @@ class ReportDetailImageEditAdapter(
 
   private var items: List<VisibleImageItem> = emptyList()
 
+  /**
+   * Replaces the current list of visible image items and refreshes the adapter.
+   *
+   * @param items combined list of server images and staged local images to display.
+   */
   fun submitList(items: List<VisibleImageItem>) {
     this.items = items
     notifyDataSetChanged()

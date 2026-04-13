@@ -18,6 +18,11 @@ import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserProfileBinding;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
 
+/**
+ * Fragment that displays and allows updates to the current user's profile.
+ *
+ * This screen supports editing basic profile fields and uploading an avatar image.
+ */
 @AndroidEntryPoint
 public class UserProfileFragment extends Fragment {
 

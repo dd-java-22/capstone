@@ -89,6 +89,12 @@ public class IssueReportViewModel extends ViewModel {
     return issueReports;
   }
 
+  /**
+   * Returns a paged stream of issue report summaries belonging to the current user.
+   *
+   * @param activity activity used for authentication flows.
+   * @return live data stream of paging data for the current user's reports.
+   */
   public LiveData<PagingData<IssueReportSummary>> getMyIssueReports(Activity activity) {
     if (myIssueReports == null) {
       myIssueReports = PagingLiveData.cachedIn(
@@ -116,10 +122,25 @@ public class IssueReportViewModel extends ViewModel {
     throwable.setValue(null);
   }
 
+  /**
+   * Loads a full issue report by identifier.
+   *
+   * @param activity activity used for authentication flows.
+   * @param reportId external report identifier.
+   * @return future completed with the loaded report.
+   */
   public CompletableFuture<IssueReport> getReport(Activity activity, String reportId) {
     return issueReportService.getReport(activity, reportId);
   }
 
+  /**
+   * Updates an existing issue report.
+   *
+   * @param activity activity used for authentication flows.
+   * @param reportId external report identifier.
+   * @param request request payload describing desired report updates.
+   * @return future completed with the updated report.
+   */
   public CompletableFuture<IssueReport> updateReport(
       Activity activity,
       String reportId,
@@ -128,6 +149,14 @@ public class IssueReportViewModel extends ViewModel {
     return issueReportService.updateReport(activity, reportId, request);
   }
 
+  /**
+   * Updates an issue report's status as a manager-only operation.
+   *
+   * @param activity activity used for authentication flows.
+   * @param reportId external report identifier.
+   * @param request request payload containing the desired status.
+   * @return future completed when the update has been applied.
+   */
   public CompletableFuture<Void> updateManagerReportStatus(
       Activity activity,
       String reportId,
@@ -136,6 +165,14 @@ public class IssueReportViewModel extends ViewModel {
     return issueReportService.updateManagerReportStatus(activity, reportId, request);
   }
 
+  /**
+   * Replaces the issue-type tags for a report as a manager-only operation.
+   *
+   * @param activity activity used for authentication flows.
+   * @param reportId external report identifier.
+   * @param request request payload containing the replacement tag list.
+   * @return future completed when the update has been applied.
+   */
   public CompletableFuture<Void> replaceManagerReportIssueTypes(
       Activity activity,
       String reportId,
@@ -144,6 +181,14 @@ public class IssueReportViewModel extends ViewModel {
     return issueReportService.replaceManagerReportIssueTypes(activity, reportId, request);
   }
 
+  /**
+   * Downloads a report image from the server.
+   *
+   * @param activity activity used for authentication flows.
+   * @param reportId external report identifier.
+   * @param imageId external image identifier.
+   * @return future completed with the image bytes.
+   */
   public CompletableFuture<byte[]> downloadImage(
       Activity activity,
       String reportId,
@@ -159,6 +204,15 @@ public class IssueReportViewModel extends ViewModel {
         });
   }
 
+  /**
+   * Downloads a report image and stores it in the local cache.
+   *
+   * @param activity activity used for authentication flows.
+   * @param reportId external report identifier.
+   * @param imageId external image identifier.
+   * @param mimeType MIME type of the image (used for cache naming).
+   * @return future completed with the cached file.
+   */
   public CompletableFuture<File> downloadImageToCache(
       Activity activity,
       String reportId,
@@ -168,10 +222,26 @@ public class IssueReportViewModel extends ViewModel {
     return issueReportService.downloadImageToCache(activity, reportId, imageId, mimeType);
   }
 
+  /**
+   * Uploads one or more local images for an existing report.
+   *
+   * @param activity activity used for authentication flows.
+   * @param reportId external report identifier.
+   * @param uris local image URIs to upload.
+   * @return future completed when uploads finish.
+   */
   public CompletableFuture<Void> uploadImages(Activity activity, String reportId, List<Uri> uris) {
     return issueReportService.uploadImages(activity, reportId, uris);
   }
 
+  /**
+   * Deletes an image associated with a report.
+   *
+   * @param activity activity used for authentication flows.
+   * @param reportId external report identifier.
+   * @param imageId external image identifier.
+   * @return future completed when deletion finishes.
+   */
   public CompletableFuture<Void> deleteImage(Activity activity, String reportId, String imageId) {
     return issueReportService.deleteImage(activity, reportId, imageId);
   }

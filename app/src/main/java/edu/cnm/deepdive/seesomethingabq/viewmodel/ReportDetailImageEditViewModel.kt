@@ -13,11 +13,25 @@ import edu.cnm.deepdive.seesomethingabq.model.dto.ReportImageDto
  */
 class ReportDetailImageEditViewModel : ViewModel() {
 
+  /**
+   * Union type representing an image that should be shown in the report image grid.
+   */
   sealed interface VisibleImageItem {
+    /** Image currently stored on the server for the report. */
     data class Server(val image: ReportImageDto) : VisibleImageItem
+
+    /** Image selected on-device and staged for upload during the current edit session. */
     data class Local(val uri: Uri) : VisibleImageItem
   }
 
+  /**
+   * Immutable snapshot of the current edit-session state.
+   *
+   * @property originalServerImages images originally loaded from the server, in display order.
+   * @property serverImageIdsStagedForDeletion server image IDs the user has marked for deletion.
+   * @property localUrisStagedForUpload local image URIs the user has selected for upload.
+   * @property visibleItems combined list used by the UI to render server + staged local items.
+   */
   data class State(
     val originalServerImages: List<ReportImageDto> = emptyList(),
     val serverImageIdsStagedForDeletion: Set<String> = emptySet(),
@@ -26,8 +40,15 @@ class ReportDetailImageEditViewModel : ViewModel() {
   )
 
   private val _state = MutableLiveData(State())
+
+  /** Current image edit-session state for the report detail UI. */
   val state: LiveData<State> = _state
 
+  /**
+   * Initializes the edit-session state using the server-provided image list.
+   *
+   * @param images images currently associated with the report on the server.
+   */
   fun seedFromReport(images: List<ReportImageDto>) {
     val sorted = images.sortedBy { it.albumOrder }
     _state.value = State(
@@ -38,6 +59,11 @@ class ReportDetailImageEditViewModel : ViewModel() {
     )
   }
 
+  /**
+   * Marks a server image for removal and updates the computed visible list.
+   *
+   * @param imageId external ID of the server image to delete.
+   */
   fun stageRemoveServerImage(imageId: String) {
     val current = _state.value ?: State()
     val updatedDeletionIds = current.serverImageIdsStagedForDeletion + imageId
@@ -51,6 +77,13 @@ class ReportDetailImageEditViewModel : ViewModel() {
     )
   }
 
+  /**
+   * Adds one or more local image URIs to the staged upload list.
+   *
+   * Duplicate URIs are removed (based on {@link Uri#equals} semantics).
+   *
+   * @param uris local image URIs selected by the user.
+   */
   fun stageAddLocalUris(uris: List<Uri>) {
     if (uris.isEmpty()) {
       return
@@ -68,6 +101,11 @@ class ReportDetailImageEditViewModel : ViewModel() {
     )
   }
 
+  /**
+   * Removes a previously staged local image URI.
+   *
+   * @param uri local image URI to remove from staged uploads.
+   */
   fun stageRemoveLocalUri(uri: Uri) {
     val current = _state.value ?: State()
     if (!current.localUrisStagedForUpload.contains(uri)) {
@@ -84,6 +122,9 @@ class ReportDetailImageEditViewModel : ViewModel() {
     )
   }
 
+  /**
+   * Resets the edit-session to the original server state, clearing any staged deletions/uploads.
+   */
   fun resetToOriginal() {
     val current = _state.value ?: State()
     _state.value = current.copy(

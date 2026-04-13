@@ -5,6 +5,19 @@ import edu.cnm.deepdive.seesomethingabq.model.entity.IssueType;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * API DTO representing an issue report, including flattened location/status information and image DTOs.
+ *
+ * @param externalId report external identifier.
+ * @param textDescription user-supplied description text.
+ * @param acceptedState accepted-state/status tag, if set.
+ * @param latitude report location latitude.
+ * @param longitude report location longitude.
+ * @param streetCoordinate report street address/coordinate text, if set.
+ * @param locationDescription free-form location description, if set.
+ * @param issueTypes issue type tags associated with the report.
+ * @param reportImages images associated with the report.
+ */
 public record IssueReportDto(
     UUID externalId,
     String textDescription,
@@ -17,6 +30,12 @@ public record IssueReportDto(
     List<ReportImageDto> reportImages
 ) {
 
+  /**
+   * Creates a DTO view of the provided entity.
+   *
+   * @param entity source entity.
+   * @return DTO populated from {@code entity}.
+   */
   public static IssueReportDto from(IssueReport entity) {
     double latitude = 0.0;
     double longitude = 0.0;

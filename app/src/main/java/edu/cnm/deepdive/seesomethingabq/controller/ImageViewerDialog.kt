@@ -7,6 +7,12 @@ import android.os.Bundle
 import android.widget.ImageView
 import edu.cnm.deepdive.seesomethingabq.R
 
+/**
+ * Dialog that displays a [Bitmap] in a fullscreen image layout.
+ *
+ * @param context hosting context.
+ * @param bitmap bitmap to display.
+ */
 class ImageViewerDialog(
     context: Context,
     private val bitmap: Bitmap

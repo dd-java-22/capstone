@@ -16,6 +16,9 @@ import kotlinx.coroutines.future.await
 import kotlinx.coroutines.future.future
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Default implementation of [AcceptedStateService] backed by the API and Room persistence.
+ */
 @Singleton
 class AcceptedStateServiceImpl @Inject constructor(
   private val authRepository: GoogleAuthRepository,

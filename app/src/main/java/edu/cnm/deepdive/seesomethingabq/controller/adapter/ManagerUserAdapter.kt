@@ -30,11 +30,19 @@ class ManagerUserAdapter(
     getItem(position)?.let { holder.bind(it) }
   }
 
+  /**
+   * ViewHolder for a manager-visible user summary row.
+   */
   class ViewHolder(
     private val binding: ItemManagerUserBinding,
     private val onItemClick: Consumer<UserProfileSummary>
   ) : RecyclerView.ViewHolder(binding.root) {
 
+    /**
+     * Binds the provided user summary to the row views.
+     *
+     * @param user user summary to display.
+     */
     fun bind(user: UserProfileSummary) {
       binding.displayName.text = user.displayName.ifBlank { "(No name)" }
       binding.email.text = user.email.ifBlank { "(No email)" }

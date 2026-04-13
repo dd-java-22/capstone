@@ -10,8 +10,19 @@ import java.util.concurrent.CompletableFuture
  */
 interface AcceptedStateService {
 
+  /**
+   * Refreshes accepted states from the server and updates local storage.
+   *
+   * @param activity activity used for authentication flows.
+   * @return future completed with the refreshed list of accepted states.
+   */
   fun refresh(activity: Activity): CompletableFuture<List<AcceptedState>>
 
+  /**
+   * Returns the locally cached list of accepted states.
+   *
+   * @return live data stream of accepted states.
+   */
   fun getAcceptedStates(): LiveData<List<AcceptedState>>
 
 }
