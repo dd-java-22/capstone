@@ -2,6 +2,7 @@ package edu.cnm.deepdive.seesomethingabq.service
 
 import android.app.Activity
 import android.net.Uri
+import edu.cnm.deepdive.seesomethingabq.R
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateUserRequest
 import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile
 import edu.cnm.deepdive.seesomethingabq.service.dao.UserDao
@@ -15,8 +16,12 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.future.future
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
+import okio.buffer
+import okio.sink
+import java.io.File
 import java.util.concurrent.CompletableFuture
 
 /**
@@ -167,5 +172,64 @@ class UserServiceImpl @Inject constructor(
         refreshedUser
       }
     }
+
+  override fun resolveAvatarUri(
+    activity: Activity,
+    user: UserProfile
+  ): CompletableFuture<Uri?> =
+    scope.future {
+      val avatarUrl = user.avatar?.toString()?.trim()
+      if (avatarUrl.isNullOrBlank()) {
+        return@future null
+      }
+
+      if (!isProtectedBackendAvatarUrl(activity, avatarUrl, user.externalId.toString())) {
+        return@future Uri.parse(avatarUrl)
+      }
+
+      val credential = authRepository.getValidCredential(activity).await()
+
+      val cacheDir = File(activity.cacheDir, "avatars")
+      //noinspection ResultOfMethodCallIgnored
+      cacheDir.mkdirs()
+      val cacheFile = File(cacheDir, "avatar-${user.externalId}.bin")
+
+      val responseBody = webService.downloadUserAvatar("Bearer ${credential.idToken}", user.externalId)
+
+      cacheFile.sink().buffer().use { sink ->
+        sink.writeAll(responseBody.source())
+      }
+
+      Uri.fromFile(cacheFile)
+    }
+
+  private fun isProtectedBackendAvatarUrl(activity: Activity, url: String, externalId: String): Boolean {
+    val baseUrl = activity.getString(R.string.base_url).toHttpUrlOrNull() ?: return false
+    val avatar = url.toHttpUrlOrNull() ?: return false
+
+    val scheme = avatar.scheme
+    if (scheme != "https" && scheme != "http") {
+      return false
+    }
+    if (avatar.host != baseUrl.host || avatar.port != baseUrl.port) {
+      return false
+    }
+
+    // baseUrl may include a path prefix (e.g., /api/); avatar should share it.
+    val baseSegments = baseUrl.encodedPathSegments.filter { it.isNotBlank() }
+    val avatarSegments = avatar.encodedPathSegments.filter { it.isNotBlank() }
+
+    if (avatarSegments.size < baseSegments.size + 3) {
+      return false
+    }
+    if (avatarSegments.subList(0, baseSegments.size) != baseSegments) {
+      return false
+    }
+    val remaining = avatarSegments.subList(baseSegments.size, avatarSegments.size)
+    return remaining.size == 3
+        && remaining[0] == "users"
+        && remaining[1] == externalId
+        && remaining[2] == "avatar"
+  }
 
 }

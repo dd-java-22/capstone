@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +23,7 @@ public class UserProfileFragment extends Fragment {
 
   private FragmentUserProfileBinding binding;
   private UserViewModel userViewModel;
-  private String lastKnownAvatarUrl;
+  private Uri lastKnownAvatarUri;
 
   // Avatar picker launcher
   private final ActivityResultLauncher<String> pickAvatarLauncher =
@@ -90,18 +91,22 @@ public class UserProfileFragment extends Fragment {
             String.format("Issue Reports: %d", user.getReportCount())
         );
 
-        // Load avatar (URL → String)
-        if (user.getAvatar() != null) {
-          lastKnownAvatarUrl = user.getAvatar().toString();
-          Glide.with(this)
-              .load(user.getAvatar().toString())
-              .placeholder(R.drawable.ic_default_avatar)
-              .error(R.drawable.ic_default_avatar)
-              .into(binding.avatarImage);
-        } else {
-          lastKnownAvatarUrl = null;
-          binding.avatarImage.setImageResource(R.drawable.ic_default_avatar);
-        }
+        // Resolve avatar for display (public URL vs protected backend URL -> cached file).
+        userViewModel.resolveAvatar(requireActivity(), user);
+      }
+    });
+
+    userViewModel.getAvatarDisplayUri().observe(getViewLifecycleOwner(), uri -> {
+      if (uri != null) {
+        lastKnownAvatarUri = uri;
+        Glide.with(this)
+            .load(uri)
+            .placeholder(R.drawable.ic_default_avatar)
+            .error(R.drawable.ic_default_avatar)
+            .into(binding.avatarImage);
+      } else {
+        lastKnownAvatarUri = null;
+        binding.avatarImage.setImageResource(R.drawable.ic_default_avatar);
       }
     });
 
@@ -114,9 +119,9 @@ public class UserProfileFragment extends Fragment {
       } else {
         Toast.makeText(requireContext(), "Avatar upload failed", Toast.LENGTH_SHORT).show();
         // Revert any local preview to last known server-backed avatar (or placeholder).
-        if (lastKnownAvatarUrl != null) {
+        if (lastKnownAvatarUri != null) {
           Glide.with(this)
-              .load(lastKnownAvatarUrl)
+              .load(lastKnownAvatarUri)
               .placeholder(R.drawable.ic_default_avatar)
               .error(R.drawable.ic_default_avatar)
               .into(binding.avatarImage);

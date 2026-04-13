@@ -63,4 +63,20 @@ interface UserService {
     activity: Activity,
     uri: Uri
   ): CompletableFuture<UserProfile>
+
+  /**
+   * Resolves the best avatar image URI for display.
+   *
+   * - For public/external URLs (e.g., Google-hosted avatars), returns the remote URL as a [Uri].
+   * - For protected backend URLs (e.g., /users/{externalId}/avatar), downloads using the authenticated
+   *   API client, caches to app cache, and returns a file [Uri].
+   *
+   * @param activity Activity used for authentication flows.
+   * @param user current user profile.
+   * @return Future completing with a displayable [Uri], or null if unavailable.
+   */
+  fun resolveAvatarUri(
+    activity: Activity,
+    user: UserProfile
+  ): CompletableFuture<Uri?>
 }

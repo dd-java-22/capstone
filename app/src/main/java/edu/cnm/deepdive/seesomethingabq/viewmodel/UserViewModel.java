@@ -29,6 +29,7 @@ public class UserViewModel extends ViewModel {
   private final MutableLiveData<Throwable> throwable;
   private final MutableLiveData<Boolean> avatarUploadInProgress;
   private final MutableLiveData<Boolean> avatarUploadSucceeded;
+  private final MutableLiveData<Uri> avatarDisplayUri;
 
   /**
    * Creates a ViewModel using the provided user service.
@@ -43,6 +44,7 @@ public class UserViewModel extends ViewModel {
     throwable = new MutableLiveData<>();
     avatarUploadInProgress = new MutableLiveData<>(false);
     avatarUploadSucceeded = new MutableLiveData<>();
+    avatarDisplayUri = new MutableLiveData<>();
 
     // TODO: 3/31/2026 explore starting log in here
   }
@@ -81,6 +83,33 @@ public class UserViewModel extends ViewModel {
    */
   public LiveData<Boolean> getAvatarUploadSucceeded() {
     return avatarUploadSucceeded;
+  }
+
+  /**
+   * Returns a displayable avatar URI resolved for the current user.
+   * This may be a remote URI (public avatar) or a local file URI (cached protected avatar).
+   */
+  public LiveData<Uri> getAvatarDisplayUri() {
+    return avatarDisplayUri;
+  }
+
+  /**
+   * Resolves the current user's avatar for display. Safe to call repeatedly; the implementation
+   * uses deterministic caching for protected avatars.
+   */
+  public void resolveAvatar(Activity activity, UserProfile user) {
+    if (user == null) {
+      avatarDisplayUri.postValue(null);
+      return;
+    }
+    userService.resolveAvatarUri(activity, user)
+        .whenComplete((uri, throwable) -> {
+          if (throwable == null) {
+            avatarDisplayUri.postValue(uri);
+          } else {
+            postThrowable(throwable);
+          }
+        });
   }
 
   /**
