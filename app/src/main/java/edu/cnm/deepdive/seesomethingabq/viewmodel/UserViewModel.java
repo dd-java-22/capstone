@@ -27,6 +27,8 @@ public class UserViewModel extends ViewModel {
 
   private final MutableLiveData<UserProfile> user;
   private final MutableLiveData<Throwable> throwable;
+  private final MutableLiveData<Boolean> avatarUploadInProgress;
+  private final MutableLiveData<Boolean> avatarUploadSucceeded;
 
   /**
    * Creates a ViewModel using the provided user service.
@@ -39,6 +41,8 @@ public class UserViewModel extends ViewModel {
 
     user = new MutableLiveData<>();
     throwable = new MutableLiveData<>();
+    avatarUploadInProgress = new MutableLiveData<>(false);
+    avatarUploadSucceeded = new MutableLiveData<>();
 
     // TODO: 3/31/2026 explore starting log in here
   }
@@ -59,6 +63,24 @@ public class UserViewModel extends ViewModel {
    */
   public LiveData<Throwable> getThrowable() {
     return throwable;
+  }
+
+  /**
+   * Returns whether an avatar upload is currently in progress.
+   *
+   * @return live data stream of upload-in-progress state.
+   */
+  public LiveData<Boolean> getAvatarUploadInProgress() {
+    return avatarUploadInProgress;
+  }
+
+  /**
+   * Returns the result of the most recent avatar upload attempt.
+   *
+   * @return live data stream that posts {@code true} on success, {@code false} on failure.
+   */
+  public LiveData<Boolean> getAvatarUploadSucceeded() {
+    return avatarUploadSucceeded;
   }
 
   /**
@@ -114,8 +136,20 @@ public class UserViewModel extends ViewModel {
   public void updateAvatar(Activity activity, Uri uri) {
     throwable.setValue(null);
 
+    avatarUploadInProgress.setValue(true);
+    avatarUploadSucceeded.setValue(null);
+
     userService.uploadAvatar(activity, uri)
-        .whenComplete(this::handleResult);
+        .whenComplete((user, throwable) -> {
+          avatarUploadInProgress.postValue(false);
+          if (throwable == null) {
+            avatarUploadSucceeded.postValue(true);
+            this.user.postValue(user);
+          } else {
+            avatarUploadSucceeded.postValue(false);
+            postThrowable(throwable);
+          }
+        });
   }
 
   /**

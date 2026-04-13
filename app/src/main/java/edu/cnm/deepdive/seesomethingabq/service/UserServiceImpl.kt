@@ -151,15 +151,19 @@ class UserServiceImpl @Inject constructor(
           requestBody
         )
 
-        val updatedUser = webService
-          .uploadUserAvatar("Bearer ${credential.idToken}", part)
+        // Upload avatar, then re-fetch canonical profile so avatarUrl reflects the server-backed
+        // endpoint (e.g., /users/{externalId}/avatar) after successful replacement.
+        webService.uploadUserAvatar("Bearer ${credential.idToken}", part)
+
+        val refreshedUser = webService
+          .getMe("Bearer ${credential.idToken}")
           .copy(
             oauthKey = credential.id,
             id = existingUser.id  // Preserve the local database ID
           )
 
-        userDao.update(updatedUser)
-        updatedUser
+        userDao.update(refreshedUser)
+        refreshedUser
       }
     }
 

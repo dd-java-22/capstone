@@ -22,18 +22,17 @@ public class UserProfileFragment extends Fragment {
 
   private FragmentUserProfileBinding binding;
   private UserViewModel userViewModel;
+  private String lastKnownAvatarUrl;
 
   // Avatar picker launcher
   private final ActivityResultLauncher<String> pickAvatarLauncher =
       registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
         if (uri != null) {
-          // Update UI immediately
+          // Optional local preview; do not show success until upload completes.
           binding.avatarImage.setImageURI(uri);
 
           // Upload avatar to backend
           userViewModel.updateAvatar(requireActivity(), uri);
-
-          Toast.makeText(requireContext(), "Avatar updated", Toast.LENGTH_SHORT).show();
         }
       });
 
@@ -87,11 +86,36 @@ public class UserProfileFragment extends Fragment {
 
         // Load avatar (URL → String)
         if (user.getAvatar() != null) {
+          lastKnownAvatarUrl = user.getAvatar().toString();
           Glide.with(this)
               .load(user.getAvatar().toString())
               .placeholder(R.drawable.ic_default_avatar)
               .error(R.drawable.ic_default_avatar)
               .into(binding.avatarImage);
+        } else {
+          lastKnownAvatarUrl = null;
+          binding.avatarImage.setImageResource(R.drawable.ic_default_avatar);
+        }
+      }
+    });
+
+    userViewModel.getAvatarUploadSucceeded().observe(getViewLifecycleOwner(), succeeded -> {
+      if (succeeded == null) {
+        return;
+      }
+      if (Boolean.TRUE.equals(succeeded)) {
+        Toast.makeText(requireContext(), "Avatar updated", Toast.LENGTH_SHORT).show();
+      } else {
+        Toast.makeText(requireContext(), "Avatar upload failed", Toast.LENGTH_SHORT).show();
+        // Revert any local preview to last known server-backed avatar (or placeholder).
+        if (lastKnownAvatarUrl != null) {
+          Glide.with(this)
+              .load(lastKnownAvatarUrl)
+              .placeholder(R.drawable.ic_default_avatar)
+              .error(R.drawable.ic_default_avatar)
+              .into(binding.avatarImage);
+        } else {
+          binding.avatarImage.setImageResource(R.drawable.ic_default_avatar);
         }
       }
     });

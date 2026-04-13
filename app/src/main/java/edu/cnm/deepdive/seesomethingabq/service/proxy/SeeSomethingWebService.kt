@@ -70,7 +70,7 @@ interface SeeSomethingWebService {
   @POST("users/me/avatar")
   suspend fun uploadUserAvatar(
     @Header("Authorization") bearerToken: String,
-    @Part("avatar") avatar: MultipartBody.Part
+    @Part avatar: MultipartBody.Part
   ): UserProfile
 
   // ---------------------------------------------------------------------------
