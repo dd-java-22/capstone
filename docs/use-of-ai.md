@@ -431,6 +431,25 @@ All AI-generated code and suggestions were reviewed and tested manually before b
 
 - All AI‑generated content was reviewed, edited, and validated by the developer to ensure correctness, consistency, and adherence to project standards.
 
+---
+### AI Usage Summary - Michael - (Milestone 4)
+
+AI assistance (primarily Claude/Perplexity) was used as a collaborative development tool throughout the lifecycle of each task — from planning through implementation.
+
+- **UML Review (\#192)** — AI was used to review and validate class/sequence diagram structure, suggest corrections to relationships, and ensure adherence to UML conventions.
+- **Plan / Create Way to Get Report Count for User (\#173)** — AI helped brainstorm the approach for aggregating report counts, including SQL query design and where to place the logic in the service layer.
+- **Set Up Edit Issue Report (\#162)** — AI assisted with scaffolding the edit flow, including fragment navigation, ViewModel wiring, and pre-populating form fields from existing data.
+- **Update 'GET /manager/users' to Return Paginated Data (\#145)** — AI was consulted to align the pagination response format with existing endpoints, helping ensure consistency in the API contract.
+- **Crash When Current-Location Lookup Completes After Navigating Away (\#144)** — AI helped diagnose the lifecycle-related crash, pointing toward lifecycle-aware observer patterns and safe fragment state checks as solutions.
+- **Report Issue Thumbnails + Remove Image Buttons (\#136)** — AI assisted with layout adjustments, thumbnail rendering logic, and guidance on removing deprecated UI elements cleanly.
+- **User Side - Edit Issue Report Page - Edit Location (\#174)** — AI supported the integration of the location picker into the edit flow, including how to pass and return location data between fragments.
+- **Location Picker Relocation (\#135)** — AI was used to plan and refactor where the location picker UI component lived within the app's navigation graph.
+- **Report Issue Fragment - UI - Create Button to Launch Photo Gallery Picker (\#128)** — AI provided guidance on the Android photo picker API, intent handling, and URI permission management.
+- **Report Issue Fragment - UI (\#108)** — AI assisted with general UI scaffolding, binding setup, and Material Design component usage within the fragment.
+
+***
+
+**Overall Pattern:** AI was used primarily for **code generation, debugging, architectural guidance, and API research** — functioning as a pair-programming assistant rather than a replacement for developer judgment. All generated code was reviewed, tested, and adapted to fit the project's existing architecture.
 <!--
 Use the following template for each AI-assisted task:
 
