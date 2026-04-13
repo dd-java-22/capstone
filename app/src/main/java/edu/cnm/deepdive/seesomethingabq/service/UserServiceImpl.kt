@@ -142,7 +142,8 @@ class UserServiceImpl @Inject constructor(
 
       inputStream.use { input ->
         val bytes = input.readBytes()
-        val requestBody = bytes.toRequestBody("image/*".toMediaType())
+        val resolvedContentType = activity.contentResolver.getType(uri) ?: "image/jpeg"
+        val requestBody = bytes.toRequestBody(resolvedContentType.toMediaType())
 
         // IMPORTANT: Backend expects the field name "avatar"
         val part = MultipartBody.Part.createFormData(
