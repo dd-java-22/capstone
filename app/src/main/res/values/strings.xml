@@ -40,6 +40,7 @@
   <string name="attached_image_preview">Attached image preview</string>
   <string name="remove_attached_image">Remove attached image</string>
   <string name="profile_settings">settings</string>
+  <string name="my_issue_reports">My Issue Reports</string>
   <!-- UserProfileFragment -->
   <string name="user_avatar">User Avatar</string>
   <string name="edit_profile_picture">Edit Profile Picture</string>

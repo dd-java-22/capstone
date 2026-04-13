@@ -25,48 +25,15 @@
   android:padding="16dp">
 
   <TextView
-    android:id="@+id/display_name"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    app:layout_constraintTop_toTopOf="parent"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintBottom_toTopOf="@id/oauth_key"
-    tools:text="some user"/>
-
-  <TextView
-    android:id="@+id/oauth_key"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    app:layout_constraintTop_toBottomOf="@id/display_name"
-    app:layout_constraintBottom_toTopOf="@id/external_key"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintWidth_percent="0.8"
-    tools:text="oauth key"
-    android:textIsSelectable="true"/>
-
-  <TextView
-    android:id="@+id/external_key"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    app:layout_constraintTop_toBottomOf="@id/oauth_key"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    app:layout_constraintWidth_percent="0.8"
-    tools:text="external key"
-    android:textIsSelectable="true"/>
-
-  <TextView
     android:id="@+id/header_text"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
-    android:text="User Dashboard"
+    android:text="@string/my_issue_reports"
     android:textSize="24sp"
     app:layout_constraintBottom_toTopOf="@+id/issueReportsRecycler"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintTop_toBottomOf="@id/external_key"
+    app:layout_constraintTop_toTopOf="parent"
     />
 
 
