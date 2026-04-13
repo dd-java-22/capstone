@@ -380,6 +380,41 @@ Updated `IssueReportRepository`:
 
 ---
 
+## Sprint 4
+
+### AI Usage Summary - Kevin - (Milestone 4)
+
+During this milestone, I used AI tools (ChatGPT and Codex) extensively to assist with development, debugging, and documentation.
+
+AI was primarily used for:
+
+- **Feature implementation:**  
+  Designing and implementing the user settings/profile page, avatar upload and display functionality, and UI improvements for report detail screens. ChatGPT was used to plan changes and generate structured prompts, and Codex was used to apply those changes to the codebase.
+
+- **Backend development:**  
+  Implementing avatar upload and retrieval endpoints, improving API consistency (e.g., ensuring PATCH `/users/me` returns the same DTO as GET), and adding proper exception handling (such as returning HTTP 415 for unsupported media types).
+
+- **Debugging and issue resolution:**  
+  Diagnosing and fixing several issues, including:
+    - avatar upload failures due to incorrect MIME types
+    - image loading failures caused by authentication (401 errors with Glide)
+    - incorrect report count values being reset after profile updates
+    - UI inconsistencies and redundant elements
+
+- **Refactoring and cleanup:**  
+  Removing redundant UI elements (duplicate headers, unused fields), improving data consistency between frontend and backend, and refining overall structure without changing functionality.
+
+- **Documentation:**  
+  Generating Javadoc and KDoc comments across the codebase to meet milestone requirements. AI was used to identify missing documentation and generate appropriate comments for public classes and members.
+
+- **Workflow support:**  
+  ChatGPT was used to analyze problems, suggest architectural approaches, and generate precise prompts for Codex. Codex was then used in agent mode to implement changes efficiently.
+
+Overall, AI tools were used as a development assistant to accelerate implementation, help diagnose issues, and ensure code quality and documentation compliance.
+
+All AI-generated code and suggestions were reviewed and tested manually before being accepted.
+
+---
 
 <!--
 Use the following template for each AI-assisted task:
