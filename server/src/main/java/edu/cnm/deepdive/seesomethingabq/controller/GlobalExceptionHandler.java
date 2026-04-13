@@ -15,7 +15,9 @@ import java.util.NoSuchElementException;
 import java.util.Objects;
 import java.util.Optional;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.HttpMediaTypeNotSupportedException;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -162,6 +164,26 @@ public class GlobalExceptionHandler {
   @ResponseStatus(HttpStatus.BAD_REQUEST)
   public ErrorResponse handleMissingServletRequestPart(MissingServletRequestPartException ex) {
     return new ErrorResponse(ex.getMessage(), Instant.now());
+  }
+
+  /**
+   * Handles requests with unsupported media/content types.
+   *
+   * @param ex exception being handled.
+   * @return error response payload.
+   */
+  @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
+  @ResponseStatus(HttpStatus.UNSUPPORTED_MEDIA_TYPE)
+  public ErrorResponse handleHttpMediaTypeNotSupported(HttpMediaTypeNotSupportedException ex) {
+    MediaType received = ex.getContentType();
+    String receivedText = (received != null) ? received.toString() : "(none)";
+    List<MediaType> supported = ex.getSupportedMediaTypes();
+    String message = (supported != null && !supported.isEmpty())
+        ? String.format("Unsupported content type '%s'. Supported: %s",
+            receivedText,
+            supported.stream().map(MediaType::toString).distinct().reduce((a, b) -> a + ", " + b).orElse(""))
+        : String.format("Unsupported content type '%s'.", receivedText);
+    return new ErrorResponse(message, Instant.now());
   }
 
   /**

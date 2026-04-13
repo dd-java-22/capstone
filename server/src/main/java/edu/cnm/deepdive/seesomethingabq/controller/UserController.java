@@ -15,6 +15,7 @@
  */
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileResponse;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateAvatarRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateDisplayNameRequest;
 import edu.cnm.deepdive.seesomethingabq.model.dto.UpdateEmailRequest;
@@ -23,15 +24,19 @@ import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;
 import edu.cnm.deepdive.seesomethingabq.service.UserService;
 import edu.cnm.deepdive.seesomethingabq.service.storage.StorageService;
 import java.io.IOException;
+import java.util.UUID;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.HttpMediaTypeException;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -66,8 +71,9 @@ public class UserController {
    * @return User profile for the authenticated user.
    */
   @GetMapping(value = "/me", produces = MediaType.APPLICATION_JSON_VALUE)
-  public UserProfile get() {
-    return service.getMe();
+  public UserProfileResponse get() {
+    UserProfile current = service.getMe();
+    return service.getUserProfileResponse(current);
   }
 
   /**
@@ -117,7 +123,7 @@ public class UserController {
    */
   @PatchMapping(value = "/me", consumes = MediaType.APPLICATION_JSON_VALUE,
       produces = MediaType.APPLICATION_JSON_VALUE)
-  public UserProfile updateProfile(@RequestBody UpdateUserRequest request) {
+  public UserProfileResponse updateProfile(@RequestBody UpdateUserRequest request) {
     UserProfile current = service.getCurrentUser();
     UserProfile updated = current;
 
@@ -129,25 +135,70 @@ public class UserController {
       updated = service.updateEmail(updated.getId(), request.getEmail());
     }
 
-    return updated;
+    return service.getUserProfileResponse(updated);
   }
 
   /**
    * Uploads a new avatar image for the currently authenticated user.
-   * The uploaded file is stored and the user's avatar URL is updated to point to the stored file.
+   * The uploaded file is stored and the user's avatar URL is updated to point to the dedicated
+   * backend-served avatar endpoint.
    *
-   * @param file The avatar image file to upload.
+   * @param avatar The avatar image file to upload (preferred part name).
+   * @param file Alternate part name supported for consistency with other upload endpoints.
    * @return Updated user profile with new avatar URL.
    * @throws IOException If file upload fails.
    * @throws HttpMediaTypeException If the file type is not supported.
    */
-  @PostMapping(value = "/me/avatar", consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
-      produces = MediaType.APPLICATION_JSON_VALUE)
-  public UserProfile uploadAvatarImage(@RequestPart("avatar") MultipartFile file)
+  @RequestMapping(
+      value = "/me/avatar",
+      method = {RequestMethod.POST, RequestMethod.PUT},
+      consumes = MediaType.MULTIPART_FORM_DATA_VALUE,
+      produces = MediaType.APPLICATION_JSON_VALUE
+  )
+  public UserProfile uploadAvatarImage(
+      @RequestPart(value = "avatar", required = false) MultipartFile avatar,
+      @RequestPart(value = "file", required = false) MultipartFile file
+  )
       throws IOException, HttpMediaTypeException {
     UserProfile current = service.getCurrentUser();
-    String storageKey = storageService.store(file);
-    return service.updateAvatarKey(current.getId(), storageKey);
+    MultipartFile selected = (avatar != null) ? avatar : file;
+    if (selected == null) {
+      throw new IllegalArgumentException("Missing avatar file upload.");
+    }
+    String storageKey = storageService.store(selected);
+    String contentType = (selected.getContentType() != null)
+        ? selected.getContentType()
+        : MediaType.APPLICATION_OCTET_STREAM_VALUE;
+    return service.updateAvatarKey(current.getId(), storageKey, contentType);
+  }
+
+  /**
+   * Serves a user's custom avatar (if present) as raw bytes.
+   *
+   * @param externalId user external ID.
+   * @return avatar content as a {@link Resource}.
+   * @throws IOException if storage retrieval fails.
+   */
+  @GetMapping(value = "/{externalId}/avatar", produces = MediaType.ALL_VALUE)
+  public ResponseEntity<Resource> getAvatar(@PathVariable UUID externalId) throws IOException {
+    UserProfile user = service.getByExternalId(externalId)
+        .orElseThrow(() -> new IllegalArgumentException("User not found: " + externalId));
+
+    String key = user.getAvatarKey();
+    if (key == null || key.isBlank()) {
+      // No custom avatar stored; clients should use the user's avatar URL (e.g., Google picture URL).
+      return ResponseEntity.notFound().build();
+    }
+
+    Resource resource = storageService.retrieve(key);
+    String contentType = (user.getAvatarMimeType() != null && !user.getAvatarMimeType().isBlank())
+        ? user.getAvatarMimeType()
+        : MediaType.APPLICATION_OCTET_STREAM_VALUE;
+
+    return ResponseEntity
+        .ok()
+        .contentType(MediaType.parseMediaType(contentType))
+        .body(resource);
   }
 
 }

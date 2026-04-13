@@ -73,15 +73,6 @@ public class UserDashboardFragment extends Fragment {
     userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
     issueReportViewModel = new ViewModelProvider(requireActivity()).get(IssueReportViewModel.class);
 
-    userViewModel.getUser()
-        .observe(getViewLifecycleOwner(), user -> {
-          if (user != null) {
-            binding.displayName.setText(user.getDisplayName());
-            binding.oauthKey.setText(user.getOauthKey());
-            binding.externalKey.setText(user.getExternalId().toString());
-          }
-        });
-
     adapter = new IssueReportAdapter(issueReport -> {
       Navigation.findNavController(view)
           .navigate(UserDashboardFragmentDirections.navigateToReportDetailFragment(

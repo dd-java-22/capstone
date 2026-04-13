@@ -70,8 +70,20 @@ interface SeeSomethingWebService {
   @POST("users/me/avatar")
   suspend fun uploadUserAvatar(
     @Header("Authorization") bearerToken: String,
-    @Part("avatar") avatar: MultipartBody.Part
+    @Part avatar: MultipartBody.Part
   ): UserProfile
+
+  /**
+   * Downloads a user's avatar image bytes (authenticated).
+   *
+   * Endpoint: **GET /users/{externalId}/avatar**
+   */
+  @Streaming
+  @GET("users/{externalId}/avatar")
+  suspend fun downloadUserAvatar(
+    @Header("Authorization") bearerToken: String,
+    @Path("externalId") externalId: UUID,
+  ): ResponseBody
 
   // ---------------------------------------------------------------------------
   //  ISSUE TYPE & REPORT ENDPOINTS

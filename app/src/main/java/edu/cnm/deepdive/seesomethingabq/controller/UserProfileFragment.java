@@ -1,5 +1,6 @@
 package edu.cnm.deepdive.seesomethingabq.controller;
 
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,18 +23,17 @@ public class UserProfileFragment extends Fragment {
 
   private FragmentUserProfileBinding binding;
   private UserViewModel userViewModel;
+  private Uri lastKnownAvatarUri;
 
   // Avatar picker launcher
   private final ActivityResultLauncher<String> pickAvatarLauncher =
       registerForActivityResult(new ActivityResultContracts.GetContent(), uri -> {
         if (uri != null) {
-          // Update UI immediately
+          // Optional local preview; do not show success until upload completes.
           binding.avatarImage.setImageURI(uri);
 
           // Upload avatar to backend
           userViewModel.updateAvatar(requireActivity(), uri);
-
-          Toast.makeText(requireContext(), "Avatar updated", Toast.LENGTH_SHORT).show();
         }
       });
 
@@ -82,16 +82,49 @@ public class UserProfileFragment extends Fragment {
         binding.emailInput.setText(user.getEmail());
 
         // Read-only fields
-        binding.usernameValue.setText(user.getDisplayName());
-        binding.emailValue.setText(user.getEmail());
+        binding.authorityLevelValue.setText(
+            String.format("Authority Level: %s", user.getManager() ? "Manager" : "User")
+        );
+        binding.issueReportCountValue.setText(
+            String.format("Issue Reports: %d", user.getReportCount())
+        );
 
-        // Load avatar (URL → String)
-        if (user.getAvatar() != null) {
+        // Resolve avatar for display (public URL vs protected backend URL -> cached file).
+        userViewModel.resolveAvatar(requireActivity(), user);
+      }
+    });
+
+    userViewModel.getAvatarDisplayUri().observe(getViewLifecycleOwner(), uri -> {
+      if (uri != null) {
+        lastKnownAvatarUri = uri;
+        Glide.with(this)
+            .load(uri)
+            .placeholder(R.drawable.ic_default_avatar)
+            .error(R.drawable.ic_default_avatar)
+            .into(binding.avatarImage);
+      } else {
+        lastKnownAvatarUri = null;
+        binding.avatarImage.setImageResource(R.drawable.ic_default_avatar);
+      }
+    });
+
+    userViewModel.getAvatarUploadSucceeded().observe(getViewLifecycleOwner(), succeeded -> {
+      if (succeeded == null) {
+        return;
+      }
+      if (Boolean.TRUE.equals(succeeded)) {
+        Toast.makeText(requireContext(), "Avatar updated", Toast.LENGTH_SHORT).show();
+      } else {
+        Toast.makeText(requireContext(), "Avatar upload failed", Toast.LENGTH_SHORT).show();
+        // Revert any local preview to last known server-backed avatar (or placeholder).
+        if (lastKnownAvatarUri != null) {
           Glide.with(this)
-              .load(user.getAvatar().toString())
+              .load(lastKnownAvatarUri)
               .placeholder(R.drawable.ic_default_avatar)
               .error(R.drawable.ic_default_avatar)
               .into(binding.avatarImage);
+        } else {
+          binding.avatarImage.setImageResource(R.drawable.ic_default_avatar);
         }
       }
     });

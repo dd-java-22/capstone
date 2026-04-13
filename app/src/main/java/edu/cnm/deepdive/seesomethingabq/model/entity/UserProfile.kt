@@ -47,7 +47,7 @@ data class UserProfile(
   val displayName: String,
 
   @ColumnInfo(name = "oauth_key")
-  val oauthKey: String,
+  val oauthKey: String = "",
 
   @Expose
   @SerializedName("email")
@@ -73,5 +73,10 @@ data class UserProfile(
   @SerializedName("userEnabled")
   @ColumnInfo("user_enabled")
   val userEnabled: Boolean,
+
+  @Expose
+  @SerializedName("reportCount")
+  @ColumnInfo("report_count")
+  val reportCount: Long = 0,
 )
 
