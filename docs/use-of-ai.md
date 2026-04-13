@@ -450,6 +450,27 @@ AI assistance (primarily Claude/Perplexity) was used as a collaborative developm
 ***
 
 **Overall Pattern:** AI was used primarily for **code generation, debugging, architectural guidance, and API research** — functioning as a pair-programming assistant rather than a replacement for developer judgment. All generated code was reviewed, tested, and adapted to fit the project's existing architecture.
+
+---
+
+### AI Usage Summary - Skylar - (Milestone 4)
+#### Manager Issue Report RecyclerView
+
+**Tool used:** Claude
+
+
+**Task:** Scrolling view of Issue Reports.
+
+
+
+**Output produced:** implement start-to-finish of paging data from server all the way to feeding a recycler view for Issue Reports.
+
+
+**Human review/modification:** Reviewed by eye and User app version done by hand. Modified by hand to take a lambda to reuse portions of code.
+
+---
+
+
 <!--
 Use the following template for each AI-assisted task:
 
