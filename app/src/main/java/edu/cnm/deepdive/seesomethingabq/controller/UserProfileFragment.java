@@ -82,7 +82,6 @@ public class UserProfileFragment extends Fragment {
         binding.emailInput.setText(user.getEmail());
 
         // Read-only fields
-        binding.emailValue.setText(user.getEmail());
         binding.authorityLevelValue.setText(
             String.format("Authority Level: %s", user.getManager() ? "Manager" : "User")
         );

@@ -92,40 +92,13 @@
     android:layout_marginTop="8dp"
     android:autofillHints="emailAddress" />
 
-  <!-- ========================= -->
-  <!--     EMAIL (Display)       -->
-  <!-- ========================= -->
-  <TextView
-    android:id="@+id/emailDisplayLabel"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:text="@string/email_current_label"
-    android:textSize="14sp"
-    android:textStyle="bold"
-    app:layout_constraintTop_toBottomOf="@id/emailInput"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="24dp" />
-
-  <TextView
-    android:id="@+id/emailValue"
-    android:layout_width="0dp"
-    android:layout_height="wrap_content"
-    android:text="@string/email_placeholder"
-    android:textSize="16sp"
-    app:layout_constraintTop_toBottomOf="@id/emailDisplayLabel"
-    app:layout_constraintStart_toStartOf="parent"
-    app:layout_constraintEnd_toEndOf="parent"
-    android:layout_marginTop="8dp"
-    android:textColor="?android:attr/textColorSecondary" />
-
   <TextView
     android:id="@+id/authorityLevelValue"
     android:layout_width="0dp"
     android:layout_height="wrap_content"
     android:text="Authority Level: Loading..."
     android:textSize="16sp"
-    app:layout_constraintTop_toBottomOf="@id/emailValue"
+    app:layout_constraintTop_toBottomOf="@id/emailInput"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     android:layout_marginTop="24dp"
