@@ -29,130 +29,203 @@
 <span class="source-line-no">016</span><span id="line-16">package edu.cnm.deepdive.seesomethingabq.service;</span>
 <span class="source-line-no">017</span><span id="line-17"></span>
 <span class="source-line-no">018</span><span id="line-18">import edu.cnm.deepdive.seesomethingabq.exception.UserNotFoundException;</span>
-<span class="source-line-no">019</span><span id="line-19">import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;</span>
-<span class="source-line-no">020</span><span id="line-20">import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;</span>
-<span class="source-line-no">021</span><span id="line-21">import java.net.URL;</span>
-<span class="source-line-no">022</span><span id="line-22">import java.util.List;</span>
-<span class="source-line-no">023</span><span id="line-23">import java.util.NoSuchElementException;</span>
-<span class="source-line-no">024</span><span id="line-24">import java.util.Optional;</span>
-<span class="source-line-no">025</span><span id="line-25">import java.util.UUID;</span>
-<span class="source-line-no">026</span><span id="line-26">import org.springframework.beans.factory.annotation.Autowired;</span>
-<span class="source-line-no">027</span><span id="line-27">import org.springframework.security.core.context.SecurityContextHolder;</span>
-<span class="source-line-no">028</span><span id="line-28">import org.springframework.stereotype.Service;</span>
-<span class="source-line-no">029</span><span id="line-29"></span>
-<span class="source-line-no">030</span><span id="line-30">/**</span>
-<span class="source-line-no">031</span><span id="line-31"> * Implementation of {@link UserService} providing business logic for user profile operations.</span>
-<span class="source-line-no">032</span><span id="line-32"> * This service handles OAuth2-based user identification and creation, as well as profile updates.</span>
-<span class="source-line-no">033</span><span id="line-33"> */</span>
-<span class="source-line-no">034</span><span id="line-34">@Service</span>
-<span class="source-line-no">035</span><span id="line-35">public class UserServiceImpl implements UserService {</span>
-<span class="source-line-no">036</span><span id="line-36"></span>
-<span class="source-line-no">037</span><span id="line-37">  private static final String OAUTH_SUB_CLAIM = "sub";</span>
-<span class="source-line-no">038</span><span id="line-38">  private static final String OAUTH_NAME_CLAIM = "name";</span>
-<span class="source-line-no">039</span><span id="line-39"></span>
-<span class="source-line-no">040</span><span id="line-40">  private final UserProfileRepository repository;</span>
-<span class="source-line-no">041</span><span id="line-41"></span>
-<span class="source-line-no">042</span><span id="line-42">  /**</span>
-<span class="source-line-no">043</span><span id="line-43">   * Constructs an instance of {@code AbstractUserService} with the specified repository.</span>
-<span class="source-line-no">044</span><span id="line-44">   *</span>
-<span class="source-line-no">045</span><span id="line-45">   * @param repository User profile repository for persistence operations.</span>
-<span class="source-line-no">046</span><span id="line-46">   */</span>
-<span class="source-line-no">047</span><span id="line-47">  @Autowired</span>
-<span class="source-line-no">048</span><span id="line-48">  public UserServiceImpl(UserProfileRepository repository) {</span>
-<span class="source-line-no">049</span><span id="line-49">    this.repository = repository;</span>
-<span class="source-line-no">050</span><span id="line-50">  }</span>
-<span class="source-line-no">051</span><span id="line-51"></span>
-<span class="source-line-no">052</span><span id="line-52">  @Override</span>
-<span class="source-line-no">053</span><span id="line-53">  public UserProfile getCurrentUser() {</span>
-<span class="source-line-no">054</span><span id="line-54">    //noinspection DataFlowIssue</span>
-<span class="source-line-no">055</span><span id="line-55">    return (UserProfile) SecurityContextHolder</span>
-<span class="source-line-no">056</span><span id="line-56">        .getContext()</span>
-<span class="source-line-no">057</span><span id="line-57">        .getAuthentication()</span>
-<span class="source-line-no">058</span><span id="line-58">        .getPrincipal();</span>
-<span class="source-line-no">059</span><span id="line-59">  }</span>
-<span class="source-line-no">060</span><span id="line-60"></span>
-<span class="source-line-no">061</span><span id="line-61">  @Override</span>
-<span class="source-line-no">062</span><span id="line-62">  public Optional&lt;UserProfile&gt; get(Long id) {</span>
-<span class="source-line-no">063</span><span id="line-63">    return repository.findById(id);</span>
-<span class="source-line-no">064</span><span id="line-64">  }</span>
-<span class="source-line-no">065</span><span id="line-65"></span>
-<span class="source-line-no">066</span><span id="line-66">  @Override</span>
-<span class="source-line-no">067</span><span id="line-67">  public UserProfile getOrCreate(String oauthKey, UserProfile userProfile) {</span>
-<span class="source-line-no">068</span><span id="line-68">    return repository</span>
-<span class="source-line-no">069</span><span id="line-69">        .findByOauthKey(oauthKey)</span>
-<span class="source-line-no">070</span><span id="line-70">        .orElseGet(() -&gt; {</span>
-<span class="source-line-no">071</span><span id="line-71">          userProfile.setOauthKey(oauthKey);</span>
-<span class="source-line-no">072</span><span id="line-72">          return repository.save(userProfile);</span>
-<span class="source-line-no">073</span><span id="line-73">        });</span>
-<span class="source-line-no">074</span><span id="line-74">  }</span>
-<span class="source-line-no">075</span><span id="line-75"></span>
-<span class="source-line-no">076</span><span id="line-76">  @Override</span>
-<span class="source-line-no">077</span><span id="line-77">  public UserProfile updateDisplayName(Long id, String displayName) {</span>
-<span class="source-line-no">078</span><span id="line-78">    return repository</span>
-<span class="source-line-no">079</span><span id="line-79">        .findById(id)</span>
-<span class="source-line-no">080</span><span id="line-80">        .map(user -&gt; {</span>
-<span class="source-line-no">081</span><span id="line-81">          user.setDisplayName(displayName);</span>
-<span class="source-line-no">082</span><span id="line-82">          return repository.save(user);</span>
-<span class="source-line-no">083</span><span id="line-83">        })</span>
-<span class="source-line-no">084</span><span id="line-84">        .orElseThrow(NoSuchElementException::new);</span>
-<span class="source-line-no">085</span><span id="line-85">  }</span>
-<span class="source-line-no">086</span><span id="line-86"></span>
-<span class="source-line-no">087</span><span id="line-87">  @Override</span>
-<span class="source-line-no">088</span><span id="line-88">  public UserProfile updateEmail(Long id, String email) {</span>
-<span class="source-line-no">089</span><span id="line-89">    return repository</span>
-<span class="source-line-no">090</span><span id="line-90">        .findById(id)</span>
-<span class="source-line-no">091</span><span id="line-91">        .map(user -&gt; {</span>
-<span class="source-line-no">092</span><span id="line-92">          user.setEmail(email);</span>
-<span class="source-line-no">093</span><span id="line-93">          return repository.save(user);</span>
-<span class="source-line-no">094</span><span id="line-94">        })</span>
-<span class="source-line-no">095</span><span id="line-95">        .orElseThrow(NoSuchElementException::new);</span>
-<span class="source-line-no">096</span><span id="line-96">  }</span>
-<span class="source-line-no">097</span><span id="line-97"></span>
-<span class="source-line-no">098</span><span id="line-98">  @Override</span>
-<span class="source-line-no">099</span><span id="line-99">  public UserProfile updateAvatar(Long id, URL avatar) {</span>
-<span class="source-line-no">100</span><span id="line-100">    return repository</span>
-<span class="source-line-no">101</span><span id="line-101">        .findById(id)</span>
-<span class="source-line-no">102</span><span id="line-102">        .map(user -&gt; {</span>
-<span class="source-line-no">103</span><span id="line-103">          user.setAvatar(avatar);</span>
-<span class="source-line-no">104</span><span id="line-104">          return repository.save(user);</span>
-<span class="source-line-no">105</span><span id="line-105">        })</span>
-<span class="source-line-no">106</span><span id="line-106">        .orElseThrow(NoSuchElementException::new);</span>
-<span class="source-line-no">107</span><span id="line-107">  }</span>
-<span class="source-line-no">108</span><span id="line-108"></span>
-<span class="source-line-no">109</span><span id="line-109">  @Override</span>
-<span class="source-line-no">110</span><span id="line-110">  public List&lt;UserProfile&gt; getAll() {</span>
-<span class="source-line-no">111</span><span id="line-111">    return repository.findAll();</span>
-<span class="source-line-no">112</span><span id="line-112">  }</span>
-<span class="source-line-no">113</span><span id="line-113"></span>
-<span class="source-line-no">114</span><span id="line-114">  @Override</span>
-<span class="source-line-no">115</span><span id="line-115">  public UserProfile getMe() {</span>
-<span class="source-line-no">116</span><span id="line-116">    return getCurrentUser();</span>
-<span class="source-line-no">117</span><span id="line-117">  }</span>
-<span class="source-line-no">118</span><span id="line-118"></span>
-<span class="source-line-no">119</span><span id="line-119">  @Override</span>
-<span class="source-line-no">120</span><span id="line-120">  public Optional&lt;UserProfile&gt; getByExternalId(UUID externalId) {</span>
-<span class="source-line-no">121</span><span id="line-121">    return repository.findByExternalId(externalId);</span>
-<span class="source-line-no">122</span><span id="line-122">  }</span>
-<span class="source-line-no">123</span><span id="line-123"></span>
-<span class="source-line-no">124</span><span id="line-124">  @Override</span>
-<span class="source-line-no">125</span><span id="line-125">  public UserProfile setManagerStatus(UUID externalId, boolean manager) {</span>
-<span class="source-line-no">126</span><span id="line-126">    UserProfile user = repository</span>
-<span class="source-line-no">127</span><span id="line-127">        .findByExternalId(externalId)</span>
-<span class="source-line-no">128</span><span id="line-128">        .orElseThrow(() -&gt; new UserNotFoundException("User not found: " + externalId));</span>
-<span class="source-line-no">129</span><span id="line-129">    user.setIsManager(manager);</span>
-<span class="source-line-no">130</span><span id="line-130">    return repository.save(user);</span>
-<span class="source-line-no">131</span><span id="line-131">  }</span>
-<span class="source-line-no">132</span><span id="line-132"></span>
-<span class="source-line-no">133</span><span id="line-133">  @Override</span>
-<span class="source-line-no">134</span><span id="line-134">  public UserProfile setEnabled(UUID externalId, boolean enabled) {</span>
-<span class="source-line-no">135</span><span id="line-135">    UserProfile user = repository</span>
-<span class="source-line-no">136</span><span id="line-136">        .findByExternalId(externalId)</span>
-<span class="source-line-no">137</span><span id="line-137">        .orElseThrow(() -&gt; new UserNotFoundException("User not found: " + externalId));</span>
-<span class="source-line-no">138</span><span id="line-138">    user.setUserEnabled(enabled);</span>
-<span class="source-line-no">139</span><span id="line-139">    return repository.save(user);</span>
-<span class="source-line-no">140</span><span id="line-140">  }</span>
-<span class="source-line-no">141</span><span id="line-141"></span>
-<span class="source-line-no">142</span><span id="line-142">}</span>
+<span class="source-line-no">019</span><span id="line-19">import edu.cnm.deepdive.seesomethingabq.model.dto.UserProfileResponse;</span>
+<span class="source-line-no">020</span><span id="line-20">import edu.cnm.deepdive.seesomethingabq.model.entity.UserProfile;</span>
+<span class="source-line-no">021</span><span id="line-21">import edu.cnm.deepdive.seesomethingabq.service.repository.IssueReportRepository;</span>
+<span class="source-line-no">022</span><span id="line-22">import edu.cnm.deepdive.seesomethingabq.service.repository.UserProfileRepository;</span>
+<span class="source-line-no">023</span><span id="line-23">import edu.cnm.deepdive.seesomethingabq.service.storage.StorageService;</span>
+<span class="source-line-no">024</span><span id="line-24">import java.net.URL;</span>
+<span class="source-line-no">025</span><span id="line-25">import java.util.List;</span>
+<span class="source-line-no">026</span><span id="line-26">import java.util.NoSuchElementException;</span>
+<span class="source-line-no">027</span><span id="line-27">import java.util.Optional;</span>
+<span class="source-line-no">028</span><span id="line-28">import java.util.UUID;</span>
+<span class="source-line-no">029</span><span id="line-29">import org.springframework.beans.factory.annotation.Autowired;</span>
+<span class="source-line-no">030</span><span id="line-30">import org.springframework.data.domain.Page;</span>
+<span class="source-line-no">031</span><span id="line-31">import org.springframework.data.domain.Pageable;</span>
+<span class="source-line-no">032</span><span id="line-32">import org.springframework.security.core.context.SecurityContextHolder;</span>
+<span class="source-line-no">033</span><span id="line-33">import org.springframework.stereotype.Service;</span>
+<span class="source-line-no">034</span><span id="line-34">import org.springframework.web.servlet.support.ServletUriComponentsBuilder;</span>
+<span class="source-line-no">035</span><span id="line-35"></span>
+<span class="source-line-no">036</span><span id="line-36">/**</span>
+<span class="source-line-no">037</span><span id="line-37"> * Implementation of {@link UserService} providing business logic for user profile operations.</span>
+<span class="source-line-no">038</span><span id="line-38"> * This service handles OAuth2-based user identification and creation, as well as profile updates.</span>
+<span class="source-line-no">039</span><span id="line-39"> */</span>
+<span class="source-line-no">040</span><span id="line-40">@Service</span>
+<span class="source-line-no">041</span><span id="line-41">public class UserServiceImpl implements UserService {</span>
+<span class="source-line-no">042</span><span id="line-42"></span>
+<span class="source-line-no">043</span><span id="line-43">  private static final String OAUTH_SUB_CLAIM = "sub";</span>
+<span class="source-line-no">044</span><span id="line-44">  private static final String OAUTH_NAME_CLAIM = "name";</span>
+<span class="source-line-no">045</span><span id="line-45"></span>
+<span class="source-line-no">046</span><span id="line-46">  private final UserProfileRepository repository;</span>
+<span class="source-line-no">047</span><span id="line-47">  private final IssueReportRepository issueReportRepository;</span>
+<span class="source-line-no">048</span><span id="line-48">  private final StorageService storageService;</span>
+<span class="source-line-no">049</span><span id="line-49"></span>
+<span class="source-line-no">050</span><span id="line-50">  /**</span>
+<span class="source-line-no">051</span><span id="line-51">   * Constructs an instance of {@code UserServiceImpl} with the specified repositories.</span>
+<span class="source-line-no">052</span><span id="line-52">   *</span>
+<span class="source-line-no">053</span><span id="line-53">   * @param repository user profile repository for persistence operations.</span>
+<span class="source-line-no">054</span><span id="line-54">   * @param issueReportRepository issue report repository for report count lookups.</span>
+<span class="source-line-no">055</span><span id="line-55">   */</span>
+<span class="source-line-no">056</span><span id="line-56">  @Autowired</span>
+<span class="source-line-no">057</span><span id="line-57">  public UserServiceImpl(UserProfileRepository repository,</span>
+<span class="source-line-no">058</span><span id="line-58">      IssueReportRepository issueReportRepository, StorageService storageService) {</span>
+<span class="source-line-no">059</span><span id="line-59">    this.repository = repository;</span>
+<span class="source-line-no">060</span><span id="line-60">    this.issueReportRepository = issueReportRepository;</span>
+<span class="source-line-no">061</span><span id="line-61">    this.storageService = storageService;</span>
+<span class="source-line-no">062</span><span id="line-62">  }</span>
+<span class="source-line-no">063</span><span id="line-63"></span>
+<span class="source-line-no">064</span><span id="line-64">  @Override</span>
+<span class="source-line-no">065</span><span id="line-65">  public UserProfile getCurrentUser() {</span>
+<span class="source-line-no">066</span><span id="line-66">    //noinspection DataFlowIssue</span>
+<span class="source-line-no">067</span><span id="line-67">    return (UserProfile) SecurityContextHolder</span>
+<span class="source-line-no">068</span><span id="line-68">        .getContext()</span>
+<span class="source-line-no">069</span><span id="line-69">        .getAuthentication()</span>
+<span class="source-line-no">070</span><span id="line-70">        .getPrincipal();</span>
+<span class="source-line-no">071</span><span id="line-71">  }</span>
+<span class="source-line-no">072</span><span id="line-72"></span>
+<span class="source-line-no">073</span><span id="line-73">  @Override</span>
+<span class="source-line-no">074</span><span id="line-74">  public Optional&lt;UserProfile&gt; get(Long id) {</span>
+<span class="source-line-no">075</span><span id="line-75">    return repository.findById(id);</span>
+<span class="source-line-no">076</span><span id="line-76">  }</span>
+<span class="source-line-no">077</span><span id="line-77"></span>
+<span class="source-line-no">078</span><span id="line-78">  @Override</span>
+<span class="source-line-no">079</span><span id="line-79">  public UserProfile getOrCreate(String oauthKey, UserProfile userProfile) {</span>
+<span class="source-line-no">080</span><span id="line-80">    return repository</span>
+<span class="source-line-no">081</span><span id="line-81">        .findByOauthKey(oauthKey)</span>
+<span class="source-line-no">082</span><span id="line-82">        .orElseGet(() -&gt; {</span>
+<span class="source-line-no">083</span><span id="line-83">          userProfile.setOauthKey(oauthKey);</span>
+<span class="source-line-no">084</span><span id="line-84">          return repository.save(userProfile);</span>
+<span class="source-line-no">085</span><span id="line-85">        });</span>
+<span class="source-line-no">086</span><span id="line-86">  }</span>
+<span class="source-line-no">087</span><span id="line-87"></span>
+<span class="source-line-no">088</span><span id="line-88">  @Override</span>
+<span class="source-line-no">089</span><span id="line-89">  public UserProfile updateDisplayName(Long id, String displayName) {</span>
+<span class="source-line-no">090</span><span id="line-90">    return repository</span>
+<span class="source-line-no">091</span><span id="line-91">        .findById(id)</span>
+<span class="source-line-no">092</span><span id="line-92">        .map(user -&gt; {</span>
+<span class="source-line-no">093</span><span id="line-93">          user.setDisplayName(displayName);</span>
+<span class="source-line-no">094</span><span id="line-94">          return repository.save(user);</span>
+<span class="source-line-no">095</span><span id="line-95">        })</span>
+<span class="source-line-no">096</span><span id="line-96">        .orElseThrow(NoSuchElementException::new);</span>
+<span class="source-line-no">097</span><span id="line-97">  }</span>
+<span class="source-line-no">098</span><span id="line-98"></span>
+<span class="source-line-no">099</span><span id="line-99">  @Override</span>
+<span class="source-line-no">100</span><span id="line-100">  public UserProfile updateEmail(Long id, String email) {</span>
+<span class="source-line-no">101</span><span id="line-101">    return repository</span>
+<span class="source-line-no">102</span><span id="line-102">        .findById(id)</span>
+<span class="source-line-no">103</span><span id="line-103">        .map(user -&gt; {</span>
+<span class="source-line-no">104</span><span id="line-104">          user.setEmail(email);</span>
+<span class="source-line-no">105</span><span id="line-105">          return repository.save(user);</span>
+<span class="source-line-no">106</span><span id="line-106">        })</span>
+<span class="source-line-no">107</span><span id="line-107">        .orElseThrow(NoSuchElementException::new);</span>
+<span class="source-line-no">108</span><span id="line-108">  }</span>
+<span class="source-line-no">109</span><span id="line-109"></span>
+<span class="source-line-no">110</span><span id="line-110">  @Override</span>
+<span class="source-line-no">111</span><span id="line-111">  public UserProfile updateAvatar(Long id, URL avatar) {</span>
+<span class="source-line-no">112</span><span id="line-112">    return repository</span>
+<span class="source-line-no">113</span><span id="line-113">        .findById(id)</span>
+<span class="source-line-no">114</span><span id="line-114">        .map(user -&gt; {</span>
+<span class="source-line-no">115</span><span id="line-115">          user.setAvatar(avatar);</span>
+<span class="source-line-no">116</span><span id="line-116">          return repository.save(user);</span>
+<span class="source-line-no">117</span><span id="line-117">        })</span>
+<span class="source-line-no">118</span><span id="line-118">        .orElseThrow(NoSuchElementException::new);</span>
+<span class="source-line-no">119</span><span id="line-119">  }</span>
+<span class="source-line-no">120</span><span id="line-120"></span>
+<span class="source-line-no">121</span><span id="line-121">  @Override</span>
+<span class="source-line-no">122</span><span id="line-122">  public UserProfile updateAvatarKey(Long id, String storageKey, String contentType) {</span>
+<span class="source-line-no">123</span><span id="line-123">    return repository</span>
+<span class="source-line-no">124</span><span id="line-124">        .findById(id)</span>
+<span class="source-line-no">125</span><span id="line-125">        .map(user -&gt; {</span>
+<span class="source-line-no">126</span><span id="line-126">          // Best-effort cleanup of prior custom avatar (if present).</span>
+<span class="source-line-no">127</span><span id="line-127">          String priorKey = user.getAvatarKey();</span>
+<span class="source-line-no">128</span><span id="line-128">          if (priorKey != null &amp;&amp; !priorKey.isBlank() &amp;&amp; !priorKey.equals(storageKey)) {</span>
+<span class="source-line-no">129</span><span id="line-129">            try {</span>
+<span class="source-line-no">130</span><span id="line-130">              storageService.delete(priorKey);</span>
+<span class="source-line-no">131</span><span id="line-131">            } catch (Exception e) {</span>
+<span class="source-line-no">132</span><span id="line-132">              // TODO: Consider asynchronous cleanup / orphan reaper. Avoid breaking avatar updates.</span>
+<span class="source-line-no">133</span><span id="line-133">            }</span>
+<span class="source-line-no">134</span><span id="line-134">          }</span>
+<span class="source-line-no">135</span><span id="line-135"></span>
+<span class="source-line-no">136</span><span id="line-136">          user.setAvatarKey(storageKey);</span>
+<span class="source-line-no">137</span><span id="line-137">          user.setAvatarMimeType(contentType);</span>
+<span class="source-line-no">138</span><span id="line-138"></span>
+<span class="source-line-no">139</span><span id="line-139">          try {</span>
+<span class="source-line-no">140</span><span id="line-140">            URL avatarUrl = ServletUriComponentsBuilder</span>
+<span class="source-line-no">141</span><span id="line-141">                .fromCurrentContextPath()</span>
+<span class="source-line-no">142</span><span id="line-142">                .path("/users/{externalId}/avatar")</span>
+<span class="source-line-no">143</span><span id="line-143">                .buildAndExpand(user.getExternalId())</span>
+<span class="source-line-no">144</span><span id="line-144">                .toUri()</span>
+<span class="source-line-no">145</span><span id="line-145">                .toURL();</span>
+<span class="source-line-no">146</span><span id="line-146">            user.setAvatar(avatarUrl);</span>
+<span class="source-line-no">147</span><span id="line-147">          } catch (Exception e) {</span>
+<span class="source-line-no">148</span><span id="line-148">            throw new RuntimeException("Failed to create backend avatar URL", e);</span>
+<span class="source-line-no">149</span><span id="line-149">          }</span>
+<span class="source-line-no">150</span><span id="line-150"></span>
+<span class="source-line-no">151</span><span id="line-151">          return repository.save(user);</span>
+<span class="source-line-no">152</span><span id="line-152">        })</span>
+<span class="source-line-no">153</span><span id="line-153">        .orElseThrow(NoSuchElementException::new);</span>
+<span class="source-line-no">154</span><span id="line-154">  }</span>
+<span class="source-line-no">155</span><span id="line-155"></span>
+<span class="source-line-no">156</span><span id="line-156">  @Override</span>
+<span class="source-line-no">157</span><span id="line-157">  public List&lt;UserProfile&gt; getAll() {</span>
+<span class="source-line-no">158</span><span id="line-158">    return repository.findAll();</span>
+<span class="source-line-no">159</span><span id="line-159">  }</span>
+<span class="source-line-no">160</span><span id="line-160"></span>
+<span class="source-line-no">161</span><span id="line-161">  @Override</span>
+<span class="source-line-no">162</span><span id="line-162">  public Page&lt;UserProfile&gt; getAll(Pageable pageable) {</span>
+<span class="source-line-no">163</span><span id="line-163">    return repository.findAll(pageable);</span>
+<span class="source-line-no">164</span><span id="line-164">  }</span>
+<span class="source-line-no">165</span><span id="line-165"></span>
+<span class="source-line-no">166</span><span id="line-166">  @Override</span>
+<span class="source-line-no">167</span><span id="line-167">  public UserProfile getMe() {</span>
+<span class="source-line-no">168</span><span id="line-168">    return getCurrentUser();</span>
+<span class="source-line-no">169</span><span id="line-169">  }</span>
+<span class="source-line-no">170</span><span id="line-170"></span>
+<span class="source-line-no">171</span><span id="line-171">  @Override</span>
+<span class="source-line-no">172</span><span id="line-172">  public Optional&lt;UserProfile&gt; getByExternalId(UUID externalId) {</span>
+<span class="source-line-no">173</span><span id="line-173">    return repository.findByExternalId(externalId);</span>
+<span class="source-line-no">174</span><span id="line-174">  }</span>
+<span class="source-line-no">175</span><span id="line-175"></span>
+<span class="source-line-no">176</span><span id="line-176">  @Override</span>
+<span class="source-line-no">177</span><span id="line-177">  public UserProfile setManagerStatus(UUID externalId, boolean manager) {</span>
+<span class="source-line-no">178</span><span id="line-178">    UserProfile user = repository</span>
+<span class="source-line-no">179</span><span id="line-179">        .findByExternalId(externalId)</span>
+<span class="source-line-no">180</span><span id="line-180">        .orElseThrow(() -&gt; new UserNotFoundException("User not found: " + externalId));</span>
+<span class="source-line-no">181</span><span id="line-181">    user.setIsManager(manager);</span>
+<span class="source-line-no">182</span><span id="line-182">    return repository.save(user);</span>
+<span class="source-line-no">183</span><span id="line-183">  }</span>
+<span class="source-line-no">184</span><span id="line-184"></span>
+<span class="source-line-no">185</span><span id="line-185">  @Override</span>
+<span class="source-line-no">186</span><span id="line-186">  public UserProfile setEnabled(UUID externalId, boolean enabled) {</span>
+<span class="source-line-no">187</span><span id="line-187">    UserProfile user = repository</span>
+<span class="source-line-no">188</span><span id="line-188">        .findByExternalId(externalId)</span>
+<span class="source-line-no">189</span><span id="line-189">        .orElseThrow(() -&gt; new UserNotFoundException("User not found: " + externalId));</span>
+<span class="source-line-no">190</span><span id="line-190">    user.setUserEnabled(enabled);</span>
+<span class="source-line-no">191</span><span id="line-191">    return repository.save(user);</span>
+<span class="source-line-no">192</span><span id="line-192">  }</span>
+<span class="source-line-no">193</span><span id="line-193"></span>
+<span class="source-line-no">194</span><span id="line-194">  /**</span>
+<span class="source-line-no">195</span><span id="line-195">   * Maps a {@link UserProfile} entity to a {@link UserProfileResponse}, including total report count.</span>
+<span class="source-line-no">196</span><span id="line-196">   *</span>
+<span class="source-line-no">197</span><span id="line-197">   * @param userProfile source entity.</span>
+<span class="source-line-no">198</span><span id="line-198">   * @return DTO enriched with report count.</span>
+<span class="source-line-no">199</span><span id="line-199">   */</span>
+<span class="source-line-no">200</span><span id="line-200">  @Override</span>
+<span class="source-line-no">201</span><span id="line-201">  public UserProfileResponse getUserProfileResponse(UserProfile userProfile) {</span>
+<span class="source-line-no">202</span><span id="line-202">    long reportCount = issueReportRepository.countByUserProfile(userProfile);</span>
+<span class="source-line-no">203</span><span id="line-203">    return new UserProfileResponse(</span>
+<span class="source-line-no">204</span><span id="line-204">        userProfile.getExternalId(),</span>
+<span class="source-line-no">205</span><span id="line-205">        userProfile.getDisplayName(),</span>
+<span class="source-line-no">206</span><span id="line-206">        userProfile.getEmail(),</span>
+<span class="source-line-no">207</span><span id="line-207">        userProfile.getAvatar(),</span>
+<span class="source-line-no">208</span><span id="line-208">        userProfile.isManager(),</span>
+<span class="source-line-no">209</span><span id="line-209">        userProfile.getTimeCreated(),</span>
+<span class="source-line-no">210</span><span id="line-210">        userProfile.getUserEnabled(),</span>
+<span class="source-line-no">211</span><span id="line-211">        reportCount</span>
+<span class="source-line-no">212</span><span id="line-212">    );</span>
+<span class="source-line-no">213</span><span id="line-213">  }</span>
+<span class="source-line-no">214</span><span id="line-214"></span>
+<span class="source-line-no">215</span><span id="line-215">}</span>
 
 
 

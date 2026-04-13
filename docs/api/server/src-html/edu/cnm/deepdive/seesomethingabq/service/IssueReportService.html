@@ -30,10 +30,10 @@
 <span class="source-line-no">017</span><span id="line-17">  /**</span>
 <span class="source-line-no">018</span><span id="line-18">   * Returns summaries of reports owned by the currently authenticated user.</span>
 <span class="source-line-no">019</span><span id="line-19">   *</span>
-<span class="source-line-no">020</span><span id="line-20">   * @param sortParam sort key/direction string as provided by the controller.</span>
-<span class="source-line-no">021</span><span id="line-21">   * @return list of report summaries.</span>
+<span class="source-line-no">020</span><span id="line-20">   * @param pageable page number, size, and sort, defined by caller.</span>
+<span class="source-line-no">021</span><span id="line-21">   * @return page of report summaries.</span>
 <span class="source-line-no">022</span><span id="line-22">   */</span>
-<span class="source-line-no">023</span><span id="line-23">  List&lt;IssueReportSummary&gt; getReportsForCurrentUser(String sortParam);</span>
+<span class="source-line-no">023</span><span id="line-23">  Page&lt;IssueReport&gt; getReportsForCurrentUser(Pageable pageable);</span>
 <span class="source-line-no">024</span><span id="line-24"></span>
 <span class="source-line-no">025</span><span id="line-25">  /**</span>
 <span class="source-line-no">026</span><span id="line-26">   * Creates a new report for the currently authenticated user.</span>

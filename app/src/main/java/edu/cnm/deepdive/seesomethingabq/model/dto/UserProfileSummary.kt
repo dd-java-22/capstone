@@ -19,6 +19,7 @@ import java.util.UUID
  * @property manager whether the user has manager privileges.
  * @property timeCreated timestamp when the profile was created.
  * @property userEnabled whether the user is enabled.
+ * @property reportCount count of reports associated with the user (as provided by the server).
  */
 data class UserProfileSummary(
   @Expose

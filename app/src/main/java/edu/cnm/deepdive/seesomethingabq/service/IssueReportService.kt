@@ -118,11 +118,26 @@ interface IssueReportService {
   fun getMyIssueReportsPager(activity: Activity): Pager<Int, IssueReportSummary>
 
 
+  /**
+   * Loads a full issue report by identifier.
+   *
+   * @param activity activity used for authentication flows.
+   * @param reportId external report identifier.
+   * @return future completed with the loaded report.
+   */
   fun getReport(
     activity: Activity,
     reportId: String
   ): CompletableFuture<IssueReport>
 
+  /**
+   * Updates an existing issue report.
+   *
+   * @param activity activity used for authentication flows.
+   * @param reportId external report identifier.
+   * @param request request payload describing desired report updates.
+   * @return future completed with the updated report.
+   */
   fun updateReport(
     activity: Activity,
     reportId: String,

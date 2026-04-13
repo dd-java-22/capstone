@@ -6,6 +6,13 @@ import androidx.room.PrimaryKey
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 
+/**
+ * Room entity and API DTO representing an accepted-state/status option for issue reports.
+ *
+ * @property acceptedStateId local Room primary key.
+ * @property statusTag short tag identifier (used in API payloads and UI).
+ * @property statusTagDescription human-readable description of the status tag.
+ */
 @Entity(tableName = "acceptedState")
 data class AcceptedState(
   @PrimaryKey(autoGenerate = true)

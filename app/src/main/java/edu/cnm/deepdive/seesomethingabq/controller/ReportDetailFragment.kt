@@ -65,6 +65,12 @@ import java.util.Objects
 import com.google.android.material.chip.ChipGroup
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Fragment for viewing and editing the details of a user-submitted issue report.
+ *
+ * This screen supports editing report fields (when allowed), staging local image changes, and
+ * selecting/confirming a location prior to saving.
+ */
 @AndroidEntryPoint
 class ReportDetailFragment : Fragment() {
 

@@ -12,6 +12,11 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.time.format.FormatStyle
 
+/**
+ * Paging adapter for rendering [IssueReportSummary] items in a RecyclerView.
+ *
+ * @param onClick invoked when the user taps a report row.
+ */
 class IssueReportAdapter(
   private val onClick: (IssueReportSummary) -> Unit = {}
 ) :
@@ -31,6 +36,9 @@ class IssueReportAdapter(
     item?.let { holder.bind(it) }
   }
 
+  /**
+   * ViewHolder for an issue report summary row.
+   */
   class ViewHolder(
     private val binding: ItemIssueReportBinding,
     private val onClick: (IssueReportSummary) -> Unit
@@ -40,6 +48,11 @@ class IssueReportAdapter(
     private val dateTimeFormatter = DateTimeFormatter.ofLocalizedDateTime(FormatStyle.MEDIUM)
       .withZone(ZoneId.systemDefault())
 
+    /**
+     * Binds the provided report summary to the row views.
+     *
+     * @param issueReport report summary to display.
+     */
     fun bind(issueReport: IssueReportSummary) {
       binding.description.text = issueReport.description
       binding.acceptedState.text = issueReport.acceptedState

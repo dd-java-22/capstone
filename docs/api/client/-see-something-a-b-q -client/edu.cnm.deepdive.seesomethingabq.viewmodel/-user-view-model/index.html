@@ -107,7 +107,7 @@
   <div class="breadcrumbs"><a href="../../../index.html">SeeSomethingABQ Client</a><span class="delimiter">/</span><a href="../index.html">edu.cnm.deepdive.seesomethingabq.viewmodel</a><span class="delimiter">/</span><span class="current">UserViewModel</span></div>
   <div class="cover ">
     <h1 class="cover"><span>User</span><wbr></wbr><span>View</span><wbr></wbr><span><span>Model</span></span></h1>
-    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">UserViewModel</a> : <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/ViewModel.html">ViewModel</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/dd-java-22/capstone/blob/main/app/src/main/java/edu/cnm/deepdive/seesomethingabq/viewmodel/UserViewModel.java#L20">source</a>)</span></span></div><p class="paragraph">ViewModel coordinating user sign-in/sign-out and exposing user and error state.</p></div></div>
+    <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">class </span><a href="index.html">UserViewModel</a> : <a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/ViewModel.html">ViewModel</a><span class="source-link-wrapper"><span class="source-link" data-element-type="source-link">(<a href="https://github.com/dd-java-22/capstone/blob/main/app/src/main/java/edu/cnm/deepdive/seesomethingabq/viewmodel/UserViewModel.java#L22">source</a>)</span></span></div><p class="paragraph">ViewModel coordinating user sign-in/sign-out and exposing user and error state. </p><p class="paragraph"> This ViewModel also manages profile updates, including display name, email, and avatar image uploads. All operations delegate to <a href="../../edu.cnm.deepdive.seesomethingabq.service/-user-service/index.html">UserService</a>, and results are published to LiveData streams for UI observation.</p></div></div>
   </div>
   <div class="tabbedcontent">
     <div class="tabs-section" tabs-section="tabs-section"><button class="section-tab" data-active="" data-togglable="CONSTRUCTOR,TYPE,PROPERTY,FUNCTION">Members</button></div>
@@ -140,6 +140,51 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">fun </span><a href="index.html#-1351453382%2FFunctions%2F1606452474"><span class="token function">clear$lifecycle_viewmodel</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-1505712012%2FFunctions%2F1606452474" anchor-label="getAvatarDisplayUri" id="-1505712012%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-avatar-display-uri.html"><span>get</span><wbr></wbr><span>Avatar</span><wbr></wbr><span>Display</span><wbr></wbr><span><span>Uri</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1505712012%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-avatar-display-uri.html"><span class="token function">getAvatarDisplayUri</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/android/net/Uri.html">Uri</a><span class="token operator">&gt;</span></div><div class="brief ">Returns a displayable avatar URI resolved for the current user.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="-828077621%2FFunctions%2F1606452474" anchor-label="getAvatarUploadInProgress" id="-828077621%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-avatar-upload-in-progress.html"><span>get</span><wbr></wbr><span>Avatar</span><wbr></wbr><span>Upload</span><wbr></wbr><span>In</span><wbr></wbr><span><span>Progress</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-828077621%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-avatar-upload-in-progress.html"><span class="token function">getAvatarUploadInProgress</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/Boolean.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief ">Returns whether an avatar upload is currently in progress.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="1808283708%2FFunctions%2F1606452474" anchor-label="getAvatarUploadSucceeded" id="1808283708%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="get-avatar-upload-succeeded.html"><span>get</span><wbr></wbr><span>Avatar</span><wbr></wbr><span>Upload</span><wbr></wbr><span><span>Succeeded</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="1808283708%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="get-avatar-upload-succeeded.html"><span class="token function">getAvatarUploadSucceeded</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/androidx/lifecycle/LiveData.html">LiveData</a><span class="token operator">&lt;</span><a href="https://developer.android.com/reference/kotlin/java/lang/Boolean.html">Boolean</a><span class="token operator">&gt;</span></div><div class="brief ">Returns the result of the most recent avatar upload attempt.</div></div></div>
                 </div>
               </div>
             </div>
@@ -193,13 +238,28 @@
           <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
             <div class="main-subrow keyValue ">
               <div class=""><span class="inline-flex">
-                  <div><a href="index.html#-1930136507%2FFunctions%2F1606452474"><span>on</span><wbr></wbr><span><span>Cleared</span></span></a></div>
+                  <div><a href="../-report-detail-image-edit-view-model/index.html#-1930136507%2FFunctions%2F1606452474"><span>on</span><wbr></wbr><span><span>Cleared</span></span></a></div>
 <span class="anchor-wrapper"><span class="anchor-icon" pointing-to="-1930136507%2FFunctions%2F1606452474"></span>
                     <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
                   </span></span></div>
               <div>
                 <div class="title">
-                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">protected </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="index.html#-1930136507%2FFunctions%2F1606452474"><span class="token function">onCleared</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">protected </span><span class="token keyword">open </span><span class="token keyword">fun </span><a href="../-report-detail-image-edit-view-model/index.html#-1930136507%2FFunctions%2F1606452474"><span class="token function">onCleared</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="299180937%2FFunctions%2F1606452474" anchor-label="resolveAvatar" id="299180937%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="resolve-avatar.html"><span>resolve</span><wbr></wbr><span><span>Avatar</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="299180937%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="resolve-avatar.html"><span class="token function">resolveAvatar</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">user<span class="token operator">: </span><a href="../../edu.cnm.deepdive.seesomethingabq.model.entity/-user-profile/index.html">UserProfile</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Resolves the current user's avatar for display.</div></div></div>
                 </div>
               </div>
             </div>
@@ -230,6 +290,36 @@
               <div>
                 <div class="title">
                   <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="sign-out.html"><span class="token function">signOut</span></a><span class="token punctuation">(</span><span class="token punctuation">)</span></div><div class="brief ">Signs the user out and clears the current user.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="2014800247%2FFunctions%2F1606452474" anchor-label="updateAvatar" id="2014800247%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-avatar.html"><span>update</span><wbr></wbr><span><span>Avatar</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="2014800247%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="update-avatar.html"><span class="token function">updateAvatar</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">uri<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/net/Uri.html">Uri</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Uploads a new avatar image for the current user.</div></div></div>
+                </div>
+              </div>
+            </div>
+          </div>
+<a data-name="959234450%2FFunctions%2F1606452474" anchor-label="updateProfile" id="959234450%2FFunctions%2F1606452474" data-filterable-set=":app/main"></a>
+          <div class="table-row table-row_content" data-filterable-current=":app/main" data-filterable-set=":app/main">
+            <div class="main-subrow keyValue ">
+              <div class=""><span class="inline-flex">
+                  <div><a href="update-profile.html"><span>update</span><wbr></wbr><span><span>Profile</span></span></a></div>
+<span class="anchor-wrapper"><span class="anchor-icon" pointing-to="959234450%2FFunctions%2F1606452474"></span>
+                    <div class="copy-popup-wrapper "><span class="copy-popup-icon"></span><span>Link copied to clipboard</span></div>
+                  </span></span></div>
+              <div>
+                <div class="title">
+                  <div class="platform-hinted " data-platform-hinted="data-platform-hinted"><div class="content sourceset-dependent-content" data-active="" data-togglable=":app/main"><div class="symbol monospace"><span class="token keyword">open </span><span class="token keyword">fun </span><a href="update-profile.html"><span class="token function">updateProfile</span></a><span class="token punctuation">(</span><span class="parameters "><span class="parameter ">activity<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/android/app/Activity.html">Activity</a><span class="token punctuation">, </span></span><span class="parameter ">displayName<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a><span class="token punctuation">, </span></span><span class="parameter ">email<span class="token operator">: </span><a href="https://developer.android.com/reference/kotlin/java/lang/String.html">String</a></span></span><span class="token punctuation">)</span></div><div class="brief ">Updates the current user's profile information, including display name and email address.</div></div></div>
                 </div>
               </div>
             </div>

@@ -26,6 +26,12 @@ import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueReportViewModel
 import edu.cnm.deepdive.seesomethingabq.viewmodel.IssueTypeViewModel
 import java.util.concurrent.CompletableFuture
 
+/**
+ * Fragment for manager-only review and updates of an issue report.
+ *
+ * This screen allows a manager to update report status and issue-type tags, and then persists those
+ * changes via the backing ViewModels.
+ */
 @AndroidEntryPoint
 class ManagerReportDetailFragment : Fragment() {
 

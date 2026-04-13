@@ -46,14 +46,30 @@ public class ManagerUserDetailViewModel extends ViewModel {
     throwable = new MutableLiveData<>();
   }
 
+  /**
+   * Returns the currently loaded user (manager-visible summary).
+   *
+   * @return live data stream of the selected user.
+   */
   public LiveData<UserProfileSummary> getUser() {
     return user;
   }
 
+  /**
+   * Returns the most recent error from a user load/mutation operation.
+   *
+   * @return live data stream of errors.
+   */
   public LiveData<Throwable> getThrowable() {
     return throwable;
   }
 
+  /**
+   * Loads the user identified by {@code externalId} for manager views.
+   *
+   * @param activity activity used for authentication flows.
+   * @param externalId user external ID.
+   */
   public void load(Activity activity, UUID externalId) {
     throwable.setValue(null);
     managerUserService.getManagerUser(activity, externalId)
@@ -66,6 +82,13 @@ public class ManagerUserDetailViewModel extends ViewModel {
         });
   }
 
+  /**
+   * Updates manager authorization status for a user and refreshes the loaded user.
+   *
+   * @param activity activity used for authentication flows.
+   * @param externalId user external ID.
+   * @param isManager desired manager status.
+   */
   public void setManagerStatus(Activity activity, UUID externalId, boolean isManager) {
     throwable.setValue(null);
     managerUserService.setManagerStatus(activity, externalId, isManager)
@@ -82,6 +105,13 @@ public class ManagerUserDetailViewModel extends ViewModel {
         });
   }
 
+  /**
+   * Updates enabled/disabled status for a user and refreshes the loaded user.
+   *
+   * @param activity activity used for authentication flows.
+   * @param externalId user external ID.
+   * @param isEnabled desired enabled status.
+   */
   public void setEnabledStatus(Activity activity, UUID externalId, boolean isEnabled) {
     throwable.setValue(null);
     managerUserService.setEnabledStatus(activity, externalId, isEnabled)

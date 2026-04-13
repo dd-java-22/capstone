@@ -126,6 +126,16 @@ loadScripts(document, 'script');</script>
 <div class="block">Returns the avatar URL, if configured.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAvatarKey()" class="member-name-link">getAvatarKey</a>()</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the storage key for a locally stored custom avatar, if set.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAvatarMimeType()" class="member-name-link">getAvatarMimeType</a>()</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Returns the MIME type for a locally stored custom avatar, if set.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getDisplayName()" class="member-name-link">getDisplayName</a>()</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the display name for this user.</div>
@@ -174,6 +184,16 @@ loadScripts(document, 'script');</script>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAvatar(java.net.URL)" class="member-name-link">setAvatar</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/URL.html" title="class or interface in java.net" class="external-link">URL</a>&nbsp;avatar)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Sets the avatar URL.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAvatarKey(java.lang.String)" class="member-name-link">setAvatarKey</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;avatarKey)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the storage key for a locally stored custom avatar.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setAvatarMimeType(java.lang.String)" class="member-name-link">setAvatarMimeType</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;avatarMimeType)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Sets the MIME type for a locally stored custom avatar.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code>void</code></div>
 <div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#setDisplayName(java.lang.String)" class="member-name-link">setDisplayName</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;displayName)</code></div>
@@ -234,7 +254,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getId()">
 <h3>getId</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-100">getId</a></span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Long.html" title="class or interface in java.lang" class="external-link">Long</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-108">getId</a></span>()</div>
 <div class="block">Returns the database identifier for this user profile.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -245,7 +265,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getExternalId()">
 <h3>getExternalId</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-109">getExternalId</a></span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-117">getExternalId</a></span>()</div>
 <div class="block">Returns the external identifier for this user profile.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -256,7 +276,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getOauthKey()">
 <h3>getOauthKey</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-118">getOauthKey</a></span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-126">getOauthKey</a></span>()</div>
 <div class="block">Returns the OAuth subject key for this user.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -267,7 +287,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setOauthKey(java.lang.String)">
 <h3>setOauthKey</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-127">setOauthKey</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;oauthKey)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-135">setOauthKey</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;oauthKey)</span></div>
 <div class="block">Sets the OAuth subject key for this user.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -278,7 +298,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getDisplayName()">
 <h3>getDisplayName</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-136">getDisplayName</a></span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-144">getDisplayName</a></span>()</div>
 <div class="block">Returns the display name for this user.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -289,7 +309,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setDisplayName(java.lang.String)">
 <h3>setDisplayName</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-145">setDisplayName</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;displayName)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-153">setDisplayName</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;displayName)</span></div>
 <div class="block">Sets the display name for this user profile.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -300,7 +320,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getAvatar()">
 <h3>getAvatar</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/URL.html" title="class or interface in java.net" class="external-link">URL</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-154">getAvatar</a></span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/URL.html" title="class or interface in java.net" class="external-link">URL</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-162">getAvatar</a></span>()</div>
 <div class="block">Returns the avatar URL, if configured.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -311,7 +331,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setAvatar(java.net.URL)">
 <h3>setAvatar</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-163">setAvatar</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/URL.html" title="class or interface in java.net" class="external-link">URL</a>&nbsp;avatar)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-171">setAvatar</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/net/URL.html" title="class or interface in java.net" class="external-link">URL</a>&nbsp;avatar)</span></div>
 <div class="block">Sets the avatar URL.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -320,9 +340,53 @@ loadScripts(document, 'script');</script>
 </section>
 </li>
 <li>
+<section class="detail" id="getAvatarKey()">
+<h3>getAvatarKey</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-180">getAvatarKey</a></span>()</div>
+<div class="block">Returns the storage key for a locally stored custom avatar, if set.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>avatar storage key (or <code>null</code>).</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setAvatarKey(java.lang.String)">
+<h3>setAvatarKey</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-189">setAvatarKey</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;avatarKey)</span></div>
+<div class="block">Sets the storage key for a locally stored custom avatar.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>avatarKey</code> - storage key.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getAvatarMimeType()">
+<h3>getAvatarMimeType</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-198">getAvatarMimeType</a></span>()</div>
+<div class="block">Returns the MIME type for a locally stored custom avatar, if set.</div>
+<dl class="notes">
+<dt>Returns:</dt>
+<dd>avatar MIME type (or <code>null</code>).</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="setAvatarMimeType(java.lang.String)">
+<h3>setAvatarMimeType</h3>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-207">setAvatarMimeType</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;avatarMimeType)</span></div>
+<div class="block">Sets the MIME type for a locally stored custom avatar.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>avatarMimeType</code> - avatar MIME type.</dd>
+</dl>
+</section>
+</li>
+<li>
 <section class="detail" id="getEmail()">
 <h3>getEmail</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-172">getEmail</a></span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-216">getEmail</a></span>()</div>
 <div class="block">Returns the email address.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -333,7 +397,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setEmail(java.lang.String)">
 <h3>setEmail</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-181">setEmail</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;email)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-225">setEmail</a></span><wbr><span class="parameters">(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/String.html" title="class or interface in java.lang" class="external-link">String</a>&nbsp;email)</span></div>
 <div class="block">Sets the email address.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -344,7 +408,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="isManager()">
 <h3>isManager</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-190">isManager</a></span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-234">isManager</a></span>()</div>
 <div class="block">Returns whether this user has manager privileges.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -355,7 +419,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setIsManager(boolean)">
 <h3>setIsManager</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-199">setIsManager</a></span><wbr><span class="parameters">(boolean&nbsp;isManager)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-243">setIsManager</a></span><wbr><span class="parameters">(boolean&nbsp;isManager)</span></div>
 <div class="block">Sets whether this user has manager privileges.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -366,7 +430,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getTimeCreated()">
 <h3>getTimeCreated</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-208">getTimeCreated</a></span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/time/Instant.html" title="class or interface in java.time" class="external-link">Instant</a></span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-252">getTimeCreated</a></span>()</div>
 <div class="block">Returns the time this user profile was created.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -377,7 +441,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getUserEnabled()">
 <h3>getUserEnabled</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-217">getUserEnabled</a></span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">boolean</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-261">getUserEnabled</a></span>()</div>
 <div class="block">Returns whether the user account is enabled.</div>
 <dl class="notes">
 <dt>Returns:</dt>
@@ -388,7 +452,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="setUserEnabled(boolean)">
 <h3>setUserEnabled</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-226">setUserEnabled</a></span><wbr><span class="parameters">(boolean&nbsp;userEnabled)</span></div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type">void</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-270">setUserEnabled</a></span><wbr><span class="parameters">(boolean&nbsp;userEnabled)</span></div>
 <div class="block">Sets whether the user account is enabled.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
@@ -399,7 +463,7 @@ loadScripts(document, 'script');</script>
 <li>
 <section class="detail" id="getIssueReports()">
 <h3>getIssueReports</h3>
-<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="IssueReport.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">IssueReport</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-235">getIssueReports</a></span>()</div>
+<div class="member-signature"><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/List.html" title="class or interface in java.util" class="external-link">List</a>&lt;<a href="IssueReport.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">IssueReport</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../../src-html/edu/cnm/deepdive/seesomethingabq/model/entity/UserProfile.html#line-279">getIssueReports</a></span>()</div>
 <div class="block">Returns the issue reports created by this user.</div>
 <dl class="notes">
 <dt>Returns:</dt>

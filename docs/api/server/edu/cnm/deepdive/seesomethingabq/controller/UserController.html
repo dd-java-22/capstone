@@ -91,7 +91,7 @@ loadScripts(document, 'script');</script>
 <hr>
 <div class="type-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RestController.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RestController</a>
 <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestMapping</a>("/users")
-</span><span class="modifiers">public class </span><span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-35">UserController</a></span>
+</span><span class="modifiers">public class </span><span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-48">UserController</a></span>
 <span class="extends-implements">extends <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/lang/Object.html" title="class or interface in java.lang" class="external-link">Object</a></span></div>
 <div class="block">REST controller for user profile operations. This controller exposes endpoints for retrieving and
  updating user profile information. All operations require authentication.</div>
@@ -106,9 +106,10 @@ loadScripts(document, 'script');</script>
 <div class="summary-table two-column-summary">
 <div class="table-header col-first">Constructor</div>
 <div class="table-header col-last">Description</div>
-<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(edu.cnm.deepdive.seesomethingabq.service.UserService)" class="member-name-link">UserController</a><wbr>(<a href="../service/UserService.html" title="interface in edu.cnm.deepdive.seesomethingabq.service">UserService</a>&nbsp;service)</code></div>
+<div class="col-constructor-name even-row-color"><code><a href="#%3Cinit%3E(edu.cnm.deepdive.seesomethingabq.service.UserService,edu.cnm.deepdive.seesomethingabq.service.storage.StorageService)" class="member-name-link">UserController</a><wbr>(<a href="../service/UserService.html" title="interface in edu.cnm.deepdive.seesomethingabq.service">UserService</a>&nbsp;service,
+ <a href="../service/storage/StorageService.html" title="interface in edu.cnm.deepdive.seesomethingabq.service.storage">StorageService</a>&nbsp;storageService)</code></div>
 <div class="col-last even-row-color">
-<div class="block">Constructs an instance of <code>UserController</code> with the specified service.</div>
+<div class="block">Constructs an instance of <code>UserController</code> with the specified services.</div>
 </div>
 </div>
 </section>
@@ -124,25 +125,41 @@ loadScripts(document, 'script');</script>
 <div class="table-header col-first">Modifier and Type</div>
 <div class="table-header col-second">Method</div>
 <div class="table-header col-last">Description</div>
-<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/dto/UserProfileResponse.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UserProfileResponse</a></code></div>
 <div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#get()" class="member-name-link">get</a>()</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Returns the user profile for the currently authenticated user.</div>
 </div>
-<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateAvatar(edu.cnm.deepdive.seesomethingabq.model.dto.UpdateAvatarRequest)" class="member-name-link">updateAvatar</a><wbr>(<a href="../model/dto/UpdateAvatarRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateAvatarRequest</a>&nbsp;request)</code></div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html" title="class or interface in org.springframework.http" class="external-link">ResponseEntity</a><wbr>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html" title="class or interface in org.springframework.core.io" class="external-link">Resource</a>&gt;</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#getAvatar(java.util.UUID)" class="member-name-link">getAvatar</a><wbr>(<a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Updates the avatar URL for the currently authenticated user.</div>
+<div class="block">Serves a user's custom avatar (if present) as raw bytes.</div>
 </div>
 <div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
-<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateDisplayName(edu.cnm.deepdive.seesomethingabq.model.dto.UpdateDisplayNameRequest)" class="member-name-link">updateDisplayName</a><wbr>(<a href="../model/dto/UpdateDisplayNameRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateDisplayNameRequest</a>&nbsp;request)</code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateAvatar(edu.cnm.deepdive.seesomethingabq.model.dto.UpdateAvatarRequest)" class="member-name-link">updateAvatar</a><wbr>(<a href="../model/dto/UpdateAvatarRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateAvatarRequest</a>&nbsp;request)</code></div>
 <div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
-<div class="block">Updates the display name for the currently authenticated user.</div>
+<div class="block">Updates the avatar URL for the currently authenticated user.</div>
 </div>
 <div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
-<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateEmail(edu.cnm.deepdive.seesomethingabq.model.dto.UpdateEmailRequest)" class="member-name-link">updateEmail</a><wbr>(<a href="../model/dto/UpdateEmailRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateEmailRequest</a>&nbsp;request)</code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateDisplayName(edu.cnm.deepdive.seesomethingabq.model.dto.UpdateDisplayNameRequest)" class="member-name-link">updateDisplayName</a><wbr>(<a href="../model/dto/UpdateDisplayNameRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateDisplayNameRequest</a>&nbsp;request)</code></div>
 <div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Updates the display name for the currently authenticated user.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateEmail(edu.cnm.deepdive.seesomethingabq.model.dto.UpdateEmailRequest)" class="member-name-link">updateEmail</a><wbr>(<a href="../model/dto/UpdateEmailRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateEmailRequest</a>&nbsp;request)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
 <div class="block">Updates the email address for the currently authenticated user.</div>
+</div>
+<div class="col-first odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/dto/UserProfileResponse.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UserProfileResponse</a></code></div>
+<div class="col-second odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#updateProfile(edu.cnm.deepdive.seesomethingabq.model.dto.UpdateUserRequest)" class="member-name-link">updateProfile</a><wbr>(<a href="../model/dto/UpdateUserRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateUserRequest</a>&nbsp;request)</code></div>
+<div class="col-last odd-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Updates user profile fields (display name and/or email) in a single request.</div>
+</div>
+<div class="col-first even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></code></div>
+<div class="col-second even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4"><code><a href="#uploadAvatarImage(org.springframework.web.multipart.MultipartFile,org.springframework.web.multipart.MultipartFile)" class="member-name-link">uploadAvatarImage</a><wbr>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/multipart/MultipartFile.html" title="class or interface in org.springframework.web.multipart" class="external-link">MultipartFile</a>&nbsp;avatar,
+ <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/multipart/MultipartFile.html" title="class or interface in org.springframework.web.multipart" class="external-link">MultipartFile</a>&nbsp;file)</code></div>
+<div class="col-last even-row-color method-summary-table method-summary-table-tab2 method-summary-table-tab4">
+<div class="block">Uploads a new avatar image for the currently authenticated user.</div>
 </div>
 </div>
 </div>
@@ -162,14 +179,16 @@ loadScripts(document, 'script');</script>
 <h2>Constructor Details</h2>
 <ul class="member-list">
 <li>
-<section class="detail" id="&lt;init&gt;(edu.cnm.deepdive.seesomethingabq.service.UserService)">
+<section class="detail" id="&lt;init&gt;(edu.cnm.deepdive.seesomethingabq.service.UserService,edu.cnm.deepdive.seesomethingabq.service.storage.StorageService)">
 <h3>UserController</h3>
 <div class="member-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Autowired.html" title="class or interface in org.springframework.beans.factory.annotation" class="external-link">@Autowired</a>
-</span><span class="modifiers">public</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-46">UserController</a></span><wbr><span class="parameters">(<a href="../service/UserService.html" title="interface in edu.cnm.deepdive.seesomethingabq.service">UserService</a>&nbsp;service)</span></div>
-<div class="block">Constructs an instance of <code>UserController</code> with the specified service.</div>
+</span><span class="modifiers">public</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-61">UserController</a></span><wbr><span class="parameters">(<a href="../service/UserService.html" title="interface in edu.cnm.deepdive.seesomethingabq.service">UserService</a>&nbsp;service,
+ <a href="../service/storage/StorageService.html" title="interface in edu.cnm.deepdive.seesomethingabq.service.storage">StorageService</a>&nbsp;storageService)</span></div>
+<div class="block">Constructs an instance of <code>UserController</code> with the specified services.</div>
 <dl class="notes">
 <dt>Parameters:</dt>
 <dd><code>service</code> - User service for business logic operations.</dd>
+<dd><code>storageService</code> - Storage service for file uploads.</dd>
 </dl>
 </section>
 </li>
@@ -186,7 +205,7 @@ loadScripts(document, 'script');</script>
 <h3>get</h3>
 <div class="member-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@GetMapping</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html#value()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">value</a>="/me",
             <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html#produces()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">produces</a>="application/json")
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-57">get</a></span>()</div>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/dto/UserProfileResponse.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UserProfileResponse</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-73">get</a></span>()</div>
 <div class="block">Returns the user profile for the currently authenticated user. If the user does not already
  exist in the system, a new profile will be created automatically.</div>
 <dl class="notes">
@@ -201,7 +220,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@PutMapping</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html#value()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">value</a>="/me/display-name",
             <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html#consumes()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">consumes</a>="application/json",
             <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html#produces()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">produces</a>="application/json")
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-68">updateDisplayName</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestBody</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-85">updateDisplayName</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestBody</a>
  <a href="../model/dto/UpdateDisplayNameRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateDisplayNameRequest</a>&nbsp;request)</span></div>
 <div class="block">Updates the display name for the currently authenticated user.</div>
 <dl class="notes">
@@ -218,7 +237,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@PutMapping</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html#value()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">value</a>="/me/email",
             <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html#consumes()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">consumes</a>="application/json",
             <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html#produces()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">produces</a>="application/json")
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-81">updateEmail</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestBody</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-98">updateEmail</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestBody</a>
  <a href="../model/dto/UpdateEmailRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateEmailRequest</a>&nbsp;request)</span></div>
 <div class="block">Updates the email address for the currently authenticated user.</div>
 <dl class="notes">
@@ -235,7 +254,7 @@ loadScripts(document, 'script');</script>
 <div class="member-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@PutMapping</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html#value()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">value</a>="/me/avatar",
             <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html#consumes()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">consumes</a>="application/json",
             <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PutMapping.html#produces()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">produces</a>="application/json")
-</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-94">updateAvatar</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestBody</a>
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-111">updateAvatar</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestBody</a>
  <a href="../model/dto/UpdateAvatarRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateAvatarRequest</a>&nbsp;request)</span></div>
 <div class="block">Updates the avatar URL for the currently authenticated user.</div>
 <dl class="notes">
@@ -243,6 +262,70 @@ loadScripts(document, 'script');</script>
 <dd><code>request</code> - Request containing the new avatar URL.</dd>
 <dt>Returns:</dt>
 <dd>Updated user profile.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="updateProfile(edu.cnm.deepdive.seesomethingabq.model.dto.UpdateUserRequest)">
+<h3>updateProfile</h3>
+<div class="member-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PatchMapping.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@PatchMapping</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PatchMapping.html#value()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">value</a>="/me",
+              <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PatchMapping.html#consumes()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">consumes</a>="application/json",
+              <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PatchMapping.html#produces()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">produces</a>="application/json")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/dto/UserProfileResponse.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UserProfileResponse</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-124">updateProfile</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestBody.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestBody</a>
+ <a href="../model/dto/UpdateUserRequest.html" title="class in edu.cnm.deepdive.seesomethingabq.model.dto">UpdateUserRequest</a>&nbsp;request)</span></div>
+<div class="block">Updates user profile fields (display name and/or email) in a single request.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>request</code> - Request containing the fields to update (nullable fields are ignored).</dd>
+<dt>Returns:</dt>
+<dd>Updated user profile.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="uploadAvatarImage(org.springframework.web.multipart.MultipartFile,org.springframework.web.multipart.MultipartFile)">
+<h3>uploadAvatarImage</h3>
+<div class="member-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestMapping</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html#value()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">value</a>="/me/avatar",
+                <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html#method()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">method</a>={<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html#POST" title="class or interface in org.springframework.web.bind.annotation" class="external-link">POST</a>,<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMethod.html#PUT" title="class or interface in org.springframework.web.bind.annotation" class="external-link">PUT</a>},
+                <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html#consumes()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">consumes</a>="multipart/form-data",
+                <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestMapping.html#produces()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">produces</a>="application/json")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="../model/entity/UserProfile.html" title="class in edu.cnm.deepdive.seesomethingabq.model.entity">UserProfile</a></span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-152">uploadAvatarImage</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestPart.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestPart</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestPart.html#value()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">value</a>="avatar",<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestPart.html#required()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">required</a>=false)
+ <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/multipart/MultipartFile.html" title="class or interface in org.springframework.web.multipart" class="external-link">MultipartFile</a>&nbsp;avatar,
+ <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestPart.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@RequestPart</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestPart.html#value()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">value</a>="file",<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RequestPart.html#required()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">required</a>=false)
+ <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/multipart/MultipartFile.html" title="class or interface in org.springframework.web.multipart" class="external-link">MultipartFile</a>&nbsp;file)</span>
+                              throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a>,
+<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/HttpMediaTypeException.html" title="class or interface in org.springframework.web" class="external-link">HttpMediaTypeException</a></span></div>
+<div class="block">Uploads a new avatar image for the currently authenticated user.
+ The uploaded file is stored and the user's avatar URL is updated to point to the dedicated
+ backend-served avatar endpoint.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>avatar</code> - The avatar image file to upload (preferred part name).</dd>
+<dd><code>file</code> - Alternate part name supported for consistency with other upload endpoints.</dd>
+<dt>Returns:</dt>
+<dd>Updated user profile with new avatar URL.</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - If file upload fails.</dd>
+<dd><code><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/HttpMediaTypeException.html" title="class or interface in org.springframework.web" class="external-link">HttpMediaTypeException</a></code> - If the file type is not supported.</dd>
+</dl>
+</section>
+</li>
+<li>
+<section class="detail" id="getAvatar(java.util.UUID)">
+<h3>getAvatar</h3>
+<div class="member-signature"><span class="annotations"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@GetMapping</a>(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html#value()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">value</a>="/{externalId}/avatar",
+            <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/GetMapping.html#produces()" title="class or interface in org.springframework.web.bind.annotation" class="external-link">produces</a>="*/*")
+</span><span class="modifiers">public</span>&nbsp;<span class="return-type"><a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/http/ResponseEntity.html" title="class or interface in org.springframework.http" class="external-link">ResponseEntity</a>&lt;<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html" title="class or interface in org.springframework.core.io" class="external-link">Resource</a>&gt;</span>&nbsp;<span class="element-name"><a href="../../../../../src-html/edu/cnm/deepdive/seesomethingabq/controller/UserController.html#line-182">getAvatar</a></span><wbr><span class="parameters">(<a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/PathVariable.html" title="class or interface in org.springframework.web.bind.annotation" class="external-link">@PathVariable</a>
+ <a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/util/UUID.html" title="class or interface in java.util" class="external-link">UUID</a>&nbsp;externalId)</span>
+                                   throws <span class="exceptions"><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></span></div>
+<div class="block">Serves a user's custom avatar (if present) as raw bytes.</div>
+<dl class="notes">
+<dt>Parameters:</dt>
+<dd><code>externalId</code> - user external ID.</dd>
+<dt>Returns:</dt>
+<dd>avatar content as a <a href="https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/core/io/Resource.html" title="class or interface in org.springframework.core.io" class="external-link"><code>Resource</code></a>.</dd>
+<dt>Throws:</dt>
+<dd><code><a href="https://docs.oracle.com/en/java/javase/21/docs/api/java.base/java/io/IOException.html" title="class or interface in java.io" class="external-link">IOException</a></code> - if storage retrieval fails.</dd>
 </dl>
 </section>
 </li>
