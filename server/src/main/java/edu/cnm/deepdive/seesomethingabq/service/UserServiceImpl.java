@@ -26,11 +26,14 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 /**
@@ -137,8 +140,16 @@ public class UserServiceImpl implements UserService {
           user.setAvatarMimeType(contentType);
 
           try {
-            URL avatarUrl = ServletUriComponentsBuilder
-                .fromCurrentContextPath()
+            ServletUriComponentsBuilder builder = ServletUriComponentsBuilder
+                .fromCurrentContextPath();
+            // When deployed behind Apache (TLS termination + reverse proxy), the inbound servlet
+            // request context may reflect the internal connector (e.g., http + :8080). Prefer
+            // X-Forwarded-* headers when present so generated URLs use the public endpoint.
+            HttpServletRequest request = currentRequestOrNull();
+            if (request != null) {
+              applyForwardedHeaders(builder, request);
+            }
+            URL avatarUrl = builder
                 .path("/users/{externalId}/avatar")
                 .buildAndExpand(user.getExternalId())
                 .toUri()
@@ -151,6 +162,59 @@ public class UserServiceImpl implements UserService {
           return repository.save(user);
         })
         .orElseThrow(NoSuchElementException::new);
+  }
+
+  private static HttpServletRequest currentRequestOrNull() {
+    if (RequestContextHolder.getRequestAttributes() instanceof ServletRequestAttributes attributes) {
+      return attributes.getRequest();
+    }
+    return null;
+  }
+
+  private static void applyForwardedHeaders(ServletUriComponentsBuilder builder, HttpServletRequest request) {
+    String proto = firstForwardedValue(request.getHeader("X-Forwarded-Proto"));
+    String host = firstForwardedValue(request.getHeader("X-Forwarded-Host"));
+    String port = firstForwardedValue(request.getHeader("X-Forwarded-Port"));
+
+    if (proto != null && !proto.isBlank()) {
+      builder.scheme(proto.trim());
+    }
+    if (host != null && !host.isBlank()) {
+      // X-Forwarded-Host can include port; ServletUriComponentsBuilder has a dedicated port setting.
+      String trimmed = host.trim();
+      int colon = trimmed.lastIndexOf(':');
+      if (colon > 0 && colon < trimmed.length() - 1 && trimmed.indexOf(']') < 0) { // naive IPv6 avoidance
+        String maybePort = trimmed.substring(colon + 1);
+        if (maybePort.chars().allMatch(Character::isDigit)) {
+          builder.host(trimmed.substring(0, colon));
+          builder.port(Integer.parseInt(maybePort));
+          return;
+        }
+      }
+      builder.host(trimmed);
+    }
+    if (port != null && !port.isBlank()) {
+      try {
+        int parsed = Integer.parseInt(port.trim());
+        // Avoid explicit :443 or :80 in generated URLs.
+        String scheme = builder.build().getScheme();
+        if (("https".equalsIgnoreCase(scheme) && parsed == 443) || ("http".equalsIgnoreCase(scheme) && parsed == 80)) {
+          builder.port(-1);
+        } else {
+          builder.port(parsed);
+        }
+      } catch (NumberFormatException ignored) {
+        // If the header is malformed, fall back to the servlet container context.
+      }
+    }
+  }
+
+  private static String firstForwardedValue(String header) {
+    if (header == null) {
+      return null;
+    }
+    int comma = header.indexOf(',');
+    return (comma >= 0) ? header.substring(0, comma).trim() : header.trim();
   }
 
   @Override
