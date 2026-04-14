@@ -34,3 +34,9 @@ storage:
     timestamp:
       format: "yyyyMMdd-HHmmss"
       timeZone: "UTC"
+
+# App is deployed behind a reverse proxy (Apache + SSL). Enable proxy header support so URL
+# generation (e.g., ServletUriComponentsBuilder.fromCurrentContextPath) reflects the public
+# scheme/host/port (via X-Forwarded-* headers) rather than the internal connector (e.g., :8080).
+server:
+  forward-headers-strategy: framework

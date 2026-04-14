@@ -16,6 +16,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.future.await
 import kotlinx.coroutines.future.future
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.HttpUrl
 import okhttp3.HttpUrl.Companion.toHttpUrlOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
@@ -206,30 +207,68 @@ class UserServiceImpl @Inject constructor(
   private fun isProtectedBackendAvatarUrl(activity: Activity, url: String, externalId: String): Boolean {
     val baseUrl = activity.getString(R.string.base_url).toHttpUrlOrNull() ?: return false
     val avatar = url.toHttpUrlOrNull() ?: return false
+    return isProtectedBackendAvatarUrl(baseUrl, avatar, externalId)
+  }
 
-    val scheme = avatar.scheme
-    if (scheme != "https" && scheme != "http") {
-      return false
-    }
-    if (avatar.host != baseUrl.host || avatar.port != baseUrl.port) {
-      return false
-    }
+  companion object {
 
-    // baseUrl may include a path prefix (e.g., /api/); avatar should share it.
-    val baseSegments = baseUrl.encodedPathSegments.filter { it.isNotBlank() }
-    val avatarSegments = avatar.encodedPathSegments.filter { it.isNotBlank() }
+    /**
+     * Determines whether [avatar] points to our backend's protected avatar endpoint for [externalId].
+     *
+     * We intentionally ignore URL scheme and default-port differences when identifying backend avatar
+     * URLs. In some deployments the server may emit `http://host/...` avatar URLs even though the
+     * app is configured with an `https://host/...` Retrofit base URL (and vice versa). Since avatar
+     * fetching must go through the authenticated Retrofit client, we detect backend avatar URLs by:
+     * - Matching backend host.
+     * - Matching the expected `/users/{externalId}/avatar` path (after any base path prefix).
+     * - Allowing mismatch between default ports (80 for http, 443 for https).
+     *
+     * Non-default ports must still match exactly to avoid misclassifying unrelated services.
+     */
+    internal fun isProtectedBackendAvatarUrl(baseUrl: HttpUrl, avatar: HttpUrl, externalId: String): Boolean {
+      val scheme = avatar.scheme
+      if (scheme != "https" && scheme != "http") {
+        return false
+      }
+      if (avatar.host != baseUrl.host) {
+        return false
+      }
+      if (!arePortsCompatibleIgnoringDefaults(baseUrl, avatar)) {
+        return false
+      }
 
-    if (avatarSegments.size < baseSegments.size + 3) {
-      return false
-    }
-    if (avatarSegments.subList(0, baseSegments.size) != baseSegments) {
-      return false
-    }
-    val remaining = avatarSegments.subList(baseSegments.size, avatarSegments.size)
-    return remaining.size == 3
+      // baseUrl may include a path prefix (e.g., /api/); avatar should share it.
+      val baseSegments = baseUrl.encodedPathSegments.filter { it.isNotBlank() }
+      val avatarSegments = avatar.encodedPathSegments.filter { it.isNotBlank() }
+
+      if (avatarSegments.size < baseSegments.size + 3) {
+        return false
+      }
+      if (avatarSegments.subList(0, baseSegments.size) != baseSegments) {
+        return false
+      }
+      val remaining = avatarSegments.subList(baseSegments.size, avatarSegments.size)
+      return remaining.size == 3
         && remaining[0] == "users"
         && remaining[1] == externalId
         && remaining[2] == "avatar"
+    }
+
+    private fun arePortsCompatibleIgnoringDefaults(baseUrl: HttpUrl, avatar: HttpUrl): Boolean {
+      if (baseUrl.port == avatar.port) {
+        return true
+      }
+      // Allow https:443 vs http:80 mismatch when both are default for their scheme.
+      return isDefaultPort(baseUrl) && isDefaultPort(avatar)
+    }
+
+    private fun isDefaultPort(url: HttpUrl): Boolean =
+      when (url.scheme) {
+        "http" -> url.port == 80
+        "https" -> url.port == 443
+        else -> false
+      }
+
   }
 
 }
