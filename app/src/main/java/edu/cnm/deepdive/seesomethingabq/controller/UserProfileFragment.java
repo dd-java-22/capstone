@@ -13,10 +13,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.ObjectKey;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserProfileBinding;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
+import java.io.File;
 
 /**
  * Fragment that displays and allows updates to the current user's profile.
@@ -102,11 +104,18 @@ public class UserProfileFragment extends Fragment {
     userViewModel.getAvatarDisplayUri().observe(getViewLifecycleOwner(), uri -> {
       if (uri != null) {
         lastKnownAvatarUri = uri;
-        Glide.with(this)
+        var request = Glide.with(this)
             .load(uri)
             .placeholder(R.drawable.ic_default_avatar)
-            .error(R.drawable.ic_default_avatar)
-            .into(binding.avatarImage);
+            .error(R.drawable.ic_default_avatar);
+        // When loading a deterministic file URI (e.g., cached protected backend avatar), Glide can
+        // otherwise reuse a stale cached image. Using the file's mtime as a signature reliably
+        // busts Glide's cache when the file is rewritten.
+        if ("file".equals(uri.getScheme()) && uri.getPath() != null) {
+          File file = new File(uri.getPath());
+          request = request.signature(new ObjectKey(file.lastModified()));
+        }
+        request.into(binding.avatarImage);
       } else {
         lastKnownAvatarUri = null;
         binding.avatarImage.setImageResource(R.drawable.ic_default_avatar);
