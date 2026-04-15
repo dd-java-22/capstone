@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.graphics.drawable.Drawable;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -13,10 +14,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.signature.ObjectKey;
 import dagger.hilt.android.AndroidEntryPoint;
 import edu.cnm.deepdive.seesomethingabq.R;
 import edu.cnm.deepdive.seesomethingabq.databinding.FragmentUserProfileBinding;
 import edu.cnm.deepdive.seesomethingabq.viewmodel.UserViewModel;
+import java.io.File;
 
 /**
  * Fragment that displays and allows updates to the current user's profile.
@@ -29,6 +32,7 @@ public class UserProfileFragment extends Fragment {
   private FragmentUserProfileBinding binding;
   private UserViewModel userViewModel;
   private Uri lastKnownAvatarUri;
+  private String lastAvatarSourceKey;
 
   // Avatar picker launcher
   private final ActivityResultLauncher<String> pickAvatarLauncher =
@@ -77,6 +81,9 @@ public class UserProfileFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+    // avatarDisplayUri is activity-scoped and can replay a previously resolved URI from the prior
+    // fragment instance. Clear it before observing to prevent stale avatar replay on re-entry.
+    userViewModel.clearResolvedAvatar();
 
     // Observe user data
     userViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
@@ -95,20 +102,40 @@ public class UserProfileFragment extends Fragment {
         );
 
         // Resolve avatar for display (public URL vs protected backend URL -> cached file).
-        userViewModel.resolveAvatar(requireActivity(), user);
+        // Avoid unnecessary re-resolves when profile fields (e.g., displayName/email/reportCount)
+        // change but the avatar source has not.
+        String avatarSourceKey = (user.getExternalId() != null ? user.getExternalId().toString() : "")
+            + "|" + (user.getAvatar() != null ? user.getAvatar().toString() : "");
+        if (!avatarSourceKey.equals(lastAvatarSourceKey)) {
+          lastAvatarSourceKey = avatarSourceKey;
+          userViewModel.resolveAvatar(requireActivity(), user);
+        }
       }
     });
 
     userViewModel.getAvatarDisplayUri().observe(getViewLifecycleOwner(), uri -> {
       if (uri != null) {
-        lastKnownAvatarUri = uri;
-        Glide.with(this)
+        var request = Glide.with(this)
             .load(uri)
-            .placeholder(R.drawable.ic_default_avatar)
-            .error(R.drawable.ic_default_avatar)
-            .into(binding.avatarImage);
+            .error(R.drawable.ic_default_avatar);
+        // Keep the currently displayed drawable visible during loads/refreshes to avoid flicker.
+        // If there isn't one yet, fall back to the default avatar placeholder.
+        Drawable current = binding.avatarImage.getDrawable();
+        request = (current != null)
+            ? request.placeholder(current)
+            : request.placeholder(R.drawable.ic_default_avatar);
+        // When loading a deterministic file URI (e.g., cached protected backend avatar), Glide can
+        // otherwise reuse a stale cached image. Using the file's mtime as a signature reliably
+        // busts Glide's cache when the file is rewritten.
+        if ("file".equals(uri.getScheme()) && uri.getPath() != null) {
+          File file = new File(uri.getPath());
+          request = request.signature(new ObjectKey(file.lastModified()));
+        }
+        request.into(binding.avatarImage);
+        lastKnownAvatarUri = uri;
       } else {
         lastKnownAvatarUri = null;
+        lastAvatarSourceKey = null;
         binding.avatarImage.setImageResource(R.drawable.ic_default_avatar);
       }
     });
@@ -117,7 +144,11 @@ public class UserProfileFragment extends Fragment {
       if (succeeded == null) {
         return;
       }
-      if (Boolean.TRUE.equals(succeeded)) {
+      Boolean wasSuccessful = succeeded.getContentIfNotHandled();
+      if (wasSuccessful == null) {
+        return;
+      }
+      if (Boolean.TRUE.equals(wasSuccessful)) {
         Toast.makeText(requireContext(), "Avatar updated", Toast.LENGTH_SHORT).show();
       } else {
         Toast.makeText(requireContext(), "Avatar upload failed", Toast.LENGTH_SHORT).show();

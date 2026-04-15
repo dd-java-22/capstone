@@ -72,8 +72,9 @@ class UserServiceImpl @Inject constructor(
         .getMe("Bearer ${credential.idToken}")
         .copy(oauthKey = oauthKey)
 
-      // Cache locally or return existing cached record
-      userDao.getByOauthKey(oauthKey) ?: serverUser.copy(id = userDao.insert(serverUser))
+      // Always refresh the local cached profile from server truth on sign-in, while preserving the
+      // local Room primary key if this user has been seen before.
+      refreshCachedUserFromServer(userDao, oauthKey, serverUser)
     }
 
   /**
@@ -197,9 +198,18 @@ class UserServiceImpl @Inject constructor(
 
       val responseBody = webService.downloadUserAvatar("Bearer ${credential.idToken}", user.externalId)
 
+      // Ensure the cached avatar file content changes (and its modification timestamp updates) so
+      // downstream image caches can reliably detect a refresh for deterministic file paths.
+      if (cacheFile.exists()) {
+        //noinspection ResultOfMethodCallIgnored
+        cacheFile.delete()
+      }
       cacheFile.sink().buffer().use { sink ->
         sink.writeAll(responseBody.source())
       }
+      // Best-effort: in case the filesystem doesn't update mtime as expected.
+      //noinspection ResultOfMethodCallIgnored
+      cacheFile.setLastModified(System.currentTimeMillis())
 
       Uri.fromFile(cacheFile)
     }
@@ -268,6 +278,23 @@ class UserServiceImpl @Inject constructor(
         "https" -> url.port == 443
         else -> false
       }
+
+    internal suspend fun refreshCachedUserFromServer(
+      userDao: UserDao,
+      oauthKey: String,
+      serverUser: UserProfile
+    ): UserProfile {
+      val existingUser = userDao.getByOauthKey(oauthKey)
+      return if (existingUser == null) {
+        serverUser.copy(id = userDao.insert(serverUser))
+      } else {
+        // Currently, all fields in UserProfile are server-backed except the local Room PK and oauthKey.
+        // If we add local-only fields in the future, merge them here instead of overwriting.
+        val refreshed = serverUser.copy(id = existingUser.id)
+        userDao.update(refreshed)
+        refreshed
+      }
+    }
 
   }
 
