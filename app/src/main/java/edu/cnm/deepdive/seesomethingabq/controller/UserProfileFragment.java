@@ -139,7 +139,11 @@ public class UserProfileFragment extends Fragment {
       if (succeeded == null) {
         return;
       }
-      if (Boolean.TRUE.equals(succeeded)) {
+      Boolean wasSuccessful = succeeded.getContentIfNotHandled();
+      if (wasSuccessful == null) {
+        return;
+      }
+      if (Boolean.TRUE.equals(wasSuccessful)) {
         Toast.makeText(requireContext(), "Avatar updated", Toast.LENGTH_SHORT).show();
       } else {
         Toast.makeText(requireContext(), "Avatar upload failed", Toast.LENGTH_SHORT).show();

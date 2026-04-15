@@ -28,7 +28,7 @@ public class UserViewModel extends ViewModel {
   private final MutableLiveData<UserProfile> user;
   private final MutableLiveData<Throwable> throwable;
   private final MutableLiveData<Boolean> avatarUploadInProgress;
-  private final MutableLiveData<Boolean> avatarUploadSucceeded;
+  private final MutableLiveData<Event<Boolean>> avatarUploadSucceeded;
   private final MutableLiveData<Uri> avatarDisplayUri;
 
   /**
@@ -81,7 +81,7 @@ public class UserViewModel extends ViewModel {
    *
    * @return live data stream that posts {@code true} on success, {@code false} on failure.
    */
-  public LiveData<Boolean> getAvatarUploadSucceeded() {
+  public LiveData<Event<Boolean>> getAvatarUploadSucceeded() {
     return avatarUploadSucceeded;
   }
 
@@ -172,10 +172,10 @@ public class UserViewModel extends ViewModel {
         .whenComplete((user, throwable) -> {
           avatarUploadInProgress.postValue(false);
           if (throwable == null) {
-            avatarUploadSucceeded.postValue(true);
+            avatarUploadSucceeded.postValue(new Event<>(true));
             this.user.postValue(user);
           } else {
-            avatarUploadSucceeded.postValue(false);
+            avatarUploadSucceeded.postValue(new Event<>(false));
             postThrowable(throwable);
           }
         });
