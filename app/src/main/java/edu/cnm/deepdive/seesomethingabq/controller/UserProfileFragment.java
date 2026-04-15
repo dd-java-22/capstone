@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.graphics.drawable.Drawable;
 import android.widget.Toast;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -80,6 +81,9 @@ public class UserProfileFragment extends Fragment {
     super.onViewCreated(view, savedInstanceState);
 
     userViewModel = new ViewModelProvider(requireActivity()).get(UserViewModel.class);
+    // avatarDisplayUri is activity-scoped and can replay a previously resolved URI from the prior
+    // fragment instance. Clear it before observing to prevent stale avatar replay on re-entry.
+    userViewModel.clearResolvedAvatar();
 
     // Observe user data
     userViewModel.getUser().observe(getViewLifecycleOwner(), user -> {
@@ -114,11 +118,12 @@ public class UserProfileFragment extends Fragment {
         var request = Glide.with(this)
             .load(uri)
             .error(R.drawable.ic_default_avatar);
-        // Only use a placeholder for the initial empty state. For subsequent refreshes, keep the
-        // currently displayed avatar visible until the new image is ready.
-        if (binding.avatarImage.getDrawable() == null || lastKnownAvatarUri == null) {
-          request = request.placeholder(R.drawable.ic_default_avatar);
-        }
+        // Keep the currently displayed drawable visible during loads/refreshes to avoid flicker.
+        // If there isn't one yet, fall back to the default avatar placeholder.
+        Drawable current = binding.avatarImage.getDrawable();
+        request = (current != null)
+            ? request.placeholder(current)
+            : request.placeholder(R.drawable.ic_default_avatar);
         // When loading a deterministic file URI (e.g., cached protected backend avatar), Glide can
         // otherwise reuse a stale cached image. Using the file's mtime as a signature reliably
         // busts Glide's cache when the file is rewritten.

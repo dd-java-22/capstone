@@ -113,6 +113,18 @@ public class UserViewModel extends ViewModel {
   }
 
   /**
+   * Clears the transient "resolved avatar" UI state.
+   * <p>
+   * {@link #avatarDisplayUri} is activity-scoped and will replay its last value to newly attached
+   * observers (e.g., when {@code UserProfileFragment} is recreated). That replay can briefly show a
+   * stale avatar while the fragment re-resolves the current profile. Clearing it on view creation
+   * prevents stale-image replay.
+   */
+  public void clearResolvedAvatar() {
+    avatarDisplayUri.setValue(null);
+  }
+
+  /**
    * Signs the user in and publishes the resulting profile.
    *
    * @param activity activity used to launch sign-in flows.
