@@ -31,6 +31,7 @@ public class UserProfileFragment extends Fragment {
   private FragmentUserProfileBinding binding;
   private UserViewModel userViewModel;
   private Uri lastKnownAvatarUri;
+  private String lastAvatarSourceKey;
 
   // Avatar picker launcher
   private final ActivityResultLauncher<String> pickAvatarLauncher =
@@ -97,17 +98,27 @@ public class UserProfileFragment extends Fragment {
         );
 
         // Resolve avatar for display (public URL vs protected backend URL -> cached file).
-        userViewModel.resolveAvatar(requireActivity(), user);
+        // Avoid unnecessary re-resolves when profile fields (e.g., displayName/email/reportCount)
+        // change but the avatar source has not.
+        String avatarSourceKey = (user.getExternalId() != null ? user.getExternalId().toString() : "")
+            + "|" + (user.getAvatar() != null ? user.getAvatar().toString() : "");
+        if (!avatarSourceKey.equals(lastAvatarSourceKey)) {
+          lastAvatarSourceKey = avatarSourceKey;
+          userViewModel.resolveAvatar(requireActivity(), user);
+        }
       }
     });
 
     userViewModel.getAvatarDisplayUri().observe(getViewLifecycleOwner(), uri -> {
       if (uri != null) {
-        lastKnownAvatarUri = uri;
         var request = Glide.with(this)
             .load(uri)
-            .placeholder(R.drawable.ic_default_avatar)
             .error(R.drawable.ic_default_avatar);
+        // Only use a placeholder for the initial empty state. For subsequent refreshes, keep the
+        // currently displayed avatar visible until the new image is ready.
+        if (binding.avatarImage.getDrawable() == null || lastKnownAvatarUri == null) {
+          request = request.placeholder(R.drawable.ic_default_avatar);
+        }
         // When loading a deterministic file URI (e.g., cached protected backend avatar), Glide can
         // otherwise reuse a stale cached image. Using the file's mtime as a signature reliably
         // busts Glide's cache when the file is rewritten.
@@ -116,8 +127,10 @@ public class UserProfileFragment extends Fragment {
           request = request.signature(new ObjectKey(file.lastModified()));
         }
         request.into(binding.avatarImage);
+        lastKnownAvatarUri = uri;
       } else {
         lastKnownAvatarUri = null;
+        lastAvatarSourceKey = null;
         binding.avatarImage.setImageResource(R.drawable.ic_default_avatar);
       }
     });
